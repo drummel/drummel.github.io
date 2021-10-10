@@ -43,13 +43,16 @@ body {
 }
 
 .panel-1 {
-    -webkit-animation: sun 6s 0s infinite alternate, blur 9s 3s ease-in infinite alternate;
+    -webkit-animation: sun 6s 0s infinite alternate, blur 9s ease-in infinite alternate;
+    animation-delay: 8s;
 }
 .panel-2 {
-    -webkit-animation: sun 9s 2s infinite alternate, blur 10s 0s ease-in infinite alternate;
+    -webkit-animation: sun 9s 2s infinite alternate, blur 11s ease-in  infinite alternate;
+    animation-delay: 14s;
 }
 .panel-3 {
-    -webkit-animation: sun 7s 4s infinite alternate, blur 11s 6s ease-in infinite alternate;
+    -webkit-animation: sun 7s 4s infinite alternate, blur 13s ease-in infinite alternate;
+    animation-delay: 17s;
 }
 .panel-1 .leaves {
     -webkit-animation: huer 12s 0s infinite alternate;
