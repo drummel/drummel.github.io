@@ -1,0 +1,133 @@
+div {
+    position: absolute;
+    display: block;
+}
+body {
+    position: absolute;
+    background-color: #a3a3a3;
+    background-color: #dfdfdf;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+
+.panel {
+    height: 500px;
+    width: 320px;
+    border: 3px solid rgba(0, 0, 0, 0.678);
+    background-color: white;
+}
+.panel-top {
+    background-color: transparent;
+    z-index: 1000;
+}
+.panel-1 {
+    left: 0px;
+    background-color: rgba(255, 217, 0, 0.174);
+}
+.panel-2 {
+    left: 350px;
+    background-color: rgba(255, 217, 0, 0.174);
+}
+.panel-3 {
+    left: 700px;
+    background-color: rgba(255, 217, 0, 0.174);
+}
+
+#triptych {
+    height: 500px;
+    width: 1000px;
+}
+
+.panel-1 {
+    -webkit-animation: sun 6s 0s infinite alternate, blur 9s 3s ease-in infinite alternate;
+}
+.panel-2 {
+    -webkit-animation: sun 9s 2s infinite alternate, blur 10s 0s ease-in infinite alternate;
+}
+.panel-3 {
+    -webkit-animation: sun 7s 4s infinite alternate, blur 11s 6s ease-in infinite alternate;
+}
+.panel-1 .leaves {
+    -webkit-animation: huer 12s 0s infinite alternate;
+}
+.panel-2 .leaves {
+    -webkit-animation: huer 12s 4s infinite alternate;
+}
+.panel-3 .leaves {
+    -webkit-animation: huer 12s 8s infinite alternate;
+}
+
+@-webkit-keyframes sun {
+    0% {
+        background-color: rgba(255, 217, 0, 0.174);
+   }
+   100% {
+        background-color: rgba(255, 94, 0, 0.174);
+   }
+}
+@-webkit-keyframes blur {
+    0% {
+        filter: blur(0px);
+   }
+   100% {
+        filter: blur(2px);
+   }
+}
+
+@-webkit-keyframes huer {
+    0% {
+        filter: hue-rotate(-90deg);
+    }
+    100% {
+        filter: hue-rotate(120deg);
+    }
+}
+
+@-webkit-keyframes huer-less {
+    0% {
+        filter: hue-rotate(-20deg);
+    }
+    100% {
+        filter: hue-rotate(20deg);
+    }
+}
+
+.tree-0 {
+    -webkit-animation: huer-less 10s ease infinite alternate;
+}
+.tree-2 {
+    -webkit-animation: huer-less 13s 3s ease infinite alternate;
+}
+
+@-webkit-keyframes floaty {
+    0% {
+        margin-top: 0px;
+        margin-left: 0px;
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        margin-top: 10px;
+        margin-left: 20px;
+        filter: hue-rotate(20deg);
+    }
+}
+
+.tree-leaves i {
+    -webkit-animation: floaty 5s ease infinite alternate, huer-less ease infinite alternate;
+}
+
+.tree-leaves i:nth-of-type(n) { -webkit-animation-delay: 1.4s;  }
+.tree-leaves i:nth-of-type(2n) { -webkit-animation-delay: 4.3s;  }
+.tree-leaves i:nth-of-type(3n) { -webkit-animation-delay: 2.1s;  }
+.tree-leaves i:nth-of-type(4n) { -webkit-animation-delay: 0.3s;  }
+.tree-leaves i:nth-of-type(5n) { -webkit-animation-delay: 2.5s;  }
+.tree-leaves i:nth-of-type(6n) { -webkit-animation-delay: 4.2s;  }
+.tree-leaves i:nth-of-type(7n) { -webkit-animation-delay: 3.3s;  }
+.tree-leaves i:nth-of-type(8n) { -webkit-animation-delay: 2.2s;  }
+.tree-leaves i:nth-of-type(9n) { -webkit-animation-delay: 1.4s;  }
+.tree-leaves i:nth-of-type(10n) { -webkit-animation-delay: 0.1s;  }
+
