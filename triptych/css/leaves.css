@@ -18,7 +18,7 @@
     /* border: 1px solid #333; */
     /* z-index: 1; */
     opacity: 0;
-    -webkit-animation: falling 8s 0s infinite;
+-webkit-animation: falling 8s 0s infinite;
 }
 
 .leaves i:nth-of-type(2n) { -webkit-animation: falling2 12s 2s infinite; }

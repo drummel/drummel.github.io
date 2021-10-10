@@ -9,10 +9,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
     width: 100%;
+    height: 3000px;
 }
 
+#triptych {
+    height: 500px;
+    width: 1000px;
+    top: 300px;
+}
 
 .panel {
     height: 500px;
@@ -35,11 +40,6 @@ body {
 .panel-3 {
     left: 700px;
     background-color: rgba(255, 217, 0, 0.174);
-}
-
-#triptych {
-    height: 500px;
-    width: 1000px;
 }
 
 .panel-1 {
