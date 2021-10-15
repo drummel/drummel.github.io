@@ -1,0 +1,69 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Color in Time</title>
+    <meta name="description" content="Color in Time">
+    <meta name="author" content="Dan Rummel">
+
+    <link rel="stylesheet" href="main.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Color Pallette Generator</h1>
+    <hr/>
+    <div id="settings">
+        <h2>Palette Ranges</h2>
+        <span>Hue Range:</span>
+        <span id="hue-min-value">tbd</span>
+        <input type="range" min="0" max="360" value="0" id="hue-min">
+        <input type="range" min="0" max="360" value="360" id="hue-max">
+        <span id="hue-max-value">tbd</span>
+        <br/>
+
+        <span>Saturation Range:</span>
+        <span id="sat-min-value">tbd</span>
+        <input type="range" min="0" max="100" value="0" id="sat-min">
+        <input type="range" min="0" max="100" value="100" id="sat-max">
+        <span id="sat-max-value">tbd</span>
+        <br/>
+
+        
+        <span>Brightness Range:</span>
+        <span id="bri-min-value">tbd</span>
+        <input type="range" min="0" max="100" value="0" id="bri-min">
+        <input type="range" min="0" max="100" value="100" id="bri-max">
+        <span id="bri-max-value">tbd</span>
+        <br/>
+
+        <hr/> 
+        <h2>Rotation Controls</h2>
+        
+        <span>Hue Rotation Range:</span>
+        <span id="hue-rot-min-value">tbd</span>
+        <input type="range" min="0" max="360" value="20" id="hue-rot-min">
+        <input type="range" min="0" max="360" value="100" id="hue-rot-max">
+        <span id="hue-rot-max-value">tbd</span>
+        <br/>
+
+    </div>
+    <hr/>
+    <div id="colors">
+        <div id="color3">outer</div>
+        <div id="color1">inner</div>
+        <div id="color0">core</div>
+        <div id="color2">inner</div>
+        <div id="color4">outer</div>
+    </div>
+    <hr/>
+    <div id="many-colors"></div>
+</body>
+<script src="main.js"></script>
+</html>
