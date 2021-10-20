@@ -1,0 +1,93 @@
+<html>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.3/p5.min.js"></script>
+  <script src="https://unpkg.com/rita"></script>
+  <style>
+      body {
+          text-align: center;
+          font-size: 20px;;
+      }
+  </style>
+  <script>
+  function setup() {
+
+    let verb = 'is'
+    document.getElementById('text').innerHTML += "The verb is '" + verb + "'. <br/><br/> Let's conjugate with RiTa!!!!!!!!!!!!!!!!!!!!<br/><br/>"
+
+    opts = {
+        tense: RiTa.PRESENT,
+        number: RiTa.SINGULAR,
+        person: RiTa.THIRD
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "Present, Singular, Third: " +result + "<br/>";
+
+    opts = {
+        tense: RiTa.PAST,
+        number: RiTa.SINGULAR,
+        person: RiTa.THIRD
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "PAST, Singular, Third: " +result + "<br/>";
+
+    opts = {
+        tense: RiTa.PAST,
+        number: RiTa.PLURAL,
+        person: RiTa.THIRD
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "Past, PLURAL, Third: " +result + "<br/>";
+
+    opts = {
+        tense: RiTa.PAST,
+        number: RiTa.PLURAL,
+        person: RiTa.FIRST
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "Past, Plural, FIRST: " +result + "<br/>";
+
+    opts = {
+        tense: RiTa.PAST,
+        number: RiTa.SINGULAR,
+        person: RiTa.FIRST
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "Past, SINGULAR, First: " +result + "<br/>";
+
+
+    opts = {
+        tense: RiTa.PRESENT,
+        number: RiTa.SINGULAR,
+        person: RiTa.FIRST
+    };
+    result = RiTa.conjugate(verb, opts);
+    document.getElementById('text').innerHTML += "PRESENT, Singular, First: " +result + "<br/>";
+
+
+
+    document.getElementById('text').innerHTML += "<br/><br/><br/>Rhyme Time!<br/><br/>";
+
+    let word = "orange";
+    document.getElementById('text').innerHTML += "The word is '" + word + "'<br/><br/>";
+
+
+    result = RiTa.soundsLike(word);
+    document.getElementById('text').innerHTML += result + "<br/>";
+
+    result = RiTa.soundsLike(word, { matchSpelling: true });
+    document.getElementById('text').innerHTML += result + "<br/>";
+
+    result = RiTa.soundsLike(word, { limit: 10, minDistance: 2 });
+    document.getElementById('text').innerHTML += result + "<br/>";
+
+    result = RiTa.soundsLike(word, { numSyllables: 4, minDistance: 2 });
+    document.getElementById('text').innerHTML += result + "<br/>";
+
+    result = RiTa.soundsLike(word, { minWordLength:10, numSyllables:2, maxDistance: 4 });
+    document.getElementById('text').innerHTML += result + "<br/>";
+
+  }
+  </script>
+  <body>
+    <div id='text'></div>
+  </body>
+</html>

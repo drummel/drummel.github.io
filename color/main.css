@@ -88,3 +88,18 @@ div {
     border: 1px dashed black;
     border-radius: 4px;
 }
+
+.brush {
+    height: 80px;
+    width: auto;
+    margin: 20px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#canvas {
+    position: relative;
+    border: 4px solid black;
+    border-radius: 60px;
+    z-index: -10;
+}
