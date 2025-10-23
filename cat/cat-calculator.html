@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Spherical Cap Surface Area Estimator - Fixed</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            background: white;
+            border: 2px solid #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .panels-container {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            max-width: 900px;
+        }
+        .controls, .calculations {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            flex: 1.2;
+        }
+        .calculations {
+            flex: 1;
+            min-width: 250px;
+        }
+        .control-group {
+            margin: 8px 0;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        label {
+            display: inline-block;
+            width: 140px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .value {
+            display: inline-block;
+            width: 45px;
+            text-align: right;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        input[type="range"] {
+            width: 140px;
+            flex: 1;
+        }
+        h1 {
+            color: #333;
+            margin: 10px 0;
+        }
+        h3 {
+            margin: 10px 0 15px 0;
+            color: #444;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            max-width: 800px;
+            font-size: 14px;
+        }
+        .calc-row {
+            margin: 6px 0;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .calc-label {
+            flex: 1;
+        }
+        .calc-value {
+            font-weight: bold;
+            text-align: right;
+            min-width: 80px;
+        }
+        .calc-section {
+            margin: 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .calc-section:last-child {
+            border-bottom: none;
+        }
+        .calc-section h4 {
+            margin: 0 0 8px 0;
+            color: #666;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .total-row {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #007acc;
+            font-size: 14px;
+            font-weight: bold;
+            color: #007acc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐱 Cat Spherical Cap Surface Area Estimator</h1>
+    
+    <div class="info">
+        <strong>How it works:</strong> The cat is built from spherical caps stacked vertically.
+        Adjust the sliders to change the proportions and cap sizes.
+    </div>
+    
+    <canvas id="catCanvas" width="800" height="600"></canvas>
+    
+    <div class="panels-container">
+        <div class="controls">
+            <h3>Controls</h3>
+            <div class="control-group">
+                <label>Total Height (ft):</label>
+                <input type="range" id="totalHeight" min="5" max="20" value="15" step="0.5">
+                <span class="value" id="totalHeightValue">15</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Body Height:</label>
+                <input type="range" id="bodyHeightPercent" min="20" max="70" value="50" step="1">
+                <span class="value" id="bodyHeightPercentValue">50%</span>
+            </div>
+            <div class="control-group">
+                <label>Head Height:</label>
+                <input type="range" id="headHeightPercent" min="20" max="70" value="40" step="1">
+                <span class="value" id="headHeightPercentValue">40%</span>
+            </div>
+            <div class="control-group">
+                <label>Ear Height:</label>
+                <input type="range" id="earHeightPercent" min="5" max="30" value="10" step="1">
+                <span class="value" id="earHeightPercentValue">10%</span>
+            </div>
+            <div class="control-group">
+                <label>Body Cap % of sphere:</label>
+                <input type="range" id="bodyCap" min="50" max="90" value="70" step="1">
+                <span class="value" id="bodyCapValue">70%</span>
+            </div>
+            <div class="control-group">
+                <label>Head Cap % of sphere:</label>
+                <input type="range" id="headCap" min="60" max="95" value="85" step="1">
+                <span class="value" id="headCapValue">85%</span>
+            </div>
+            <div class="control-group">
+                <label>Show Construction:</label>
+                <input type="checkbox" id="showConstruction" checked>
+            </div>
+        </div>
+        
+        <div class="calculations">
+            <h3>Calculations</h3>
+            <div class="calc-section">
+                <h4>Body Sphere</h4>
+                <div class="calc-row">
+                    <span class="calc-label">Radius:</span>
+                    <span class="calc-value" id="bodyRadius">-</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Cap height:</span>
+                    <span class="calc-value" id="bodyCapHeight">-</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Surface area:</span>
+                    <span class="calc-value" id="bodySurfaceArea">-</span>
+                </div>
+            </div>
+            
+            <div class="calc-section">
+                <h4>Head Sphere</h4>
+                <div class="calc-row">
+                    <span class="calc-label">Radius:</span>
+                    <span class="calc-value" id="headRadius">-</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Cap height:</span>
+                    <span class="calc-value" id="headCapHeight">-</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Surface area:</span>
+                    <span class="calc-value" id="headSurfaceArea">-</span>
+                </div>
+            </div>
+            
+            <div class="calc-section">
+                <h4>Ears (2)</h4>
+                <div class="calc-row">
+                    <span class="calc-label">Total surface area:</span>
+                    <span class="calc-value" id="earSurfaceArea">-</span>
+                </div>
+            </div>
+            
+            <div class="calc-row total-row">
+                <span class="calc-label">Total Surface Area:</span>
+                <span class="calc-value" id="totalSurfaceArea">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('catCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Control elements
+        const totalHeightSlider = document.getElementById('totalHeight');
+        const bodyHeightPercentSlider = document.getElementById('bodyHeightPercent');
+        const headHeightPercentSlider = document.getElementById('headHeightPercent');
+        const earHeightPercentSlider = document.getElementById('earHeightPercent');
+        const bodyCapSlider = document.getElementById('bodyCap');
+        const headCapSlider = document.getElementById('headCap');
+        const showConstructionCheck = document.getElementById('showConstruction');
+        
+        // Flag to prevent recursive updates
+        let isUpdating = false;
+        
+        // Function to adjust other sliders proportionally
+        function adjustProportionally(changedSlider) {
+            if (isUpdating) return;
+            isUpdating = true;
+            
+            const bodyPercent = parseFloat(bodyHeightPercentSlider.value);
+            const headPercent = parseFloat(headHeightPercentSlider.value);
+            const earPercent = parseFloat(earHeightPercentSlider.value);
+            
+            let newBody = bodyPercent;
+            let newHead = headPercent;
+            let newEar = earPercent;
+            
+            if (changedSlider === 'body') {
+                const remainingPercent = 100 - newBody;
+                const ratio = (headPercent + earPercent) > 0 ? headPercent / (headPercent + earPercent) : 0.8;
+                newHead = remainingPercent * ratio;
+                newEar = remainingPercent * (1 - ratio);
+            } else if (changedSlider === 'head') {
+                const remainingPercent = 100 - newHead;
+                const ratio = (bodyPercent + earPercent) > 0 ? bodyPercent / (bodyPercent + earPercent) : 0.833;
+                newBody = remainingPercent * ratio;
+                newEar = remainingPercent * (1 - ratio);
+            } else if (changedSlider === 'ear') {
+                const remainingPercent = 100 - newEar;
+                const ratio = (bodyPercent + headPercent) > 0 ? bodyPercent / (bodyPercent + headPercent) : 0.556;
+                newBody = remainingPercent * ratio;
+                newHead = remainingPercent * (1 - ratio);
+            }
+            
+            // Round to integers
+            newBody = Math.round(newBody);
+            newHead = Math.round(newHead);
+            newEar = Math.round(newEar);
+            
+            // Adjust for rounding errors
+            const sum = newBody + newHead + newEar;
+            if (sum !== 100) {
+                const diff = 100 - sum;
+                if (changedSlider === 'body') {
+                    newHead += diff;
+                } else if (changedSlider === 'head') {
+                    newBody += diff;
+                } else {
+                    newBody += diff;
+                }
+            }
+            
+            // Clamp values to slider ranges
+            newBody = Math.max(20, Math.min(70, newBody));
+            newHead = Math.max(20, Math.min(70, newHead));
+            newEar = Math.max(5, Math.min(30, newEar));
+            
+            // Update sliders and display values
+            if (changedSlider !== 'body') {
+                bodyHeightPercentSlider.value = newBody;
+                document.getElementById('bodyHeightPercentValue').textContent = newBody + '%';
+            }
+            if (changedSlider !== 'head') {
+                headHeightPercentSlider.value = newHead;
+                document.getElementById('headHeightPercentValue').textContent = newHead + '%';
+            }
+            if (changedSlider !== 'ear') {
+                earHeightPercentSlider.value = newEar;
+                document.getElementById('earHeightPercentValue').textContent = newEar + '%';
+            }
+            
+            isUpdating = false;
+        }
+        
+        // Update handlers
+        totalHeightSlider.oninput = () => {
+            document.getElementById('totalHeightValue').textContent = totalHeightSlider.value;
+            draw();
+        };
+        
+        bodyHeightPercentSlider.oninput = () => {
+            document.getElementById('bodyHeightPercentValue').textContent = bodyHeightPercentSlider.value + '%';
+            adjustProportionally('body');
+            draw();
+        };
+        
+        headHeightPercentSlider.oninput = () => {
+            document.getElementById('headHeightPercentValue').textContent = headHeightPercentSlider.value + '%';
+            adjustProportionally('head');
+            draw();
+        };
+        
+        earHeightPercentSlider.oninput = () => {
+            document.getElementById('earHeightPercentValue').textContent = earHeightPercentSlider.value + '%';
+            adjustProportionally('ear');
+            draw();
+        };
+        
+        bodyCapSlider.oninput = () => {
+            document.getElementById('bodyCapValue').textContent = bodyCapSlider.value + '%';
+            draw();
+        };
+        
+        headCapSlider.oninput = () => {
+            document.getElementById('headCapValue').textContent = headCapSlider.value + '%';
+            draw();
+        };
+        
+        showConstructionCheck.onchange = draw;
+        
+        function drawSphericalCap(centerX, centerY, radius, capHeight, scale, baseY) {
+            
+            const isLargeCap = capHeight > radius; // More than hemisphere
+
+            var theta;
+            if (isLargeCap) {
+                theta = Math.acos((capHeight- radius) / radius);
+            } else {
+                theta = Math.acos((radius - capHeight) / radius);
+            }
+            
+            // Calculate base width
+            const baseWidth = radius * Math.sin(theta);
+            
+            // Determine actual position of center relative to base
+            const centerBelowBase = centerY > baseY;
+            
+            // Draw the arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * scale, Math.PI*0.5 - theta, Math.PI*0.5 + theta, true);
+            ctx.stroke();
+            
+            // Draw the horizontal base line
+            ctx.beginPath();
+            ctx.moveTo(centerX - baseWidth * scale, baseY);
+            ctx.lineTo(centerX + baseWidth * scale, baseY);
+            ctx.stroke();
+            
+            return { baseWidth: baseWidth * scale, topY: baseY - capHeight * scale };
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get parameters
+            const totalHeight = parseFloat(totalHeightSlider.value);
+            const bodyHeightPercent = parseFloat(bodyHeightPercentSlider.value) / 100;
+            const headHeightPercent = parseFloat(headHeightPercentSlider.value) / 100;
+            const earHeightPercent = parseFloat(earHeightPercentSlider.value) / 100;
+            const bodyCapPercent = parseFloat(bodyCapSlider.value) / 100;
+            const headCapPercent = parseFloat(headCapSlider.value) / 100;
+            const showConstruction = showConstructionCheck.checked;
+            
+            // Scale and positioning
+            const scale = 25; // pixels per foot
+            const centerX = canvas.width / 2;
+            const groundY = canvas.height - 80;
+            
+            // Calculate heights
+            const bodyHeight = totalHeight * bodyHeightPercent;
+            const headHeight = totalHeight * headHeightPercent;
+            const earHeight = totalHeight * earHeightPercent;
+            
+            // Calculate sphere radii
+            // For a spherical cap: h = capPercent × 2r, so r = h / (2 × capPercent)
+            const bodyRadius = bodyHeight / (2 * bodyCapPercent);
+            const headRadius = headHeight / (2 * headCapPercent);
+            
+            // Calculate center positions
+            // Body center position depends on whether it's more or less than hemisphere
+            let bodyCenterY;
+            if (bodyCapPercent > 0.5) {
+                // Center is below ground by (bodyRadius - bodyHeight)
+                bodyCenterY = groundY + (bodyRadius - bodyHeight) * scale;
+            } else {
+                // Center is above ground by (bodyHeight - bodyRadius) 
+                bodyCenterY = groundY - (bodyHeight - bodyRadius) * scale;
+            }
+            
+            // Head sits on top of body
+            const bodyTopY = groundY - bodyHeight * scale;
+            let headCenterY;
+            if (headCapPercent > 0.5) {
+                // Center is below body top by (headRadius - headHeight)
+                headCenterY = bodyTopY + (headRadius - headHeight) * scale;
+            } else {
+                // Center is above body top by (headHeight - headRadius)
+                headCenterY = bodyTopY - (headHeight - headRadius) * scale;
+            }
+            const headTopY = bodyTopY - headHeight * scale;
+            
+            // Draw construction circles if enabled
+            if (showConstruction) {
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                
+                // Full body circle
+                ctx.beginPath();
+                ctx.arc(centerX, bodyCenterY, bodyRadius * scale, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Full head circle
+                ctx.beginPath();
+                ctx.arc(centerX, headCenterY, headRadius * scale, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Center markers
+                ctx.beginPath();
+                ctx.moveTo(centerX - 20, bodyCenterY);
+                ctx.lineTo(centerX + 20, bodyCenterY);
+                ctx.moveTo(centerX, bodyCenterY - 20);
+                ctx.lineTo(centerX, bodyCenterY + 20);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX - 20, headCenterY);
+                ctx.lineTo(centerX + 20, headCenterY);
+                ctx.moveTo(centerX, headCenterY - 20);
+                ctx.lineTo(centerX, headCenterY + 20);
+                ctx.stroke();
+            }
+            
+            // Draw the actual cat outline
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            
+            // Draw body cap - base is at ground level
+            console.log('=== BODY CAP ===');
+            const bodyResult = drawSphericalCap(centerX, bodyCenterY, bodyRadius, bodyHeight, scale, groundY);
+            
+            // Draw head cap - base is at top of body
+            console.log('=== HEAD CAP ===');
+            const headResult = drawSphericalCap(centerX, headCenterY, headRadius, headHeight, scale, bodyTopY);
+            
+            // Draw ears (triangles)
+            const earSide = earHeight * scale * 1.15;
+            const earTopHeight = (Math.sqrt(3) / 2) * earSide;
+            const earSpacing = headRadius * scale * 0.45;
+            const angleRad = (20 * Math.PI) / 180;
+            const earBaseY = headTopY + 15;
+            
+            // Left ear
+            ctx.beginPath();
+            const leftEarCenterX = centerX - earSpacing;
+            const leftTipX = leftEarCenterX - earTopHeight * Math.sin(angleRad);
+            const leftTipY = earBaseY - earTopHeight * Math.cos(angleRad);
+            ctx.moveTo(leftEarCenterX - earSide/2, earBaseY);
+            ctx.lineTo(leftTipX, leftTipY);
+            ctx.lineTo(leftEarCenterX + earSide/2, earBaseY);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Right ear
+            ctx.beginPath();
+            const rightEarCenterX = centerX + earSpacing;
+            const rightTipX = rightEarCenterX + earTopHeight * Math.sin(angleRad);
+            const rightTipY = earBaseY - earTopHeight * Math.cos(angleRad);
+            ctx.moveTo(rightEarCenterX - earSide/2, earBaseY);
+            ctx.lineTo(rightTipX, rightTipY);
+            ctx.lineTo(rightEarCenterX + earSide/2, earBaseY);
+            ctx.closePath();
+            ctx.stroke();
+            
+            const earTop = Math.min(leftTipY, rightTipY);
+            
+            // Draw measurements
+            ctx.fillStyle = '#007acc';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#007acc';
+            
+            // Ground line
+            ctx.beginPath();
+            ctx.moveTo(50, groundY);
+            ctx.lineTo(canvas.width - 50, groundY);
+            ctx.stroke();
+            
+            // Height markers
+            ctx.strokeStyle = '#999';
+            
+            // Body height marker
+            const bodyMarkerX = centerX + Math.max(bodyRadius * scale, headRadius * scale) + 30;
+            ctx.beginPath();
+            ctx.moveTo(bodyMarkerX, groundY);
+            ctx.lineTo(bodyMarkerX, bodyTopY);
+            ctx.stroke();
+            ctx.fillText(`Body: ${bodyHeight.toFixed(1)}ft (${Math.round(bodyHeightPercent * 100)}%)`, 
+                         bodyMarkerX + 10, (groundY + bodyTopY) / 2);
+            
+            // Head height marker
+            ctx.beginPath();
+            ctx.moveTo(bodyMarkerX - 15, bodyTopY);
+            ctx.lineTo(bodyMarkerX - 15, headTopY);
+            ctx.stroke();
+            ctx.fillText(`Head: ${headHeight.toFixed(1)}ft (${Math.round(headHeightPercent * 100)}%)`, 
+                         bodyMarkerX + 0, (bodyTopY + headTopY) / 2);
+            
+            // Ear height marker
+            ctx.beginPath();
+            ctx.moveTo(bodyMarkerX - 30, headTopY);
+            ctx.lineTo(bodyMarkerX - 30, earTop);
+            ctx.stroke();
+            ctx.fillText(`Ears: ${earHeight.toFixed(1)}ft (${Math.round(earHeightPercent * 100)}%)`, 
+                         bodyMarkerX - 10, (headTopY + earTop) / 2);
+            
+            // Total height
+            ctx.strokeStyle = '#007acc';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, groundY);
+            ctx.lineTo(50, earTop);
+            ctx.stroke();
+            
+            // Arrows
+            ctx.fillStyle = '#007acc';
+            ctx.beginPath();
+            ctx.moveTo(50, groundY);
+            ctx.lineTo(45, groundY - 10);
+            ctx.lineTo(55, groundY - 10);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(50, earTop);
+            ctx.lineTo(45, earTop + 10);
+            ctx.lineTo(55, earTop + 10);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`${totalHeight}ft`, 20, (groundY + earTop) / 2);
+            
+            // Update calculations panel instead of drawing on canvas
+            const bodyCapSurfaceArea = 2 * Math.PI * bodyRadius * bodyHeight;
+            const headCapSurfaceArea = 2 * Math.PI * headRadius * headHeight;
+            
+            // Calculate ear surface area
+            // Each ear triangle has base = earSide and height = earTopHeight
+            // Area of one triangle face = 0.5 * base * height
+            const oneTriangleArea = 0.5 * (earSide/scale) * (earTopHeight/scale);
+            // Each ear has 3 faces, and there are 2 ears
+            const earSurfaceArea = 2 * 3 * oneTriangleArea;
+            
+            const totalSurfaceArea = bodyCapSurfaceArea + headCapSurfaceArea + earSurfaceArea;
+            
+            // Update the calculation display
+            document.getElementById('bodyRadius').textContent = `${bodyRadius.toFixed(2)} ft`;
+            document.getElementById('bodyCapHeight').textContent = `${bodyHeight.toFixed(2)} ft`;
+            document.getElementById('bodySurfaceArea').textContent = `${bodyCapSurfaceArea.toFixed(2)} sq ft`;
+            
+            document.getElementById('headRadius').textContent = `${headRadius.toFixed(2)} ft`;
+            document.getElementById('headCapHeight').textContent = `${headHeight.toFixed(2)} ft`;
+            document.getElementById('headSurfaceArea').textContent = `${headCapSurfaceArea.toFixed(2)} sq ft`;
+            
+            document.getElementById('earSurfaceArea').textContent = `${earSurfaceArea.toFixed(2)} sq ft`;
+            document.getElementById('totalSurfaceArea').textContent = `${totalSurfaceArea.toFixed(2)} sq ft`;
+        }
+        
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>
