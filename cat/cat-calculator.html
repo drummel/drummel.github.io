@@ -136,21 +136,24 @@
                 <input type="range" id="totalHeight" min="5" max="20" value="15" step="0.5">
                 <span class="value" id="totalHeightValue">15</span>
             </div>
-            
             <div class="control-group">
+                <label>Ear Height:</label>
+                <input type="range" id="earHeightPercent" min="5" max="30" value="10" step="1">
+                <span class="value" id="earHeightPercentValue">10%</span>
+            </div>           
+            <div class="control-group">
+                <label>Head Height:</label>
+                <input type="range" id="headHeightPercent" min="20" max="70" value="40" step="1">
+                <span class="value" id="headHeightPercentValue">40%</span>
+            </div> <div class="control-group">
                 <label>Body Height:</label>
                 <input type="range" id="bodyHeightPercent" min="20" max="70" value="50" step="1">
                 <span class="value" id="bodyHeightPercentValue">50%</span>
             </div>
             <div class="control-group">
-                <label>Head Height:</label>
-                <input type="range" id="headHeightPercent" min="20" max="70" value="40" step="1">
-                <span class="value" id="headHeightPercentValue">40%</span>
-            </div>
-            <div class="control-group">
-                <label>Ear Height:</label>
-                <input type="range" id="earHeightPercent" min="5" max="30" value="10" step="1">
-                <span class="value" id="earHeightPercentValue">10%</span>
+                <label>Head Cap % of sphere:</label>
+                <input type="range" id="headCap" min="60" max="95" value="85" step="1">
+                <span class="value" id="headCapValue">85%</span>
             </div>
             <div class="control-group">
                 <label>Body Cap % of sphere:</label>
@@ -158,9 +161,24 @@
                 <span class="value" id="bodyCapValue">70%</span>
             </div>
             <div class="control-group">
-                <label>Head Cap % of sphere:</label>
-                <input type="range" id="headCap" min="60" max="95" value="85" step="1">
-                <span class="value" id="headCapValue">85%</span>
+                <label>Arm Length:</label>
+                <input type="range" id="armLength" min="15" max="70" value="52" step="1">
+                <span class="value" id="armLengthValue">52%</span>
+            </div>
+            <div class="control-group">
+                <label>Arm Width:</label>
+                <input type="range" id="armWidth" min="5" max="15" value="13" step="1">
+                <span class="value" id="armWidthValue">13%</span>
+            </div>
+            <div class="control-group">
+                <label>Shoulder Separation:</label>
+                <input type="range" id="shoulderSeparation" min="20" max="40" value="30" step="1">
+                <span class="value" id="shoulderSeparationValue">30°</span>
+            </div>
+            <div class="control-group">
+                <label>Lower Arm Angle:</label>
+                <input type="range" id="armSeparation" min="0" max="30" value="15" step="1">
+                <span class="value" id="armSeparationValue">15°</span>
             </div>
             <div class="control-group">
                 <label>Show Construction:</label>
@@ -171,7 +189,10 @@
         <div class="calculations">
             <h3>Calculations</h3>
             <div class="calc-section">
-                <h4>Body Sphere</h4>
+                <h4>Body Spherical Cap</h4>
+                <div class="calc-row" style="font-size: 11px; font-style: italic; color: #666;">
+                    <span>Spherical Cap Area = 2πrh</span>
+                </div>
                 <div class="calc-row">
                     <span class="calc-label">Radius:</span>
                     <span class="calc-value" id="bodyRadius">-</span>
@@ -187,7 +208,10 @@
             </div>
             
             <div class="calc-section">
-                <h4>Head Sphere</h4>
+                <h4>Head Spherical Cap</h4>
+                <div class="calc-row" style="font-size: 11px; font-style: italic; color: #666;">
+                    <span>Spherical Cap Area = 2πrh</span>
+                </div>
                 <div class="calc-row">
                     <span class="calc-label">Radius:</span>
                     <span class="calc-value" id="headRadius">-</span>
@@ -203,10 +227,24 @@
             </div>
             
             <div class="calc-section">
-                <h4>Ears (2)</h4>
+                <h4>Ears x2</h4>
+                <div class="calc-row" style="font-size: 11px; font-style: italic; color: #666;">
+                    <span>2 × 3-sided Pyramid Area = 6 × (½bh)</span>
+                </div>
                 <div class="calc-row">
                     <span class="calc-label">Total surface area:</span>
                     <span class="calc-value" id="earSurfaceArea">-</span>
+                </div>
+            </div>
+            
+            <div class="calc-section">
+                <h4>Arms x2</h4>
+                <div class="calc-row" style="font-size: 11px; font-style: italic; color: #666;">
+                    <span>4 × Cylinder Area = 4 × (2πrh + 2πr²)</span>
+                </div>
+                <div class="calc-row">
+                    <span class="calc-label">Total surface area:</span>
+                    <span class="calc-value" id="armSurfaceArea">-</span>
                 </div>
             </div>
             
@@ -228,6 +266,10 @@
         const earHeightPercentSlider = document.getElementById('earHeightPercent');
         const bodyCapSlider = document.getElementById('bodyCap');
         const headCapSlider = document.getElementById('headCap');
+        const armLengthSlider = document.getElementById('armLength');
+        const armWidthSlider = document.getElementById('armWidth');
+        const armSeparationSlider = document.getElementById('armSeparation');
+        const shoulderSeparationSlider = document.getElementById('shoulderSeparation');
         const showConstructionCheck = document.getElementById('showConstruction');
         
         // Flag to prevent recursive updates
@@ -334,6 +376,26 @@
         
         headCapSlider.oninput = () => {
             document.getElementById('headCapValue').textContent = headCapSlider.value + '%';
+            draw();
+        };
+        
+        armLengthSlider.oninput = () => {
+            document.getElementById('armLengthValue').textContent = armLengthSlider.value + '%';
+            draw();
+        };
+        
+        armWidthSlider.oninput = () => {
+            document.getElementById('armWidthValue').textContent = armWidthSlider.value + '%';
+            draw();
+        };
+        
+        armSeparationSlider.oninput = () => {
+            document.getElementById('armSeparationValue').textContent = armSeparationSlider.value + '°';
+            draw();
+        };
+        
+        shoulderSeparationSlider.oninput = () => {
+            document.getElementById('shoulderSeparationValue').textContent = shoulderSeparationSlider.value + '°';
             draw();
         };
         
@@ -496,7 +558,175 @@
             
             const earTop = Math.min(leftTipY, rightTipY);
             
-            // Draw measurements
+            // Get arm parameters
+            const armLengthPercent = parseFloat(armLengthSlider.value) / 100;
+            const armWidthPercent = parseFloat(armWidthSlider.value) / 100;
+            const armSeparationAngle = parseFloat(armSeparationSlider.value);
+            const shoulderSeparationAngle = parseFloat(shoulderSeparationSlider.value);
+            const armLength = totalHeight * armLengthPercent;
+            const armWidth = totalHeight * armWidthPercent;
+            
+            // Draw the waving arm (on the right side)
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            
+            // Right arm position: shoulder separation degrees from top of body
+            // Convert angle to position on the body circle
+            const rightShoulderAngle = (90 - shoulderSeparationAngle) * Math.PI / 180; // from vertical
+            const armHeightFromGround = bodyHeight * Math.cos(shoulderSeparationAngle * Math.PI / 180);
+            const armStartY = groundY - armHeightFromGround * scale;
+            
+            // Calculate the x position at this height on the body sphere
+            const distFromCenterY = Math.abs(bodyCenterY - armStartY) / scale;
+            let armStartX;
+            if (distFromCenterY <= bodyRadius) {
+                const xOffset = Math.sqrt(bodyRadius * bodyRadius - distFromCenterY * distFromCenterY);
+                armStartX = centerX + xOffset * scale;
+            } else {
+                // Fallback if calculation fails
+                armStartX = centerX + bodyRadius * scale * 0.5;
+            }
+            
+            // Lower arm - horizontal from shoulder
+            const lowerArmLength = armLength * 0.5 * scale;
+            const armWidthScaled = armWidth * scale;
+            
+            // Draw lower arm (horizontal rectangle with curved right end)
+            ctx.beginPath();
+            // Start at top left corner
+            ctx.moveTo(armStartX, armStartY - armWidthScaled/2);
+            // Top line going right
+            ctx.lineTo(armStartX + lowerArmLength, armStartY - armWidthScaled/2);
+            // Curved right end - elliptical arc
+            ctx.save();
+            ctx.translate(armStartX + lowerArmLength, armStartY);
+            ctx.scale(0.5, 1); // Make the ellipse half as wide as it is tall
+            ctx.arc(0, 0, armWidthScaled/2, -Math.PI/2, Math.PI/2, false);
+            ctx.restore();
+            // Bottom line going left
+            ctx.lineTo(armStartX, armStartY + armWidthScaled/2);
+            // Left side closing the shape
+            ctx.lineTo(armStartX, armStartY - armWidthScaled/2);
+            ctx.stroke();
+            
+            // Upper arm - vertical from elbow, going up
+            const elbowX = armStartX + lowerArmLength;
+            const elbowY = armStartY;
+            const upperArmLength = armLength * 0.5 * scale;
+            
+            // Draw upper arm (vertical rectangle with curved top)
+            ctx.beginPath();
+            // Start at bottom left corner
+            ctx.moveTo(elbowX - armWidthScaled/2, elbowY);
+            // Left side going up
+            ctx.lineTo(elbowX - armWidthScaled/2, elbowY - upperArmLength);
+            // Curved top - elliptical arc
+            // The arc spans the width of the arm and bulges up by 1/4 of the arm width
+            ctx.save();
+            ctx.translate(elbowX, elbowY - upperArmLength);
+            ctx.scale(1, 0.5); // Make the ellipse half as tall as it is wide
+            ctx.arc(0, 0, armWidthScaled/2, Math.PI, 0, false);
+            ctx.restore();
+            // Right side going down
+            ctx.lineTo(elbowX + armWidthScaled/2, elbowY);
+            // Bottom line
+            ctx.lineTo(elbowX - armWidthScaled/2, elbowY);
+            ctx.stroke();
+            
+            // Draw left arm (resting arm) - rotated based on lower arm angle
+            // Find the left shoulder position using the same shoulder separation angle
+            const leftArmHeightFromGround = bodyHeight * Math.cos(shoulderSeparationAngle * Math.PI / 180);
+            const leftArmStartY = groundY - leftArmHeightFromGround * scale;
+            
+            // Calculate the x position on the opposite side of the body
+            const leftDistFromCenterY = Math.abs(bodyCenterY - leftArmStartY) / scale;
+            let leftArmStartX;
+            if (leftDistFromCenterY <= bodyRadius) {
+                const xOffset = Math.sqrt(bodyRadius * bodyRadius - leftDistFromCenterY * leftDistFromCenterY);
+                leftArmStartX = centerX - xOffset * scale; // Negative offset for left side
+            } else {
+                // Fallback
+                leftArmStartX = centerX - bodyRadius * scale * 0.5;
+            }
+            
+            // Left arm uses 135 degrees minus the lower arm angle
+            // This brings the arms closer together as separation increases
+            const leftArmAngle = (135 - armSeparationAngle) * Math.PI / 180;
+            
+            ctx.save();
+            ctx.translate(leftArmStartX, leftArmStartY);
+            ctx.rotate(leftArmAngle);
+            
+            // Draw lower arm segment (what was horizontal, now rotated)
+            ctx.beginPath();
+            // Start at top left corner (in local coordinates)
+            ctx.moveTo(0, -armWidthScaled/2);
+            // Top line going right
+            ctx.lineTo(lowerArmLength, -armWidthScaled/2);
+            // Curved right end
+            ctx.save();
+            ctx.translate(lowerArmLength, 0);
+            ctx.scale(0.5, 1);
+            ctx.arc(0, 0, armWidthScaled/2, -Math.PI/2, Math.PI/2, false);
+            ctx.restore();
+            // Bottom line going left
+            ctx.lineTo(0, armWidthScaled/2);
+            // Left side closing the shape
+            ctx.lineTo(0, -armWidthScaled/2);
+            ctx.stroke();
+            
+            // Draw upper arm segment (what was vertical, now rotated)
+            ctx.beginPath();
+            // The elbow position in local coordinates
+            const localElbowX = lowerArmLength;
+            const localElbowY = 0;
+            
+            // Start at bottom left corner
+            ctx.moveTo(localElbowX - armWidthScaled/2, localElbowY);
+            // Left side going up
+            ctx.lineTo(localElbowX - armWidthScaled/2, localElbowY - upperArmLength);
+            // Curved top
+            ctx.save();
+            ctx.translate(localElbowX, localElbowY - upperArmLength);
+            ctx.scale(1, 0.5);
+            ctx.arc(0, 0, armWidthScaled/2, Math.PI, 0, false);
+            ctx.restore();
+            // Right side going down
+            ctx.lineTo(localElbowX + armWidthScaled/2, localElbowY);
+            // Bottom line
+            ctx.lineTo(localElbowX - armWidthScaled/2, localElbowY);
+            ctx.stroke();
+            
+            ctx.restore(); // Restore the rotation transformation
+            
+            // Draw arm measurements on the right side
+            ctx.fillStyle = '#007acc';
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 2;
+            ctx.font = '12px Arial';  // Set font explicitly
+            
+            // Arm length indicator (vertical line showing total arm length)
+            const armMeasureX = elbowX + armWidthScaled/2 + 20;
+            ctx.beginPath();
+            ctx.moveTo(armMeasureX, armStartY);
+            ctx.lineTo(armMeasureX, elbowY - upperArmLength);
+            ctx.stroke();
+            ctx.fillText(`Arm Length: ${armLength.toFixed(1)}ft (${Math.round(armLengthPercent * 100)}%)`, 
+                         armMeasureX + 10, armStartY - upperArmLength/2);
+            
+            // Arm width indicator (vertical line, horizontally aligned with the lower arm)
+            const armWidthMeasureX = armMeasureX + 15;
+            const armWidthMeasureY = armStartY - armWidthScaled/2;  // Align with top of horizontal arm
+            ctx.beginPath();
+            ctx.moveTo(armWidthMeasureX, armWidthMeasureY);
+            ctx.lineTo(armWidthMeasureX, armWidthMeasureY + armWidthScaled);
+            ctx.stroke();
+            
+            ctx.fillText(`Arm Width: ${armWidth.toFixed(1)}ft (${Math.round(armWidthPercent * 100)}%)`, 
+                         armWidthMeasureX + 10, armStartY);
+            
+            // Draw measurements (moved to left side)
             ctx.fillStyle = '#007acc';
             ctx.lineWidth = 2;
             ctx.setLineDash([]);
@@ -508,33 +738,34 @@
             ctx.lineTo(canvas.width - 50, groundY);
             ctx.stroke();
             
-            // Height markers
+            // Height markers (now on the LEFT side)
             ctx.strokeStyle = '#999';
+            ctx.font = '12px Arial';  // Set font explicitly
             
-            // Body height marker
-            const bodyMarkerX = centerX + Math.max(bodyRadius * scale, headRadius * scale) + 30;
+            // Body height marker (leftmost)
+            const bodyMarkerX = centerX - Math.max(bodyRadius * scale, headRadius * scale) - 30;
             ctx.beginPath();
             ctx.moveTo(bodyMarkerX, groundY);
             ctx.lineTo(bodyMarkerX, bodyTopY);
             ctx.stroke();
             ctx.fillText(`Body: ${bodyHeight.toFixed(1)}ft (${Math.round(bodyHeightPercent * 100)}%)`, 
-                         bodyMarkerX + 10, (groundY + bodyTopY) / 2);
+                         bodyMarkerX - 150, (groundY + bodyTopY) / 2);
             
-            // Head height marker
+            // Head height marker (middle)
             ctx.beginPath();
-            ctx.moveTo(bodyMarkerX - 15, bodyTopY);
-            ctx.lineTo(bodyMarkerX - 15, headTopY);
+            ctx.moveTo(bodyMarkerX + 15, bodyTopY);
+            ctx.lineTo(bodyMarkerX + 15, headTopY);
             ctx.stroke();
             ctx.fillText(`Head: ${headHeight.toFixed(1)}ft (${Math.round(headHeightPercent * 100)}%)`, 
-                         bodyMarkerX + 0, (bodyTopY + headTopY) / 2);
+                         bodyMarkerX - 135, (bodyTopY + headTopY) / 2);
             
-            // Ear height marker
+            // Ear height marker (rightmost of the three)
             ctx.beginPath();
-            ctx.moveTo(bodyMarkerX - 30, headTopY);
-            ctx.lineTo(bodyMarkerX - 30, earTop);
+            ctx.moveTo(bodyMarkerX + 30, headTopY);
+            ctx.lineTo(bodyMarkerX + 30, earTop);
             ctx.stroke();
             ctx.fillText(`Ears: ${earHeight.toFixed(1)}ft (${Math.round(earHeightPercent * 100)}%)`, 
-                         bodyMarkerX - 10, (headTopY + earTop) / 2);
+                         bodyMarkerX - 120, (headTopY + earTop) / 2);
             
             // Total height
             ctx.strokeStyle = '#007acc';
@@ -574,7 +805,15 @@
             // Each ear has 3 faces, and there are 2 ears
             const earSurfaceArea = 2 * 3 * oneTriangleArea;
             
-            const totalSurfaceArea = bodyCapSurfaceArea + headCapSurfaceArea + earSurfaceArea;
+            // Calculate arm surface area (as cylinders) - now for both arms
+            // Surface area of cylinder = 2πrh + 2πr² (lateral + ends)
+            // We have upper arm and lower arm, each as a cylinder, times 2 arms
+            const armRadius = armWidth / 2;
+            const upperArmSurfaceArea = 2 * Math.PI * armRadius * (armLength * 0.5) + 2 * Math.PI * armRadius * armRadius;
+            const lowerArmSurfaceArea = 2 * Math.PI * armRadius * (armLength * 0.5) + 2 * Math.PI * armRadius * armRadius;
+            const totalArmSurfaceArea = 2 * (upperArmSurfaceArea + lowerArmSurfaceArea); // Both arms
+            
+            const totalSurfaceArea = bodyCapSurfaceArea + headCapSurfaceArea + earSurfaceArea + totalArmSurfaceArea;
             
             // Update the calculation display
             document.getElementById('bodyRadius').textContent = `${bodyRadius.toFixed(2)} ft`;
@@ -586,6 +825,7 @@
             document.getElementById('headSurfaceArea').textContent = `${headCapSurfaceArea.toFixed(2)} sq ft`;
             
             document.getElementById('earSurfaceArea').textContent = `${earSurfaceArea.toFixed(2)} sq ft`;
+            document.getElementById('armSurfaceArea').textContent = `${totalArmSurfaceArea.toFixed(2)} sq ft`;
             document.getElementById('totalSurfaceArea').textContent = `${totalSurfaceArea.toFixed(2)} sq ft`;
         }
         
