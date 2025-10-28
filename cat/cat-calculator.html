@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cat Spherical Cap Surface Area Estimator - Fixed</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             font-family: Arial, sans-serif;
             background: #f0f0f0;
             display: flex;
@@ -18,12 +18,16 @@
             background: white;
             border: 2px solid #333;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
         }
         .panels-container {
             display: flex;
             gap: 20px;
             margin: 20px 0;
             max-width: 900px;
+            width: 100%;
+            flex-wrap: wrap;
         }
         .controls, .calculations {
             padding: 15px;
@@ -33,6 +37,7 @@
         }
         .controls {
             flex: 1.2;
+            min-width: 260px;
         }
         .calculations {
             flex: 1;
@@ -43,12 +48,14 @@
             font-size: 13px;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
         }
         label {
             display: inline-block;
             width: 140px;
             font-weight: bold;
             font-size: 13px;
+            flex-shrink: 0;
         }
         .value {
             display: inline-block;
@@ -56,14 +63,18 @@
             text-align: right;
             font-size: 13px;
             margin-right: 8px;
+            flex-shrink: 0;
         }
         input[type="range"] {
             width: 140px;
             flex: 1;
+            min-width: 100px;
         }
         h1 {
             color: #333;
             margin: 10px 0;
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            text-align: center;
         }
         h3 {
             margin: 10px 0 15px 0;
@@ -78,7 +89,9 @@
             border-radius: 8px;
             margin: 10px 0;
             max-width: 800px;
+            width: 100%;
             font-size: 14px;
+            box-sizing: border-box;
         }
         .calc-row {
             margin: 6px 0;
@@ -116,6 +129,94 @@
             font-weight: bold;
             color: #007acc;
         }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+                padding: 0 10px;
+            }
+            
+            .info {
+                margin: 5px;
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .panels-container {
+                flex-direction: column;
+                gap: 10px;
+                margin: 10px 0;
+                padding: 0 5px;
+            }
+            
+            .controls, .calculations {
+                width: calc(100% - 10px);
+                box-sizing: border-box;
+                padding: 12px;
+                margin: 0 5px;
+            }
+            
+            canvas {
+                width: calc(100% - 10px);
+                max-width: 500px;
+                height: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            .control-group {
+                flex-wrap: wrap;
+                margin: 12px 0;
+            }
+            
+            label {
+                width: 100%;
+                margin-bottom: 5px;
+                font-size: 12px;
+            }
+            
+            input[type="range"] {
+                width: calc(100% - 55px);
+                margin-right: 5px;
+            }
+            
+            .value {
+                width: 45px;
+                font-size: 12px;
+            }
+            
+            h3 {
+                font-size: 14px;
+            }
+            
+            .calc-row {
+                font-size: 11px;
+            }
+            
+            .calc-value {
+                min-width: 60px;
+                font-size: 11px;
+            }
+            
+            /* Make table smaller on mobile */
+            table {
+                font-size: 10px !important;
+            }
+            
+            th, td {
+                padding: 3px !important;
+                font-size: 9px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -126,7 +227,7 @@
         Adjust the sliders to change the proportions and cap sizes.
     </div>
     
-    <canvas id="catCanvas" width="800" height="600"></canvas>
+    <canvas id="catCanvas" width="600" height="450"></canvas>
     
     <div class="panels-container">
         <div class="controls">
@@ -260,6 +361,53 @@
     <script>
         const canvas = document.getElementById('catCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // Determine canvas size and scale based on screen width
+        function getCanvasSettings() {
+            const screenWidth = window.innerWidth;
+            let settings = {};
+            
+            if (screenWidth < 480) {
+                // Small mobile
+                settings.width = 360;
+                settings.height = 270;
+                settings.scale = 0.6;
+            } else if (screenWidth < 768) {
+                // Large mobile / tablet
+                settings.width = 480;
+                settings.height = 360;
+                settings.scale = 0.75;
+            } else if (screenWidth < 1024) {
+                // Small desktop
+                settings.width = 600;
+                settings.height = 450;
+                settings.scale = 0.9;
+            } else {
+                // Large desktop
+                settings.width = 700;
+                settings.height = 525;
+                settings.scale = 1.0;
+            }
+            
+            return settings;
+        }
+        
+        // Make canvas responsive
+        function resizeCanvas() {
+            const settings = getCanvasSettings();
+            canvas.width = settings.width;
+            canvas.height = settings.height;
+            
+            // Store the scale factor globally for the draw function to use
+            window.canvasScale = settings.scale;
+            
+            // Only call draw if sliders are initialized
+            if (typeof draw !== 'undefined' && window.slidersInitialized) {
+                draw();
+            }
+        }
+        
+        // Will set up resize listener after initialization
         
         // Control elements
         const totalHeightSlider = document.getElementById('totalHeight');
@@ -507,7 +655,16 @@
             const showConstruction = showConstructionCheck.checked;
             
             // Scale and positioning
-            const scale = 25; // pixels per foot
+            // Use responsive scale based on screen size
+            const baseScale = 25; // base pixels per foot
+            const responsiveScale = window.canvasScale || 1.0;
+            const scale = baseScale * responsiveScale;
+            
+            // Calculate responsive sizes for text and strokes
+            const fontSize = Math.max(10, Math.floor(12 * responsiveScale));
+            const largeFontSize = Math.max(12, Math.floor(16 * responsiveScale));
+            const strokeWidth = Math.max(2, Math.floor(3 * responsiveScale));
+            const thinStrokeWidth = Math.max(1.5, Math.floor(2 * responsiveScale));
             const centerX = canvas.width / 2;
             const groundY = canvas.height - 80;
             
@@ -630,7 +787,7 @@
             
             // Draw the waving arm (on the right side)
             ctx.strokeStyle = '#333';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = strokeWidth;
             ctx.setLineDash([]);
             
             // Right arm position: shoulder separation degrees from top of body
@@ -765,8 +922,8 @@
             // Draw arm measurements on the right side
             ctx.fillStyle = '#007acc';
             ctx.strokeStyle = '#999';
-            ctx.lineWidth = 2;
-            ctx.font = '12px Arial';  // Set font explicitly
+            ctx.lineWidth = thinStrokeWidth;
+            ctx.font = fontSize + 'px Arial';  // Set font explicitly
             
             // Arm length indicator (vertical line showing total arm length)
             const armMeasureX = elbowX + armWidthScaled/2 + 20;
@@ -790,7 +947,7 @@
             
             // Draw measurements (moved to left side)
             ctx.fillStyle = '#007acc';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = thinStrokeWidth;
             ctx.setLineDash([]);
             ctx.strokeStyle = '#007acc';
             
@@ -802,7 +959,7 @@
             
             // Height markers (now on the LEFT side)
             ctx.strokeStyle = '#999';
-            ctx.font = '12px Arial';  // Set font explicitly
+            ctx.font = fontSize + 'px Arial';  // Set font explicitly
             
             // Body height marker (leftmost)
             const bodyMarkerX = centerX - Math.max(bodyRadius * scale, headRadius * scale) - 30;
@@ -810,28 +967,31 @@
             ctx.moveTo(bodyMarkerX, groundY);
             ctx.lineTo(bodyMarkerX, bodyTopY);
             ctx.stroke();
+            const bodyTextOffset = responsiveScale < 0.8 ? 80 : 150;
             ctx.fillText(`Body: ${bodyHeight.toFixed(1)}ft (${Math.round(bodyHeightPercent * 100)}%)`, 
-                         bodyMarkerX - 150, (groundY + bodyTopY) / 2);
+                         bodyMarkerX - bodyTextOffset, (groundY + bodyTopY) / 2);
             
             // Head height marker (middle)
             ctx.beginPath();
             ctx.moveTo(bodyMarkerX + 15, bodyTopY);
             ctx.lineTo(bodyMarkerX + 15, headTopY);
             ctx.stroke();
+            const headTextOffset = responsiveScale < 0.8 ? 70 : 135;
             ctx.fillText(`Head: ${headHeight.toFixed(1)}ft (${Math.round(headHeightPercent * 100)}%)`, 
-                         bodyMarkerX - 135, (bodyTopY + headTopY) / 2);
+                         bodyMarkerX - headTextOffset, (bodyTopY + headTopY) / 2);
             
             // Ear height marker (rightmost of the three)
             ctx.beginPath();
             ctx.moveTo(bodyMarkerX + 30, headTopY);
             ctx.lineTo(bodyMarkerX + 30, earTop);
             ctx.stroke();
+            const earTextOffset = responsiveScale < 0.8 ? 60 : 120;
             ctx.fillText(`Ears: ${earHeight.toFixed(1)}ft (${Math.round(earHeightPercent * 100)}%)`, 
-                         bodyMarkerX - 120, (headTopY + earTop) / 2);
+                         bodyMarkerX - earTextOffset, (headTopY + earTop) / 2);
             
             // Total height
             ctx.strokeStyle = '#007acc';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = strokeWidth;
             ctx.beginPath();
             ctx.moveTo(50, groundY);
             ctx.lineTo(50, earTop);
@@ -853,7 +1013,7 @@
             ctx.closePath();
             ctx.fill();
             
-            ctx.font = 'bold 16px Arial';
+            ctx.font = 'bold ' + largeFontSize + 'px Arial';
             ctx.fillText(`${totalHeight}ft`, 20, (groundY + earTop) / 2);
             
             // Update calculations panel instead of drawing on canvas
@@ -892,7 +1052,11 @@
         }
         
         // Initial draw
-        draw();
+        window.slidersInitialized = true;
+        resizeCanvas(); // This will set canvas size and call draw()
+        
+        // Now add resize listener
+        window.addEventListener('resize', resizeCanvas);
     </script>
     
     <div style="max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
