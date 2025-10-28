@@ -136,29 +136,31 @@
                 <input type="range" id="totalHeight" min="5" max="20" value="15" step="0.5">
                 <span class="value" id="totalHeightValue">15</span>
             </div>
+            
             <div class="control-group">
                 <label>Ear Height:</label>
                 <input type="range" id="earHeightPercent" min="5" max="30" value="10" step="1">
                 <span class="value" id="earHeightPercentValue">10%</span>
-            </div>           
+            </div>
             <div class="control-group">
                 <label>Head Height:</label>
                 <input type="range" id="headHeightPercent" min="20" max="70" value="40" step="1">
                 <span class="value" id="headHeightPercentValue">40%</span>
-            </div> <div class="control-group">
+            </div>
+            <div class="control-group">
                 <label>Body Height:</label>
                 <input type="range" id="bodyHeightPercent" min="20" max="70" value="50" step="1">
                 <span class="value" id="bodyHeightPercentValue">50%</span>
             </div>
             <div class="control-group">
-                <label>Head Cap % of sphere:</label>
-                <input type="range" id="headCap" min="60" max="95" value="85" step="1">
-                <span class="value" id="headCapValue">85%</span>
-            </div>
-            <div class="control-group">
                 <label>Body Cap % of sphere:</label>
                 <input type="range" id="bodyCap" min="50" max="90" value="70" step="1">
                 <span class="value" id="bodyCapValue">70%</span>
+            </div>
+            <div class="control-group">
+                <label>Head Cap % of sphere:</label>
+                <input type="range" id="headCap" min="60" max="95" value="85" step="1">
+                <span class="value" id="headCapValue">85%</span>
             </div>
             <div class="control-group">
                 <label>Arm Length:</label>
@@ -272,6 +274,13 @@
         const shoulderSeparationSlider = document.getElementById('shoulderSeparation');
         const showConstructionCheck = document.getElementById('showConstruction');
         
+        // Easter egg tracking for lower arm angle slider
+        let armMovementHistory = [];
+        let lastArmValue = parseFloat(armSeparationSlider.value);
+        let directionChanges = 0;
+        let lastArmMovementTime = Date.now();
+        let easterEggTriggered = false;
+        
         // Flag to prevent recursive updates
         let isUpdating = false;
         
@@ -349,57 +358,110 @@
         totalHeightSlider.oninput = () => {
             document.getElementById('totalHeightValue').textContent = totalHeightSlider.value;
             draw();
+            generateHeightTable();
         };
         
         bodyHeightPercentSlider.oninput = () => {
             document.getElementById('bodyHeightPercentValue').textContent = bodyHeightPercentSlider.value + '%';
             adjustProportionally('body');
             draw();
+            generateHeightTable();
         };
         
         headHeightPercentSlider.oninput = () => {
             document.getElementById('headHeightPercentValue').textContent = headHeightPercentSlider.value + '%';
             adjustProportionally('head');
             draw();
+            generateHeightTable();
         };
         
         earHeightPercentSlider.oninput = () => {
             document.getElementById('earHeightPercentValue').textContent = earHeightPercentSlider.value + '%';
             adjustProportionally('ear');
             draw();
+            generateHeightTable();
         };
         
         bodyCapSlider.oninput = () => {
             document.getElementById('bodyCapValue').textContent = bodyCapSlider.value + '%';
             draw();
+            generateHeightTable();
         };
         
         headCapSlider.oninput = () => {
             document.getElementById('headCapValue').textContent = headCapSlider.value + '%';
             draw();
+            generateHeightTable();
         };
         
         armLengthSlider.oninput = () => {
             document.getElementById('armLengthValue').textContent = armLengthSlider.value + '%';
             draw();
+            generateHeightTable();
         };
         
         armWidthSlider.oninput = () => {
             document.getElementById('armWidthValue').textContent = armWidthSlider.value + '%';
             draw();
+            generateHeightTable();
         };
         
         armSeparationSlider.oninput = () => {
             document.getElementById('armSeparationValue').textContent = armSeparationSlider.value + '°';
             draw();
+            generateHeightTable();
+            
+            // Easter egg detection
+            const currentValue = parseFloat(armSeparationSlider.value);
+            const currentTime = Date.now();
+            
+            // Reset if more than 2 seconds have passed
+            if (currentTime - lastArmMovementTime > 2000) {
+                armMovementHistory = [];
+                directionChanges = 0;
+                easterEggTriggered = false;
+            }
+            
+            // Detect direction change
+            if (armMovementHistory.length > 0) {
+                const lastDirection = currentValue > lastArmValue ? 'right' : 'left';
+                const prevDirection = armMovementHistory[armMovementHistory.length - 1];
+                
+                if (lastDirection !== prevDirection) {
+                    directionChanges++;
+                    armMovementHistory.push(lastDirection);
+                    
+                    // Check if we've had enough back-and-forth movements
+                    if (directionChanges >= 7 && !easterEggTriggered) {
+                        easterEggTriggered = true;
+                        setTimeout(() => {
+                            alert("Whoa, woah, woah there! I thought you might do that. I'm tattling on you... < webcam accessed ... alerting PETA >");
+                        }, 100);
+                    }
+                } else {
+                    // Same direction, don't count as a change
+                    armMovementHistory[armMovementHistory.length - 1] = lastDirection;
+                }
+            } else {
+                // First movement
+                const direction = currentValue > lastArmValue ? 'right' : 'left';
+                armMovementHistory.push(direction);
+            }
+            
+            lastArmValue = currentValue;
+            lastArmMovementTime = currentTime;
         };
         
         shoulderSeparationSlider.oninput = () => {
             document.getElementById('shoulderSeparationValue').textContent = shoulderSeparationSlider.value + '°';
             draw();
+            generateHeightTable();
         };
         
-        showConstructionCheck.onchange = draw;
+        showConstructionCheck.onchange = () => {
+            draw();
+            generateHeightTable();
+        };
         
         function drawSphericalCap(centerX, centerY, radius, capHeight, scale, baseY) {
             
@@ -831,6 +893,108 @@
         
         // Initial draw
         draw();
+    </script>
+    
+    <div style="max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3>Surface Area Calculations by Height</h3>
+        <table id="heightTable" style="width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 15px;">
+            <thead>
+                <tr style="background: #007acc; color: white;">
+                    <th rowspan="2" style="padding: 10px; border: 1px solid #ddd;">Total<br>Height<br>(ft)</th>
+                    <th colspan="5" style="padding: 10px; border: 1px solid #ddd;">Component Heights (ft)</th>
+                    <th colspan="5" style="padding: 10px; border: 1px solid #ddd;">Surface Areas (sq ft)</th>
+                </tr>
+                <tr style="background: #007acc; color: white;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Ears</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Head</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Body</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Arm<br>Length</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Arm<br>Width</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Ears</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Head</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Body</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Arms</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; background: #0056a0;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // Generate table with calculations for different heights
+        function generateHeightTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            // Get current slider values (using percentages)
+            const bodyHeightPercent = parseFloat(document.getElementById('bodyHeightPercent').value) / 100;
+            const headHeightPercent = parseFloat(document.getElementById('headHeightPercent').value) / 100;
+            const earHeightPercent = parseFloat(document.getElementById('earHeightPercent').value) / 100;
+            const bodyCapPercent = parseFloat(document.getElementById('bodyCap').value) / 100;
+            const headCapPercent = parseFloat(document.getElementById('headCap').value) / 100;
+            const armLengthPercent = parseFloat(document.getElementById('armLength').value) / 100;
+            const armWidthPercent = parseFloat(document.getElementById('armWidth').value) / 100;
+            
+            // Generate rows for heights from 5 to 20 in increments of 2.5
+            for (let totalHeight = 5; totalHeight <= 20; totalHeight += 2.5) {
+                // Calculate component dimensions
+                const bodyHeight = totalHeight * bodyHeightPercent;
+                const headHeight = totalHeight * headHeightPercent;
+                const earHeight = totalHeight * earHeightPercent;
+                const armLength = totalHeight * armLengthPercent;
+                const armWidth = totalHeight * armWidthPercent;
+                
+                // Calculate sphere radii
+                const bodyRadius = bodyHeight / (2 * bodyCapPercent);
+                const headRadius = headHeight / (2 * headCapPercent);
+                
+                // Calculate surface areas
+                const bodyCapSurfaceArea = 2 * Math.PI * bodyRadius * bodyHeight;
+                const headCapSurfaceArea = 2 * Math.PI * headRadius * headHeight;
+                
+                // Ear surface area (triangular pyramid approximation)
+                const earSide = earHeight * 1.15;
+                const earTopHeight = (Math.sqrt(3) / 2) * earSide;
+                const oneTriangleArea = 0.5 * earSide * earTopHeight;
+                const earSurfaceArea = 2 * 3 * oneTriangleArea;
+                
+                // Arm surface area (4 cylinders)
+                const armRadius = armWidth / 2;
+                const oneSegmentSurfaceArea = 2 * Math.PI * armRadius * (armLength * 0.5) + 2 * Math.PI * armRadius * armRadius;
+                const totalArmSurfaceArea = 4 * oneSegmentSurfaceArea;
+                
+                // Total surface area
+                const totalSurfaceArea = bodyCapSurfaceArea + headCapSurfaceArea + earSurfaceArea + totalArmSurfaceArea;
+                
+                // Create table row
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #ddd';
+                if (Math.abs(totalHeight - 15) < 0.1) {
+                    row.style.background = '#fffacd'; // Highlight the default 15ft row
+                }
+                
+                row.innerHTML = `
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${totalHeight.toFixed(1)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${earHeight.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${headHeight.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${bodyHeight.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${armLength.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${armWidth.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right; background: #f8f9fa;">${earSurfaceArea.toFixed(1)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right; background: #f8f9fa;">${headCapSurfaceArea.toFixed(1)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right; background: #f8f9fa;">${bodyCapSurfaceArea.toFixed(1)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right; background: #f8f9fa;">${totalArmSurfaceArea.toFixed(1)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold; background: #e8f4f8;">${totalSurfaceArea.toFixed(1)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // Generate table on page load
+        generateHeightTable();
     </script>
 </body>
 </html>
