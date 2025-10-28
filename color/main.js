@@ -264,28 +264,31 @@ function paintCanvas(brushSrc = 'circle.png') {
 
 function recolorBlackImage(img, newRed, newGreen, newBlue) {
     // Create a temporary canvas
-    var c = document.createElement('canvas');
+    var tempCanvas = document.createElement('canvas');
     // document.body.append(c);
-    var ctx = c.getContext("2d");
+    var ctx = tempCanvas.getContext("2d");
     var w = img.width;
     var h = img.height;
-    c.width = w;
-    c.height = h;
+    tempCanvas.width = w;
+    tempCanvas.height = h;
+
+    // Add a contour with the new color
+    drawContour(tempCanvas, img, newRed, newGreen, newBlue);
 
     // draw the image on the temporary canvas
     ctx.drawImage(img, 0, 0, w, h);
     // pull the entire image into an array of pixel data
     var imageData = ctx.getImageData(0, 0, w, h);
 
-    // examine every pixel, change any old rgb to the new-rgb
+    // examine every pixel, change any black pixels to the new-rgb
     for (var i = 0; i < imageData.data.length; i += 4) {
-        // is this pixel the old rgb?
-        // if (imageData.data[i] == 0 && imageData.data[i + 1] == 0 && imageData.data[i + 2] == 0) {
+        // is this pixel black (or very dark)?
+        if (imageData.data[i] < 50 && imageData.data[i + 1] < 50 && imageData.data[i + 2] < 50) {
             // change to your new rgb
             imageData.data[i] = newRed;
             imageData.data[i + 1] = newGreen;
             imageData.data[i + 2] = newBlue;
-        // }
+        }
     }
     // put the altered data back on the canvas  
     ctx.putImageData(imageData, 0, 0);
@@ -293,6 +296,26 @@ function recolorBlackImage(img, newRed, newGreen, newBlue) {
     // put the re-colored image back on the image
     // var img1 = document.getElementById("image1");
     alteredImg = new Image()
-    alteredImg.src = c.toDataURL('image/png');
+    alteredImg.src = tempCanvas.toDataURL('image/png');
     return alteredImg;
+}
+
+function drawContour(localCanvas, img, newRed, newGreen, newBlue) {
+    var ctx = localCanvas.getContext('2d');
+
+    var dArr = [-1,-1, 0,-1, 1,-1, -1,0, 1,0, -1,1, 0,1, 1,1], // offset array
+        s = 6,  // thickness scale
+        i = 0,  // iterator
+        x = 5,  // final position
+        y = 5;
+    
+    // draw images at offsets from the array scaled by s
+    for(; i < dArr.length; i += 2)
+      ctx.drawImage(img, x + dArr[i]*s, y + dArr[i+1]*s);
+    
+    // fill with the generated color
+    ctx.globalCompositeOperation = "source-in";
+    ctx.fillStyle = "rgb(" + newRed + "," + newGreen + "," + newBlue + ")";
+    ctx.fillRect(0,0,localCanvas.width, localCanvas.height);
+
 }
