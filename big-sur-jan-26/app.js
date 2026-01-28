@@ -1,70 +1,69 @@
 // ============ ACTIVITY DATA ============
 const activities = [
-    // HIKES
-    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.2380, -121.7850] },
-    { id: 'soberanes', name: 'Soberanes Canyon', emoji: '🌲', cat: 'hike', tag: 'Moderate', duration: 2, miles: 3, desc: 'Lush redwood canyon near your stay. Whale watching from Soberanes Point!', zone: 'north', coords: [36.4467, -121.9283] },
-    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'hike', tag: 'Easy', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4583, -121.9217] },
-    { id: 'pfeiffer-falls', name: 'Pfeiffer Falls + Valley View', emoji: '💧', cat: 'hike', tag: 'Moderate', duration: 2, miles: 3.2, desc: 'Waterfall through redwood forest, then climb to sweeping valley panorama.', zone: 'central', coords: [36.2500, -121.7833] },
-    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1783, -121.7017] },
-    { id: 'point-lobos', name: 'Point Lobos Reserve', emoji: '🦭', cat: 'hike', tag: 'Crown Jewel', duration: 2, miles: 3, desc: 'Best state park in CA. Sea otters, seals, tide pools. Bird Island Trail stunning. $10.', zone: 'carmel', coords: [36.5167, -121.9500] },
+    // EXPLORE - Hikes (subtype: hike)
+    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'explore', subtype: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.2380, -121.7850] },
+    { id: 'soberanes', name: 'Soberanes Canyon', emoji: '🌲', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3, desc: 'Lush redwood canyon near your stay. Whale watching from Soberanes Point!', zone: 'north', coords: [36.4467, -121.9283] },
+    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Easy Walk', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4583, -121.9217] },
+    { id: 'pfeiffer-falls', name: 'Pfeiffer Falls + Valley View', emoji: '💧', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3.2, desc: 'Waterfall through redwood forest, then climb to sweeping valley panorama.', zone: 'central', coords: [36.2500, -121.7833] },
+    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'explore', subtype: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1783, -121.7017] },
+    { id: 'point-lobos', name: 'Point Lobos Reserve', emoji: '🦭', cat: 'explore', subtype: 'coastal', tag: 'Crown Jewel', duration: 2, miles: 3, desc: 'Best state park in CA. Sea otters, seals, tide pools. Bird Island Trail stunning. $10.', zone: 'carmel', coords: [36.5167, -121.9500] },
 
-    // BEACHES
-    { id: 'pfeiffer-beach', name: 'Pfeiffer Beach', emoji: '🌅', cat: 'beach', tag: 'Must-See', duration: 1.5, desc: 'Famous Keyhole Rock, purple sand, dramatic sunset through the arch. $15.', zone: 'central', coords: [36.2383, -121.8150] },
-    { id: 'garrapata-beach', name: 'Garrapata Beach', emoji: '🐚', cat: 'beach', tag: 'Hidden', duration: 1, desc: 'Secluded sandy beach near Calla Lily Valley. Driftwood shelters, great for picnics.', zone: 'north', coords: [36.4617, -121.9267] },
-    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🦋', cat: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2850, -121.8517] },
-    { id: 'carmel-river-beach', name: 'Carmel River State Beach', emoji: '🏖️', cat: 'beach', tag: 'Accessible', duration: 1, desc: 'Wide sandy beach at Carmel River mouth. Great for sunset walks, birdwatching, stargazing.', zone: 'carmel', coords: [36.5367, -121.9283] },
+    // EXPLORE - Beaches (subtype: beach)
+    { id: 'pfeiffer-beach', name: 'Pfeiffer Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Must-See', duration: 1.5, desc: 'Famous Keyhole Rock, purple sand, dramatic sunset through the arch. $15.', zone: 'central', coords: [36.2383, -121.8150] },
+    { id: 'garrapata-beach', name: 'Garrapata Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Hidden', duration: 1, desc: 'Secluded sandy beach near Calla Lily Valley. Driftwood shelters, great for picnics.', zone: 'north', coords: [36.4617, -121.9267] },
+    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2850, -121.8517] },
+    { id: 'carmel-river-beach', name: 'Carmel River State Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Accessible', duration: 1, desc: 'Wide sandy beach at Carmel River mouth. Great for sunset walks, birdwatching.', zone: 'carmel', coords: [36.5367, -121.9283] },
 
-    // SCENIC
-    { id: 'mcway-falls', name: 'McWay Falls Overlook', emoji: '🏞️', cat: 'scenic', tag: 'Iconic', duration: 0.5, desc: '80-foot waterfall onto pristine beach. THE Big Sur postcard shot.', zone: 'south', coords: [36.1583, -121.6717] },
-    { id: 'bixby', name: 'Bixby Bridge', emoji: '🌉', cat: 'scenic', tag: 'Classic', duration: 0.5, desc: 'The Instagram shot. Park north of bridge, walk back. Big Little Lies fame!', zone: 'north', coords: [36.3717, -121.9017] },
-    { id: '17-mile', name: '17-Mile Drive', emoji: '🌳', cat: 'scenic', tag: 'Iconic', duration: 1.5, desc: 'The Lone Cypress! Ghost Trees! Pebble Beach! $12.25 toll (refunded with $35 restaurant purchase).', zone: 'carmel', coords: [36.5700, -121.9617] },
+    // EXPLORE - Scenic Stops (subtype: scenic)
+    { id: 'mcway-falls', name: 'McWay Falls Overlook', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 0.5, desc: '80-foot waterfall onto pristine beach. THE Big Sur postcard shot.', zone: 'south', coords: [36.1583, -121.6717] },
+    { id: 'bixby', name: 'Bixby Bridge', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Classic', duration: 0.5, desc: 'The Instagram shot. Park north of bridge, walk back. Big Little Lies fame!', zone: 'north', coords: [36.3717, -121.9017] },
+    { id: '17-mile', name: '17-Mile Drive', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 1.5, desc: 'The Lone Cypress! Ghost Trees! Pebble Beach! $12.25 toll (refunded with $35 restaurant purchase).', zone: 'carmel', coords: [36.5700, -121.9617] },
+    { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'explore', subtype: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
 
-    // SEASONAL
-    { id: 'calla-lily', name: 'Calla Lily Valley', emoji: '🌺', cat: 'seasonal', tag: 'Peak Bloom!', duration: 0.75, desc: 'Hidden valley BURSTING with white calla lilies in late Jan! Gate 18 at Garrapata. Waterproof shoes!', zone: 'north', coords: [36.4650, -121.9233] },
-    { id: 'whale-watch', name: 'Gray Whale Watching', emoji: '🐋', cat: 'seasonal', tag: 'Peak Migration!', duration: 0.5, desc: 'Mid-January is PEAK! Bring binoculars. Best from Soberanes Point or any overlook.', zone: 'north', coords: [36.4467, -121.9283] },
+    // EXPERIENCES - Seasonal & Special Activities
+    { id: 'calla-lily', name: 'Calla Lily Valley', emoji: '🌸', cat: 'experience', subtype: 'seasonal', tag: 'Peak Bloom!', duration: 0.75, desc: 'Hidden valley BURSTING with white calla lilies in late Jan! Gate 18 at Garrapata. Waterproof shoes!', zone: 'north', coords: [36.4650, -121.9233] },
+    { id: 'whale-watch', name: 'Gray Whale Watching', emoji: '🐋', cat: 'experience', subtype: 'seasonal', tag: 'Peak Migration!', duration: 0.5, desc: 'Mid-January is PEAK! Bring binoculars. Best from Soberanes Point or any overlook.', zone: 'north', coords: [36.4467, -121.9283] },
+    { id: 'stargaze-garrapata', name: 'Stargazing at Cabin', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Near Cabin', duration: 1, desc: 'Dark skies right by your cabin! Minimal light pollution. Bring blankets, hot cocoa.', zone: 'north', coords: [36.4583, -121.9217] },
+    { id: 'stargaze-pfeiffer', name: 'Pfeiffer Beach Night Sky', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Dramatic', duration: 1.5, desc: 'Stars through Keyhole Rock! Check tide times. Bortle Scale 2 - exceptional darkness.', zone: 'central', coords: [36.2383, -121.8150] },
+    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2850, -121.8517] },
+    { id: 'stargaze-carmel', name: 'Carmel Beach Stars', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Easy Access', duration: 1, desc: 'Most accessible spot. Easy parking, flat beach. Good for casual stargazing.', zone: 'carmel', coords: [36.5367, -121.9283] },
 
-    // STARGAZING
-    { id: 'stargaze-garrapata', name: 'Garrapata Stargazing', emoji: '🌌', cat: 'stargazing', tag: 'Near Cabin', duration: 1, desc: 'Dark skies right by your cabin! Minimal light pollution. Bring blankets, hot cocoa.', zone: 'north', coords: [36.4583, -121.9217] },
-    { id: 'stargaze-pfeiffer', name: 'Pfeiffer Beach Night Sky', emoji: '✨', cat: 'stargazing', tag: 'Dramatic', duration: 1.5, desc: 'Stars through Keyhole Rock! Check tide times. Bortle Scale 2 - exceptional darkness.', zone: 'central', coords: [36.2383, -121.8150] },
-    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🔭', cat: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2850, -121.8517] },
-    { id: 'stargaze-carmel', name: 'Carmel River Beach Stars', emoji: '🌠', cat: 'stargazing', tag: 'Easy Access', duration: 1, desc: 'Most accessible spot. Easy parking, flat beach. Good for casual stargazing.', zone: 'carmel', coords: [36.5367, -121.9283] },
+    // EXPERIENCES - Beach Activities
+    { id: 'beach-picnic-garrapata', name: 'Beach Picnic at Garrapata', emoji: '🧺', cat: 'experience', subtype: 'beach-activity', tag: 'Relaxed', duration: 1.5, desc: 'Pack a lunch from the deli and enjoy it on the beach. Driftwood shelters make cozy spots!', zone: 'north', coords: [36.4617, -121.9267] },
+    { id: 'beach-picnic-pfeiffer', name: 'Sunset Picnic at Pfeiffer', emoji: '🧺', cat: 'experience', subtype: 'beach-activity', tag: 'Romantic', duration: 2, desc: 'Watch the sun set through Keyhole Rock with wine and cheese. Magical!', zone: 'central', coords: [36.2383, -121.8150] },
+    { id: 'beach-time-carmel', name: 'Beach Time in Carmel', emoji: '🐕', cat: 'experience', subtype: 'beach-activity', tag: 'Easy', duration: 1.5, desc: 'Relax on the white sand. Dog-friendly! Great for a lazy afternoon before heading home.', zone: 'carmel', coords: [36.5550, -121.9300] },
 
     // RESTAURANTS & CAFES - Big Sur
-    { id: 'nepenthe', name: 'Nepenthe', emoji: '🌄', cat: 'restaurant', tag: 'Essential', duration: 1.5, price: '$$$', desc: 'THE Big Sur restaurant. Terrace 800ft above Pacific. Ambrosia Burger legendary. Sunset dinner!', zone: 'central', coords: [36.2217, -121.7583] },
-    { id: 'cafe-kevah', name: 'Cafe Kevah', emoji: '☕', cat: 'restaurant', tag: 'Casual', duration: 1, price: '$$', desc: 'Below Nepenthe. Same views, lighter fare. Fresh smoothies, sandwiches.', zone: 'central', coords: [36.2217, -121.7583] },
-    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2417, -121.7750] },
-    { id: 'river-inn', name: 'Big Sur River Inn', emoji: '🍺', cat: 'restaurant', tag: 'Local Fave', duration: 1.5, price: '$$', desc: 'Chairs IN the river! Classic roadhouse vibes, good burgers. Grab a beer, sit in the creek.', zone: 'central', coords: [36.2700, -121.8200] },
-    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2017, -121.7400] },
-    { id: 'big-sur-taphouse', name: 'Big Sur Taphouse', emoji: '🍻', cat: 'restaurant', tag: 'Craft Beer', duration: 1, price: '$$', desc: 'Rotating craft beers, hearty sandwiches. Local hangout spot.', zone: 'central', coords: [36.2700, -121.8200] },
+    { id: 'nepenthe', name: 'Nepenthe', emoji: '🍽️', cat: 'restaurant', subtype: 'dining', tag: 'Essential', duration: 1.5, price: '$$$', desc: 'THE Big Sur restaurant. Terrace 800ft above Pacific. Ambrosia Burger legendary. Sunset dinner!', zone: 'central', coords: [36.2217, -121.7583] },
+    { id: 'cafe-kevah', name: 'Cafe Kevah', emoji: '☕', cat: 'restaurant', subtype: 'cafe', tag: 'Casual', duration: 1, price: '$$', desc: 'Below Nepenthe. Same views, lighter fare. Fresh smoothies, sandwiches.', zone: 'central', coords: [36.2217, -121.7583] },
+    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2417, -121.7750] },
+    { id: 'river-inn', name: 'Big Sur River Inn', emoji: '🍺', cat: 'restaurant', subtype: 'dining', tag: 'Local Fave', duration: 1.5, price: '$$', desc: 'Chairs IN the river! Classic roadhouse vibes, good burgers. Grab a beer, sit in the creek.', zone: 'central', coords: [36.2700, -121.8200] },
+    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', subtype: 'dining', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2017, -121.7400] },
+    { id: 'big-sur-taphouse', name: 'Big Sur Taphouse', emoji: '🍻', cat: 'restaurant', subtype: 'dining', tag: 'Craft Beer', duration: 1, price: '$$', desc: 'Rotating craft beers, hearty sandwiches. Local hangout spot.', zone: 'central', coords: [36.2700, -121.8200] },
 
     // RESTAURANTS & CAFES - Carmel
-    { id: 'stationary', name: 'Stationæry', emoji: '⭐', cat: 'restaurant', tag: 'Michelin Bib', duration: 1.5, price: '$$$', desc: 'Michelin Bib Gourmand! Best brunch in Carmel. House-made pastries, shakshuka. Reserve ahead!', zone: 'carmel', coords: [36.5550, -121.9233] },
-    { id: 'carmel-belle', name: 'Carmel Belle', emoji: '🥐', cat: 'restaurant', tag: 'Cozy', duration: 1, price: '$$', desc: 'Farm-to-table cafe in Doud Arcade. Great pastries, sandwiches, coffee.', zone: 'carmel', coords: [36.5550, -121.9217] },
-    { id: 'la-bicyclette', name: 'La Bicyclette', emoji: '🇫🇷', cat: 'restaurant', tag: 'French', duration: 1.5, price: '$$$', desc: 'Rustic European charm. Wood-fired pizzas, hearty French-California cuisine.', zone: 'carmel', coords: [36.5550, -121.9233] },
-    { id: 'carmel-bakery', name: 'Carmel Bakery', emoji: '🍰', cat: 'restaurant', tag: 'Early Open', duration: 0.5, price: '$', desc: 'Opens 7am! Coffee and pastries for early birds. Cute dog treats too.', zone: 'carmel', coords: [36.5550, -121.9217] },
+    { id: 'stationary', name: 'Stationæry', emoji: '⭐', cat: 'restaurant', subtype: 'dining', tag: 'Michelin Bib', duration: 1.5, price: '$$$', desc: 'Michelin Bib Gourmand! Best brunch in Carmel. House-made pastries, shakshuka. Reserve ahead!', zone: 'carmel', coords: [36.5550, -121.9233] },
+    { id: 'carmel-belle', name: 'Carmel Belle', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Cozy', duration: 1, price: '$$', desc: 'Farm-to-table cafe in Doud Arcade. Great pastries, sandwiches, coffee.', zone: 'carmel', coords: [36.5550, -121.9217] },
+    { id: 'la-bicyclette', name: 'La Bicyclette', emoji: '🍽️', cat: 'restaurant', subtype: 'dining', tag: 'French', duration: 1.5, price: '$$$', desc: 'Rustic European charm. Wood-fired pizzas, hearty French-California cuisine.', zone: 'carmel', coords: [36.5550, -121.9233] },
+    { id: 'carmel-bakery', name: 'Carmel Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Early Open', duration: 0.5, price: '$', desc: 'Opens 7am! Coffee and pastries for early birds. Cute dog treats too.', zone: 'carmel', coords: [36.5550, -121.9217] },
 
-    // MARKETS & PROVISIONS - Big Sur
-    { id: 'big-sur-deli', name: 'Big Sur Deli', emoji: '🥪', cat: 'provisions', tag: 'Grab & Go', duration: 0.5, price: '$', desc: 'Grab-and-go sandwiches, snacks, drinks. Perfect for trail picnics.', zone: 'central', coords: [36.2700, -121.8200] },
-    { id: 'big-sur-general', name: 'Big Sur Village General Store', emoji: '🏪', cat: 'provisions', tag: 'Supplies', duration: 0.5, price: '$', desc: 'Groceries, camping supplies, firewood. Gas station attached (expensive!).', zone: 'central', coords: [36.2700, -121.8200] },
-
-    // MARKETS & PROVISIONS - Carmel
-    { id: 'brunos', name: "Bruno's Market & Deli", emoji: '🥖', cat: 'provisions', tag: 'Institution', duration: 0.5, price: '$', desc: 'Carmel institution since 1953. Great sandwiches, picnic supplies, wine selection.', zone: 'carmel', coords: [36.5517, -121.9183] },
-    { id: 'nielsen-bros', name: 'Nielsen Bros. Market', emoji: '🧺', cat: 'provisions', tag: 'Gourmet', duration: 0.5, price: '$$', desc: 'Upscale market with great deli, wine, cheese. Perfect picnic provisions.', zone: 'carmel', coords: [36.5550, -121.9200] },
-
-    // CULTURE
-    { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
+    // SUPPLIES & PROVISIONS
+    { id: 'big-sur-deli', name: 'Big Sur Deli', emoji: '🥪', cat: 'provisions', subtype: 'deli', tag: 'Grab & Go', duration: 0.5, price: '$', desc: 'Grab-and-go sandwiches, snacks, drinks. Perfect for trail picnics.', zone: 'central', coords: [36.2700, -121.8200] },
+    { id: 'big-sur-general', name: 'Big Sur General Store', emoji: '🏪', cat: 'provisions', subtype: 'store', tag: 'Supplies', duration: 0.5, price: '$', desc: 'Groceries, camping supplies, firewood. Gas station attached (expensive!).', zone: 'central', coords: [36.2700, -121.8200] },
+    { id: 'brunos', name: "Bruno's Market & Deli", emoji: '🥪', cat: 'provisions', subtype: 'deli', tag: 'Institution', duration: 0.5, price: '$', desc: 'Carmel institution since 1953. Great sandwiches, picnic supplies, wine selection.', zone: 'carmel', coords: [36.5517, -121.9183] },
+    { id: 'nielsen-bros', name: 'Nielsen Bros. Market', emoji: '🧺', cat: 'provisions', subtype: 'store', tag: 'Gourmet', duration: 0.5, price: '$$', desc: 'Upscale market with great deli, wine, cheese. Perfect picnic provisions.', zone: 'carmel', coords: [36.5550, -121.9200] },
 
     // TRAVEL (special category - not shown in discovery but used in scheduling)
-    { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
-    { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', tag: 'Return', duration: 2, desc: '~2 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
+    { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', subtype: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
+    { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', subtype: 'travel', tag: 'Return', duration: 2, desc: '~2 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
 
     // LIFESTYLE (cabin/rest activities)
-    { id: 'cozy-airbnb', name: 'Cozy at the Airbnb', emoji: '🏡', cat: 'lifestyle', tag: 'Relax', duration: 2, desc: 'Enjoy the cabin! Hot tub, fireplace, ocean views. Make dinner, play games.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
-    { id: 'sleep-in', name: 'Sleep In', emoji: '😴', cat: 'lifestyle', tag: 'Rest', duration: 1.5, desc: 'No alarm! Wake up naturally. Enjoy a slow morning.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
-    { id: 'early-start', name: 'Early Start', emoji: '🌅', cat: 'lifestyle', tag: 'Wake Up', duration: 0.5, desc: 'Up early to maximize the day! Catch the sunrise.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
+    { id: 'cozy-airbnb', name: 'Cozy Time at Cabin', emoji: '🏡', cat: 'lifestyle', subtype: 'rest', tag: 'Relax', duration: 2, desc: 'Enjoy the cabin! Hot tub, fireplace, ocean views. Make dinner, play games.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
+    { id: 'sleep-in', name: 'Sleep In', emoji: '😴', cat: 'lifestyle', subtype: 'rest', tag: 'Rest', duration: 1.5, desc: 'No alarm! Wake up naturally. Enjoy a slow morning.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
+    { id: 'early-start', name: 'Early Start', emoji: '🌅', cat: 'lifestyle', subtype: 'wakeup', tag: 'Wake Up', duration: 0.5, desc: 'Up early to maximize the day! Catch the sunrise.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
 
     // BIGFOOT (Easter egg)
-    { id: 'bigfoot', name: 'Call Bigfoot', emoji: '🦶', cat: 'culture', tag: 'Legendary', duration: 0, desc: 'Reception spotty in redwoods. Prefers text. Last seen near Ewoldsen stealing granola.', zone: 'unknown', coords: [36.25, -121.78] },
+    { id: 'bigfoot', name: 'Call Bigfoot', emoji: '🦶', cat: 'explore', subtype: 'culture', tag: 'Legendary', duration: 0, desc: 'Reception spotty in redwoods. Prefers text. Last seen near Ewoldsen stealing granola.', zone: 'unknown', coords: [36.25, -121.78] },
 ];
 
 // Zone-based drive times (minutes from cabin at Garrapata)
@@ -506,31 +505,68 @@ function renderPlanSelector() {
     });
 }
 
+// Category titles and descriptions
+const categoryInfo = {
+    explore: { emoji: '🧭', title: 'Explore Big Sur', desc: 'Hikes, beaches, scenic stops, and outdoor adventures' },
+    experience: { emoji: '✨', title: 'Experiences', desc: 'Seasonal highlights, stargazing, and beach activities' },
+    restaurant: { emoji: '🍽️', title: 'Eat & Drink', desc: 'Restaurants, cafes, and places to grab a meal' },
+    provisions: { emoji: '🏪', title: 'Supplies', desc: 'Markets and delis for picnic supplies' },
+    all: { emoji: '🌊', title: 'All Activities', desc: 'Everything Big Sur has to offer' }
+};
+
 function renderActivityGrid() {
     const grid = document.getElementById('activityGrid');
     const activeFilter = document.querySelector('.cat-filter.active').dataset.cat;
     const user = getCurrentUser();
 
+    // Update category title
+    const titleEl = document.getElementById('categoryTitle');
+    if (titleEl) {
+        const info = categoryInfo[activeFilter] || categoryInfo.all;
+        titleEl.innerHTML = `
+            <h3>${info.emoji} ${info.title}</h3>
+            <p class="category-desc">${info.desc}</p>
+        `;
+    }
+
     grid.innerHTML = '';
 
-    activities.forEach(act => {
-        // Hide Easter egg and travel items from discovery
-        if (act.id === 'bigfoot') return;
-        if (act.cat === 'travel') return;
+    // Filter and sort activities
+    const filtered = activities.filter(act => {
+        // Hide Easter egg and travel/lifestyle items from discovery
+        if (act.id === 'bigfoot') return false;
+        if (act.cat === 'travel') return false;
+        if (act.cat === 'lifestyle') return false;
 
         const pref = getPreference(act.id);
-
         // Don't show passed items in main grid
-        if (pref === 'pass') return;
+        if (pref === 'pass') return false;
 
         // Filter by category
-        if (activeFilter !== 'all' && act.cat !== activeFilter) return;
+        if (activeFilter !== 'all' && act.cat !== activeFilter) return false;
+
+        return true;
+    });
+
+    filtered.forEach(act => {
+        const pref = getPreference(act.id);
 
         const card = document.createElement('div');
         card.className = 'activity-card';
         card.dataset.id = act.id;
 
-        const tagClass = 'tag-' + act.cat;
+        // Use subtype for tag styling if available
+        const tagClass = 'tag-' + (act.subtype || act.cat);
+
+        // Show subtype icon for explore items
+        let subtypeIcon = '';
+        if (act.cat === 'explore') {
+            if (act.subtype === 'hike') subtypeIcon = '🥾';
+            else if (act.subtype === 'beach') subtypeIcon = '🏖️';
+            else if (act.subtype === 'coastal') subtypeIcon = '🌊';
+            else if (act.subtype === 'scenic') subtypeIcon = '📸';
+            else if (act.subtype === 'culture') subtypeIcon = '📚';
+        }
 
         card.innerHTML = `
             <div class="card-header">
@@ -538,6 +574,7 @@ function renderActivityGrid() {
                 <div class="card-info">
                     <div class="card-name">${act.name}</div>
                     <div class="card-meta">
+                        ${subtypeIcon ? `<span class="subtype-icon">${subtypeIcon}</span>` : ''}
                         <span class="tag ${tagClass}">${act.tag}</span>
                         ${act.duration ? `<span>${act.duration}h</span>` : ''}
                         ${act.miles ? `<span>${act.miles}mi</span>` : ''}
@@ -559,8 +596,8 @@ function renderActivityGrid() {
     // Render passed items section
     renderPassedItems();
 
-    // Update map with favorites
-    renderFavoritesMap();
+    // Update map with favorites (filtered by current category)
+    renderFavoritesMap(activeFilter);
 }
 
 function renderPassedItems() {
@@ -682,21 +719,33 @@ function switchScheduleDay(day) {
 // ============ FAVORITES MAP ============
 let favoritesMap = null;
 
-function renderFavoritesMap() {
+function renderFavoritesMap(categoryFilter = 'all') {
     const user = getCurrentUser();
     const mapWrapper = document.getElementById('mapWrapper');
     const mapCanvas = document.getElementById('mapCanvas');
     const mapPlaceholder = document.getElementById('mapPlaceholder');
     const mapLegend = document.getElementById('mapLegend');
+    const mapTitle = document.getElementById('favoritesMapTitle');
 
     if (!mapWrapper || !mapCanvas) return;
 
-    // Get all favorited activities with coordinates
+    // Update map title based on filter
+    if (mapTitle) {
+        const info = categoryInfo[categoryFilter] || categoryInfo.all;
+        mapTitle.textContent = categoryFilter === 'all'
+            ? '🗺️ Your Favorites Map'
+            : `🗺️ ${info.title} Locations`;
+    }
+
+    // Get all favorited activities with coordinates, filtered by category
     const favorites = [];
     if (user) {
         [...user.favorites, ...user.mustDos].forEach(id => {
             const act = activities.find(a => a.id === id);
-            if (act && act.coords && act.cat !== 'travel') {
+            if (act && act.coords && act.cat !== 'travel' && act.cat !== 'lifestyle') {
+                // Apply category filter
+                if (categoryFilter !== 'all' && act.cat !== categoryFilter) return;
+
                 const pref = user.mustDos.includes(id) ? 'heart' : 'star';
                 favorites.push({ ...act, pref });
             }
@@ -705,6 +754,9 @@ function renderFavoritesMap() {
 
     if (favorites.length === 0) {
         mapPlaceholder.classList.remove('hidden');
+        mapPlaceholder.querySelector('span').textContent = categoryFilter === 'all'
+            ? 'Mark some favorites above to see them on the map!'
+            : `No favorites in this category yet`;
         if (favoritesMap) {
             favoritesMap.remove();
             favoritesMap = null;
@@ -733,25 +785,16 @@ function renderFavoritesMap() {
         }
     });
 
-    // Category colors
-    const catColors = {
-        hike: '#2d7d5f',
-        beach: '#0ea5e9',
-        scenic: '#eab308',
-        seasonal: '#ec4899',
-        stargazing: '#6366f1',
-        restaurant: '#f97316',
-        provisions: '#8b5a3c',
-        culture: '#8b5cf6'
-    };
-
+    // Subtype colors for explore
+    const subtypeColors = {
     // Add markers
     const bounds = [];
-    const usedCats = new Set();
+    const usedSubtypes = new Set();
 
     favorites.forEach(act => {
-        const color = catColors[act.cat] || '#666';
-        usedCats.add(act.cat);
+        const subtype = act.subtype || act.cat;
+        const color = subtypeColors[subtype] || catColors[act.cat] || '#666';
+        usedSubtypes.add(subtype);
 
         const markerClass = act.pref === 'heart' ? 'heart-marker' : 'star-marker';
 
@@ -762,7 +805,7 @@ function renderFavoritesMap() {
             iconAnchor: [16, 16]
         });
 
-        const marker = L.marker([act.coords[0], act.coords[1]], { icon })
+        L.marker([act.coords[0], act.coords[1]], { icon })
             .addTo(favoritesMap)
             .bindPopup(`<strong>${act.emoji} ${act.name}</strong><br>${act.desc}`);
 
@@ -776,11 +819,17 @@ function renderFavoritesMap() {
         favoritesMap.setView(bounds[0], 12);
     }
 
-    // Update legend
+    // Update legend with subtypes
+    const subtypeNames = {
+        hike: 'Hikes', beach: 'Beaches', coastal: 'Coastal', scenic: 'Scenic',
+        culture: 'Culture', seasonal: 'Seasonal', stargazing: 'Stargazing',
+        'beach-activity': 'Beach Time', dining: 'Dining', cafe: 'Cafes',
+        deli: 'Delis', store: 'Stores'
+    };
     let legendHtml = '';
-    usedCats.forEach(cat => {
-        const catName = cat.charAt(0).toUpperCase() + cat.slice(1);
-        legendHtml += `<div class="map-legend-item"><span class="map-legend-dot ${cat}"></span>${catName}</div>`;
+    usedSubtypes.forEach(subtype => {
+        const name = subtypeNames[subtype] || subtype.charAt(0).toUpperCase() + subtype.slice(1);
+        legendHtml += `<div class="map-legend-item"><span class="map-legend-dot ${subtype}"></span>${name}</div>`;
     });
     mapLegend.innerHTML = legendHtml;
 }

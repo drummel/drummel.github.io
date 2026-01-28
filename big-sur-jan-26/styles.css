@@ -415,6 +415,12 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--stone);
+    margin-bottom: 0.25rem;
+}
+
+.template-plans .template-desc {
+    font-size: 0.8rem;
+    color: #666;
     margin-bottom: 0.75rem;
 }
 
@@ -550,12 +556,20 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .map-legend-dot.hike { background: var(--forest); }
 .map-legend-dot.beach { background: var(--ocean); }
+.map-legend-dot.coastal { background: #14b8a6; }
 .map-legend-dot.scenic { background: var(--gold); }
 .map-legend-dot.seasonal { background: var(--heart); }
 .map-legend-dot.stargazing { background: #6366f1; }
+.map-legend-dot.beach-activity { background: #06b6d4; }
+.map-legend-dot.dining { background: var(--sunset); }
+.map-legend-dot.cafe { background: #d97706; }
+.map-legend-dot.deli { background: var(--redwood); }
+.map-legend-dot.store { background: #78716c; }
+.map-legend-dot.culture { background: #8b5cf6; }
+.map-legend-dot.explore { background: var(--forest); }
+.map-legend-dot.experience { background: var(--heart); }
 .map-legend-dot.restaurant { background: var(--sunset); }
 .map-legend-dot.provisions { background: var(--redwood); }
-.map-legend-dot.culture { background: #8b5cf6; }
 
 /* Custom Leaflet marker styling */
 .custom-marker {
@@ -595,6 +609,25 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .cat-filter:hover { border-color: var(--ocean); }
 .cat-filter.active { background: var(--ocean); color: white; border-color: var(--ocean); }
+
+/* Category Title */
+.category-title {
+    margin-bottom: 1rem;
+}
+
+.category-title h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--stone);
+    margin-bottom: 0.25rem;
+}
+
+.category-title .category-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
 
 /* ============ ACTIVITY GRID ============ */
 .activity-grid {
@@ -665,6 +698,31 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .tag-stargazing { background: #e0e7ff; color: #4338ca; border: 1px dashed #6366f1; }
 .tag-travel { background: #f3f4f6; color: #374151; }
 .tag-lifestyle { background: #fef3c7; color: #92400e; border: 1px dashed #d97706; }
+
+/* Explore subtypes */
+.tag-hike { background: #dcfce7; color: #166534; }
+.tag-beach { background: #e0f2fe; color: #0369a1; }
+.tag-coastal { background: #ccfbf1; color: #0f766e; }
+.tag-culture { background: #f3e8ff; color: #7c3aed; }
+
+/* Experience subtypes */
+.tag-stargazing { background: #e0e7ff; color: #4338ca; }
+.tag-seasonal { background: #fce7f3; color: #be185d; }
+.tag-beach-activity { background: #cffafe; color: #0891b2; }
+
+/* Restaurant subtypes */
+.tag-dining { background: #ffedd5; color: #c2410c; }
+.tag-cafe { background: #fef3c7; color: #b45309; }
+
+/* Provisions subtypes */
+.tag-deli { background: #fed7aa; color: #9a3412; }
+.tag-store { background: #f5f5f4; color: #57534e; }
+
+/* Subtype icon in card meta */
+.subtype-icon {
+    font-size: 0.9rem;
+    margin-right: 0.25rem;
+}
 
 .card-desc {
     font-size: 0.85rem;
