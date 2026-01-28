@@ -137,18 +137,6 @@
                 </div>
             </div>
 
-            <!-- Favorites Map -->
-            <div class="favorites-map-container" id="favoritesMapContainer">
-                <h3>🗺️ Your Favorites Map</h3>
-                <div class="map-wrapper" id="mapWrapper">
-                    <div class="map-placeholder" id="mapPlaceholder">
-                        <span>Mark some favorites below to see them on the map!</span>
-                    </div>
-                    <div class="map-canvas" id="mapCanvas"></div>
-                </div>
-                <div class="map-legend" id="mapLegend"></div>
-            </div>
-
             <!-- Category Filters - Hikes first, All last -->
             <div class="category-filters">
                 <button class="cat-filter active" data-cat="hike">🥾 Hikes</button>
@@ -159,6 +147,18 @@
                 <button class="cat-filter" data-cat="restaurant">🍽️ Restaurants</button>
                 <button class="cat-filter" data-cat="provisions">🏪 Markets</button>
                 <button class="cat-filter" data-cat="all">All</button>
+            </div>
+
+            <!-- Favorites Map (shows where selected activities are located) -->
+            <div class="favorites-map-container" id="favoritesMapContainer">
+                <h3>🗺️ Your Favorites Map</h3>
+                <div class="map-wrapper" id="mapWrapper">
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        <span>Mark some favorites below to see them on the map!</span>
+                    </div>
+                    <div class="map-canvas" id="mapCanvas"></div>
+                </div>
+                <div class="map-legend" id="mapLegend"></div>
             </div>
 
             <!-- Activity Grid -->
@@ -192,6 +192,7 @@
                     <!-- Sidebar category filters -->
                     <div class="sidebar-filters" id="sidebarFilters">
                         <button class="sidebar-filter active" data-cat="all">All</button>
+                        <button class="sidebar-filter" data-cat="lifestyle">🏡</button>
                         <button class="sidebar-filter" data-cat="hike">🥾</button>
                         <button class="sidebar-filter" data-cat="beach">🏖️</button>
                         <button class="sidebar-filter" data-cat="scenic">📸</button>
@@ -206,80 +207,177 @@
                     </div>
                 </div>
 
-                <!-- Schedule Grid -->
-                <div class="schedule-grid">
-                    <!-- Saturday -->
-                    <div class="day-column">
-                        <div class="day-header">Saturday, Jan 31</div>
-                        <div class="time-bucket" data-bucket="sat-morning">
-                            <div class="bucket-header">
-                                <span>Morning</span>
-                                <span class="bucket-time">~8am - 12pm</span>
-                            </div>
-                            <div class="bucket-items" data-bucket="sat-morning">
-                                <div class="bucket-empty">Drop activities here</div>
+                <!-- Schedule Content -->
+                <div class="schedule-content">
+                    <!-- Day Tabs -->
+                    <div class="day-tabs">
+                        <button class="day-tab" data-day="friday">🚗 Friday</button>
+                        <button class="day-tab active" data-day="saturday">🌄 Saturday</button>
+                        <button class="day-tab" data-day="sunday">🏠 Sunday</button>
+                    </div>
+
+                    <!-- Day Panels (one visible at a time) -->
+                    <div class="day-panels">
+                        <!-- Friday Panel -->
+                        <div class="day-panel" id="fridayPanel" data-day="friday">
+                            <div class="day-column">
+                                <div class="day-header friday">Friday, Jan 30 — Arrival Day</div>
+                                <div class="time-bucket" data-bucket="fri-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">Leave SF / travel</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="fri-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset</span>
+                                        <span class="bucket-time">~5:30pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="fri-evening">
+                                    <div class="bucket-header">
+                                        <span>Evening</span>
+                                        <span class="bucket-time">Dinner & settle in</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-evening">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="friSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="friActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="friArrival">~4pm</div>
+                                        <div class="label">Est. Arrival</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="time-bucket" data-bucket="sat-afternoon">
-                            <div class="bucket-header">
-                                <span>Afternoon</span>
-                                <span class="bucket-time">~12pm - sunset</span>
-                            </div>
-                            <div class="bucket-items" data-bucket="sat-afternoon">
-                                <div class="bucket-empty">Drop activities here</div>
+
+                        <!-- Saturday Panel -->
+                        <div class="day-panel active" id="saturdayPanel" data-day="saturday">
+                            <div class="day-column">
+                                <div class="day-header">Saturday, Jan 31 — Full Day</div>
+                                <div class="time-bucket" data-bucket="sat-morning">
+                                    <div class="bucket-header">
+                                        <span>Morning</span>
+                                        <span class="bucket-time">~7am - 12pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-morning">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">~12pm - 5pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset</span>
+                                        <span class="bucket-time">~5:30pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-evening">
+                                    <div class="bucket-header">
+                                        <span>Evening</span>
+                                        <span class="bucket-time">Dinner & stargazing</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-evening">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="satSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="satActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="satHours">0h</div>
+                                        <div class="label">Est. Time</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="satDrive">0m</div>
+                                        <div class="label">Driving</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="day-summary" id="satSummary">
-                            <div class="summary-stat">
-                                <div class="value" id="satActivities">0</div>
-                                <div class="label">Activities</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="value" id="satHours">0h</div>
-                                <div class="label">Est. Time</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="value" id="satDrive">0m</div>
-                                <div class="label">Driving</div>
+
+                        <!-- Sunday Panel -->
+                        <div class="day-panel" id="sundayPanel" data-day="sunday">
+                            <div class="day-column">
+                                <div class="day-header sunday">Sunday, Feb 1 — Heading Home</div>
+                                <div class="time-bucket" data-bucket="sun-morning">
+                                    <div class="bucket-header">
+                                        <span>Morning</span>
+                                        <span class="bucket-time">~7am checkout</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-morning">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sun-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">Carmel exploring</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sun-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset / Evening</span>
+                                        <span class="bucket-time">Head home</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="sunSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunHours">0h</div>
+                                        <div class="label">Est. Time</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunEta">~2pm</div>
+                                        <div class="label">Home ETA</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sunday -->
-                    <div class="day-column">
-                        <div class="day-header sunday">Sunday, Feb 1</div>
-                        <div class="time-bucket" data-bucket="sun-morning">
-                            <div class="bucket-header">
-                                <span>Morning</span>
-                                <span class="bucket-time">~7am checkout</span>
+                    <!-- Itinerary Map -->
+                    <div class="itinerary-map-container" id="itineraryMapContainer">
+                        <h3>🗺️ Today's Route</h3>
+                        <div class="itinerary-map-wrapper" id="itineraryMapWrapper">
+                            <div class="map-placeholder" id="itineraryMapPlaceholder">
+                                <span>Add activities to see your route!</span>
                             </div>
-                            <div class="bucket-items" data-bucket="sun-morning">
-                                <div class="bucket-empty">Drop activities here</div>
-                            </div>
+                            <div class="itinerary-map-canvas" id="itineraryMapCanvas"></div>
                         </div>
-                        <div class="time-bucket" data-bucket="sun-afternoon">
-                            <div class="bucket-header">
-                                <span>Afternoon</span>
-                                <span class="bucket-time">Carmel & home</span>
-                            </div>
-                            <div class="bucket-items" data-bucket="sun-afternoon">
-                                <div class="bucket-empty">Drop activities here</div>
-                            </div>
-                        </div>
-                        <div class="day-summary" id="sunSummary">
-                            <div class="summary-stat">
-                                <div class="value" id="sunActivities">0</div>
-                                <div class="label">Activities</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="value" id="sunHours">0h</div>
-                                <div class="label">Est. Time</div>
-                            </div>
-                            <div class="summary-stat">
-                                <div class="value" id="sunEta">~2pm</div>
-                                <div class="label">Home ETA</div>
-                            </div>
-                        </div>
+                        <div class="itinerary-legend" id="itineraryLegend"></div>
                     </div>
                 </div>
             </div>

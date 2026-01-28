@@ -55,8 +55,13 @@ const activities = [
     { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
 
     // TRAVEL (special category - not shown in discovery but used in scheduling)
-    { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', tag: 'Departure', duration: 0, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
+    { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
     { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', tag: 'Return', duration: 2, desc: '~2 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
+
+    // LIFESTYLE (cabin/rest activities)
+    { id: 'cozy-airbnb', name: 'Cozy at the Airbnb', emoji: '🏡', cat: 'lifestyle', tag: 'Relax', duration: 2, desc: 'Enjoy the cabin! Hot tub, fireplace, ocean views. Make dinner, play games.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
+    { id: 'sleep-in', name: 'Sleep In', emoji: '😴', cat: 'lifestyle', tag: 'Rest', duration: 1.5, desc: 'No alarm! Wake up naturally. Enjoy a slow morning.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
+    { id: 'early-start', name: 'Early Start', emoji: '🌅', cat: 'lifestyle', tag: 'Wake Up', duration: 0.5, desc: 'Up early to maximize the day! Catch the sunrise.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
 
     // BIGFOOT (Easter egg)
     { id: 'bigfoot', name: 'Call Bigfoot', emoji: '🦶', cat: 'culture', tag: 'Legendary', duration: 0, desc: 'Reception spotty in redwoods. Prefers text. Last seen near Ewoldsen stealing granola.', zone: 'unknown', coords: [36.25, -121.78] },
@@ -82,18 +87,22 @@ const templatePlans = {
             fri: {
                 departure: '1:00 PM',
                 arrival: '~4:00 PM',
-                activities: ['leave-san-rafael', 'bixby', 'nepenthe']
+                afternoon: ['leave-san-rafael'],
+                sunset: ['bixby'],
+                evening: ['nepenthe', 'cozy-airbnb']
             }
         },
         {
             id: 'friday-chill',
             emoji: '🍷',
             name: 'Cozy Evening',
-            desc: 'Leave 2pm → Groceries → Taphouse',
+            desc: 'Leave 2pm → Groceries → Taphouse → Cabin',
             fri: {
                 departure: '2:00 PM',
                 arrival: '~5:00 PM',
-                activities: ['leave-san-rafael', 'big-sur-general', 'big-sur-taphouse']
+                afternoon: ['leave-san-rafael'],
+                sunset: ['big-sur-general'],
+                evening: ['big-sur-taphouse', 'cozy-airbnb']
             }
         },
         {
@@ -104,7 +113,9 @@ const templatePlans = {
             fri: {
                 departure: '12:00 PM',
                 arrival: '~3:00 PM',
-                activities: ['leave-san-rafael', 'garrapata-bluffs', 'river-inn']
+                afternoon: ['leave-san-rafael', 'garrapata-bluffs'],
+                sunset: ['river-inn'],
+                evening: ['cozy-airbnb']
             }
         },
         {
@@ -115,7 +126,9 @@ const templatePlans = {
             fri: {
                 departure: '1:00 PM',
                 arrival: '~4:00 PM',
-                activities: ['leave-san-rafael', 'big-sur-general', 'stargaze-garrapata']
+                afternoon: ['leave-san-rafael'],
+                sunset: ['big-sur-general', 'cozy-airbnb'],
+                evening: ['stargaze-garrapata']
             }
         }
     ],
@@ -124,10 +137,12 @@ const templatePlans = {
             id: 'sat-nepenthe-sunset',
             emoji: '🌄',
             name: 'Nepenthe Sunset',
-            desc: 'Hike + sunset dinner at Nepenthe',
+            desc: 'Epic hike → Beach → Sunset dinner at Nepenthe',
             sat: {
-                morning: ['ewoldsen', 'mcway-falls'],
-                afternoon: ['pfeiffer-beach', 'nepenthe']
+                morning: ['early-start', 'ewoldsen'],
+                afternoon: ['mcway-falls', 'pfeiffer-beach'],
+                sunset: ['nepenthe'],
+                evening: ['cozy-airbnb']
             }
         },
         {
@@ -136,8 +151,10 @@ const templatePlans = {
             name: 'Coastal Adventure',
             desc: 'Beach hopping & seasonal wonders',
             sat: {
-                morning: ['calla-lily', 'soberanes', 'whale-watch'],
-                afternoon: ['garrapata-beach', 'cafe-kevah']
+                morning: ['calla-lily', 'soberanes'],
+                afternoon: ['whale-watch', 'garrapata-beach'],
+                sunset: ['cafe-kevah'],
+                evening: ['stargaze-garrapata']
             }
         },
         {
@@ -146,28 +163,34 @@ const templatePlans = {
             name: 'Best Hikes Day',
             desc: 'Tackle the epic trails',
             sat: {
-                morning: ['ewoldsen'],
-                afternoon: ['pfeiffer-falls', 'big-sur-bakery']
+                morning: ['early-start', 'ewoldsen'],
+                afternoon: ['pfeiffer-falls'],
+                sunset: ['big-sur-bakery'],
+                evening: ['cozy-airbnb']
             }
         },
         {
             id: 'sat-romantic',
             emoji: '💕',
             name: 'Romantic Day',
-            desc: 'Scenic spots + Deetjen\'s dinner',
+            desc: 'Scenic spots + candlelit Deetjen\'s',
             sat: {
-                morning: ['calla-lily', 'partington-cove'],
-                afternoon: ['mcway-falls', 'deetjens']
+                morning: ['sleep-in', 'calla-lily'],
+                afternoon: ['partington-cove', 'mcway-falls'],
+                sunset: ['deetjens'],
+                evening: ['stargaze-pfeiffer']
             }
         },
         {
             id: 'sat-chill',
             emoji: '😌',
             name: 'Relaxed Saturday',
-            desc: 'Easy pace, great food',
+            desc: 'Sleep in, easy pace, great food',
             sat: {
-                morning: ['garrapata-bluffs', 'big-sur-bakery'],
-                afternoon: ['pfeiffer-beach', 'river-inn']
+                morning: ['sleep-in', 'big-sur-bakery'],
+                afternoon: ['garrapata-bluffs', 'pfeiffer-beach'],
+                sunset: ['river-inn'],
+                evening: ['cozy-airbnb']
             }
         }
     ],
@@ -176,10 +199,11 @@ const templatePlans = {
             id: 'sun-lazy',
             emoji: '😴',
             name: 'Lazy Sunday',
-            desc: 'Sleep in, brunch, Point Lobos → home ~5pm',
+            desc: 'Sleep in, Point Lobos, brunch → home ~5pm',
             sun: {
-                morning: ['point-lobos'],
-                afternoon: ['stationary', 'drive-home'],
+                morning: ['sleep-in', 'point-lobos'],
+                afternoon: ['stationary'],
+                sunset: ['drive-home'],
                 homeEta: '~5:00 PM'
             }
         },
@@ -189,8 +213,9 @@ const templatePlans = {
             name: 'Early Checkout',
             desc: '7am checkout → Calla Lily → home ~1pm',
             sun: {
-                morning: ['calla-lily', 'bixby', 'carmel-bakery'],
-                afternoon: ['drive-home'],
+                morning: ['early-start', 'calla-lily', 'bixby'],
+                afternoon: ['carmel-bakery', 'drive-home'],
+                sunset: [],
                 homeEta: '~1:00 PM'
             }
         },
@@ -198,10 +223,11 @@ const templatePlans = {
             id: 'sun-maximize',
             emoji: '🌟',
             name: 'Maximize Sunday',
-            desc: 'Full day exploration → home ~7pm',
+            desc: 'Full day in Carmel → home ~7pm',
             sun: {
                 morning: ['point-lobos', '17-mile'],
-                afternoon: ['stationary', 'brunos', 'drive-home'],
+                afternoon: ['stationary', 'brunos'],
+                sunset: ['drive-home'],
                 homeEta: '~7:00 PM'
             }
         },
@@ -212,7 +238,8 @@ const templatePlans = {
             desc: 'Food tour through Carmel → home ~6pm',
             sun: {
                 morning: ['carmel-bakery', 'point-lobos'],
-                afternoon: ['carmel-belle', 'la-bicyclette', 'drive-home'],
+                afternoon: ['carmel-belle', 'la-bicyclette'],
+                sunset: ['drive-home'],
                 homeEta: '~6:00 PM'
             }
         },
@@ -220,10 +247,11 @@ const templatePlans = {
             id: 'sun-one-more-hike',
             emoji: '🥾',
             name: 'One More Hike',
-            desc: 'Morning Soberanes hike → home ~4pm',
+            desc: 'Early Soberanes hike → home ~4pm',
             sun: {
-                morning: ['soberanes'],
+                morning: ['early-start', 'soberanes'],
                 afternoon: ['brunos', 'drive-home'],
+                sunset: [],
                 homeEta: '~4:00 PM'
             }
         },
@@ -231,10 +259,11 @@ const templatePlans = {
             id: 'sun-late-departure',
             emoji: '🌙',
             name: 'Stay Till Sunset',
-            desc: 'Full day + sunset dinner → home ~9pm',
+            desc: 'Full day + dinner → home ~9pm',
             sun: {
-                morning: ['point-lobos', 'carmel-belle'],
-                afternoon: ['17-mile', 'la-bicyclette', 'drive-home'],
+                morning: ['sleep-in', 'point-lobos'],
+                afternoon: ['17-mile', 'carmel-belle'],
+                sunset: ['la-bicyclette', 'drive-home'],
                 homeEta: '~9:00 PM'
             }
         }
@@ -255,7 +284,8 @@ let state = {
     users: {},
     sharedData: null,
     isViewingShared: false,
-    sidebarFilter: 'all'  // For filtering available items in schedule
+    sidebarFilter: 'all',  // For filtering available items in schedule
+    currentScheduleDay: 'saturday'  // Which day is currently shown in schedule
 };
 
 // ============ LOCAL STORAGE ============
@@ -333,11 +363,26 @@ function createUser(name) {
         favorites: [],
         mustDos: [],
         passed: [],
-        plans: { 'My Trip': { 'sat-morning': [], 'sat-afternoon': [], 'sun-morning': [], 'sun-afternoon': [] } },
+        plans: { 'My Trip': createEmptyPlan() },
         currentPlan: 'My Trip'
     };
     state.currentUser = name;
     saveState();
+}
+
+function createEmptyPlan() {
+    return {
+        'fri-afternoon': [],
+        'fri-sunset': [],
+        'fri-evening': [],
+        'sat-morning': [],
+        'sat-afternoon': [],
+        'sat-sunset': [],
+        'sat-evening': [],
+        'sun-morning': [],
+        'sun-afternoon': [],
+        'sun-sunset': []
+    };
 }
 
 function switchUser(name) {
@@ -382,7 +427,7 @@ function getPreference(activityId) {
 function createPlan(name) {
     const user = getCurrentUser();
     if (!user) return;
-    user.plans[name] = { 'sat-morning': [], 'sat-afternoon': [], 'sun-morning': [], 'sun-afternoon': [] };
+    user.plans[name] = createEmptyPlan();
     user.currentPlan = name;
     saveState();
     renderAll();
@@ -616,6 +661,24 @@ function renderPassedSummary() {
     });
 }
 
+// ============ DAY TAB SWITCHING ============
+function switchScheduleDay(day) {
+    state.currentScheduleDay = day;
+
+    // Update tab buttons
+    document.querySelectorAll('.day-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.day === day);
+    });
+
+    // Update panels
+    document.querySelectorAll('.day-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.day === day);
+    });
+
+    // Re-render the itinerary map for the new day
+    renderItineraryMap();
+}
+
 // ============ FAVORITES MAP ============
 let favoritesMap = null;
 
@@ -722,6 +785,131 @@ function renderFavoritesMap() {
     mapLegend.innerHTML = legendHtml;
 }
 
+// ============ ITINERARY MAP ============
+let itineraryMap = null;
+let routeLines = [];
+
+function renderItineraryMap() {
+    const plan = getCurrentPlan();
+    const mapWrapper = document.getElementById('itineraryMapWrapper');
+    const mapCanvas = document.getElementById('itineraryMapCanvas');
+    const mapPlaceholder = document.getElementById('itineraryMapPlaceholder');
+    const legend = document.getElementById('itineraryLegend');
+
+    if (!mapWrapper || !mapCanvas) return;
+
+    // Get activities for the current day
+    const day = state.currentScheduleDay;
+    let dayBuckets;
+    if (day === 'friday') {
+        dayBuckets = ['fri-afternoon', 'fri-sunset', 'fri-evening'];
+    } else if (day === 'saturday') {
+        dayBuckets = ['sat-morning', 'sat-afternoon', 'sat-sunset', 'sat-evening'];
+    } else {
+        dayBuckets = ['sun-morning', 'sun-afternoon', 'sun-sunset'];
+    }
+
+    // Collect all activities with coordinates for this day
+    const stops = [];
+    if (plan) {
+        dayBuckets.forEach(bucket => {
+            (plan[bucket] || []).forEach(id => {
+                const act = activities.find(a => a.id === id);
+                if (act && act.coords) {
+                    stops.push(act);
+                }
+            });
+        });
+    }
+
+    // Update the map title based on current day
+    const dayNames = { friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' };
+    const mapTitle = document.querySelector('#itineraryMapContainer h3');
+    if (mapTitle) {
+        mapTitle.textContent = `🗺️ ${dayNames[day]}'s Route`;
+    }
+
+    if (stops.length === 0) {
+        if (mapPlaceholder) mapPlaceholder.classList.remove('hidden');
+        if (itineraryMap) {
+            itineraryMap.remove();
+            itineraryMap = null;
+        }
+        if (legend) legend.innerHTML = '';
+        return;
+    }
+
+    if (mapPlaceholder) mapPlaceholder.classList.add('hidden');
+
+    // Initialize map if not exists
+    if (!itineraryMap) {
+        itineraryMap = L.map(mapCanvas, {
+            scrollWheelZoom: false
+        }).setView([36.35, -121.85], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(itineraryMap);
+    }
+
+    // Clear existing markers and lines
+    itineraryMap.eachLayer(layer => {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+            itineraryMap.removeLayer(layer);
+        }
+    });
+
+    // Add numbered markers and route lines
+    const bounds = [];
+    const routeColors = ['#0ea5e9', '#f97316', '#2d7d5f', '#ec4899'];
+
+    stops.forEach((act, index) => {
+        const color = routeColors[index % routeColors.length];
+
+        // Create numbered marker
+        const icon = L.divIcon({
+            className: 'itinerary-marker',
+            html: `<div class="itinerary-marker-inner" style="background:${color}">${index + 1}</div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        L.marker([act.coords[0], act.coords[1]], { icon })
+            .addTo(itineraryMap)
+            .bindPopup(`<strong>${index + 1}. ${act.emoji} ${act.name}</strong><br>${act.desc}`);
+
+        bounds.push([act.coords[0], act.coords[1]]);
+
+        // Draw line to next stop
+        if (index < stops.length - 1) {
+            const nextAct = stops[index + 1];
+            L.polyline(
+                [[act.coords[0], act.coords[1]], [nextAct.coords[0], nextAct.coords[1]]],
+                { color: color, weight: 3, opacity: 0.7, dashArray: '10, 5' }
+            ).addTo(itineraryMap);
+        }
+    });
+
+    // Fit bounds
+    if (bounds.length > 1) {
+        itineraryMap.fitBounds(bounds, { padding: [40, 40] });
+    } else if (bounds.length === 1) {
+        itineraryMap.setView(bounds[0], 12);
+    }
+
+    // Update legend with route steps
+    let legendHtml = '';
+    stops.forEach((act, index) => {
+        legendHtml += `
+            <div class="itinerary-step">
+                <span class="step-num">${index + 1}</span>
+                <span>${act.emoji} ${act.name}</span>
+            </div>
+        `;
+    });
+    if (legend) legend.innerHTML = legendHtml;
+}
+
 function renderTemplates() {
     const activeTab = document.querySelector('.template-tab.active');
     const day = activeTab ? activeTab.dataset.day : 'friday';
@@ -781,50 +969,42 @@ function applyTemplate(templateId) {
 
     if (!template) return;
 
-    // Gather all activities from the template
-    const allActivities = [
-        ...(template.activities || []),
-        ...(template.fri?.activities || []),
-        ...(template.sat?.morning || []),
-        ...(template.sat?.afternoon || []),
-        ...(template.sun?.morning || []),
-        ...(template.sun?.afternoon || [])
-    ].filter(id => id !== 'leave-san-rafael' && id !== 'drive-home'); // Don't mark travel as favorites
-
-    // Mark activities as interested
-    allActivities.forEach(id => {
-        if (!user.favorites.includes(id) && !user.mustDos.includes(id) && !user.passed.includes(id)) {
-            user.favorites.push(id);
-        }
-    });
-
-    // Populate the schedule based on template type
+    // Only populate the schedule - don't modify favorites!
+    // User's favorites are their personal preferences, separate from schedule
     const plan = getCurrentPlan();
+
+    if (template.fri) {
+        plan['fri-afternoon'] = [...(template.fri.afternoon || [])];
+        plan['fri-sunset'] = [...(template.fri.sunset || [])];
+        plan['fri-evening'] = [...(template.fri.evening || [])];
+    }
     if (template.sat) {
-        plan['sat-morning'] = [...template.sat.morning];
-        plan['sat-afternoon'] = [...template.sat.afternoon];
+        plan['sat-morning'] = [...(template.sat.morning || [])];
+        plan['sat-afternoon'] = [...(template.sat.afternoon || [])];
+        plan['sat-sunset'] = [...(template.sat.sunset || [])];
+        plan['sat-evening'] = [...(template.sat.evening || [])];
     }
     if (template.sun) {
-        plan['sun-morning'] = [...template.sun.morning];
-        plan['sun-afternoon'] = [...template.sun.afternoon];
+        plan['sun-morning'] = [...(template.sun.morning || [])];
+        plan['sun-afternoon'] = [...(template.sun.afternoon || [])];
+        plan['sun-sunset'] = [...(template.sun.sunset || [])];
     }
 
     saveState();
     renderAll();
-    showToast(`✨ Applied "${template.name}" template!`);
+    showToast(`📅 Loaded "${template.name}" schedule!`);
 }
 
 function renderAvailableItems() {
     const user = getCurrentUser();
     const container = document.getElementById('availableItems');
-    const filterContainer = document.getElementById('sidebarFilters');
 
     if (!user) {
         container.innerHTML = '<p class="bucket-empty">Create your profile first!</p>';
         return;
     }
 
-    // Get all non-passed, non-travel items
+    // Get all non-passed items (include lifestyle, exclude travel)
     const available = activities.filter(act => {
         if (act.id === 'bigfoot') return false;
         if (act.cat === 'travel') return false; // Travel items handled separately
@@ -838,27 +1018,61 @@ function renderAvailableItems() {
 
     let html = '';
 
-    // Add "Drive Home" as a special item at the top
-    const driveHome = activities.find(a => a.id === 'drive-home');
-    if (driveHome && state.sidebarFilter === 'all') {
-        html += `
-            <div class="available-item travel-item" draggable="true" data-id="drive-home">
-                <div class="item-name">
-                    <span>${driveHome.emoji}</span>
-                    ${driveHome.name}
+    // Add travel items at the top when showing "all"
+    if (state.sidebarFilter === 'all') {
+        const leaveSf = activities.find(a => a.id === 'leave-san-rafael');
+        const driveHome = activities.find(a => a.id === 'drive-home');
+
+        if (leaveSf) {
+            html += `
+                <div class="available-item travel-item" draggable="true" data-id="leave-san-rafael">
+                    <div class="item-name">
+                        <span>${leaveSf.emoji}</span>
+                        ${leaveSf.name}
+                    </div>
+                    <div class="item-time">~2.5h drive</div>
                 </div>
-                <div class="item-time">~2h drive</div>
-            </div>
-        `;
+            `;
+        }
+        if (driveHome) {
+            html += `
+                <div class="available-item travel-item" draggable="true" data-id="drive-home">
+                    <div class="item-name">
+                        <span>${driveHome.emoji}</span>
+                        ${driveHome.name}
+                    </div>
+                    <div class="item-time">~2h drive</div>
+                </div>
+            `;
+        }
     }
 
-    if (filtered.length === 0 && !html) {
+    // Add lifestyle items prominently when showing "all" or "lifestyle"
+    if (state.sidebarFilter === 'all' || state.sidebarFilter === 'lifestyle') {
+        const lifestyleItems = activities.filter(a => a.cat === 'lifestyle');
+        lifestyleItems.forEach(act => {
+            html += `
+                <div class="available-item lifestyle-item" draggable="true" data-id="${act.id}">
+                    <div class="item-name">
+                        <span>${act.emoji}</span>
+                        ${act.name}
+                    </div>
+                    <div class="item-time">${act.duration}h • ${act.tag}</div>
+                </div>
+            `;
+        });
+    }
+
+    // Filter out lifestyle from the main list to avoid duplicates
+    const nonLifestyle = filtered.filter(act => act.cat !== 'lifestyle');
+
+    if (nonLifestyle.length === 0 && !html) {
         container.innerHTML = '<p class="bucket-empty">No items in this category</p>';
         return;
     }
 
     // Sort: must-dos first, then favorites, then others
-    const sorted = [...filtered].sort((a, b) => {
+    const sorted = [...nonLifestyle].sort((a, b) => {
         const prefA = getPreference(a.id);
         const prefB = getPreference(b.id);
         const order = { heart: 0, star: 1, null: 2 };
@@ -892,11 +1106,17 @@ function renderAvailableItems() {
 
 function renderSchedule() {
     const plan = getCurrentPlan();
-    const buckets = ['sat-morning', 'sat-afternoon', 'sun-morning', 'sun-afternoon'];
+    const allBuckets = [
+        'fri-afternoon', 'fri-sunset', 'fri-evening',
+        'sat-morning', 'sat-afternoon', 'sat-sunset', 'sat-evening',
+        'sun-morning', 'sun-afternoon', 'sun-sunset'
+    ];
 
-    buckets.forEach(bucket => {
+    allBuckets.forEach(bucket => {
         const container = document.querySelector(`.bucket-items[data-bucket="${bucket}"]`);
-        const items = plan ? plan[bucket] : [];
+        if (!container) return; // Skip if bucket doesn't exist in DOM
+
+        const items = plan ? (plan[bucket] || []) : [];
 
         if (items.length === 0) {
             container.innerHTML = '<div class="bucket-empty">Drop activities here</div>';
@@ -941,14 +1161,41 @@ function renderSchedule() {
     });
 
     updateDaySummaries();
+    renderItineraryMap();
 }
 
 function updateDaySummaries() {
     const plan = getCurrentPlan();
     if (!plan) return;
 
+    // Friday
+    const friItems = [
+        ...(plan['fri-afternoon'] || []),
+        ...(plan['fri-sunset'] || []),
+        ...(plan['fri-evening'] || [])
+    ];
+    let friHours = 0;
+    friItems.forEach(id => {
+        const act = activities.find(a => a.id === id);
+        if (act) friHours += act.duration || 0;
+    });
+
+    // Estimate arrival time based on departure
+    const hasLeaveSf = plan['fri-afternoon']?.includes('leave-san-rafael');
+    const arrivalTime = hasLeaveSf ? '~4pm' : '--';
+
+    const friActivitiesEl = document.getElementById('friActivities');
+    const friArrivalEl = document.getElementById('friArrival');
+    if (friActivitiesEl) friActivitiesEl.textContent = friItems.length;
+    if (friArrivalEl) friArrivalEl.textContent = arrivalTime;
+
     // Saturday
-    const satItems = [...plan['sat-morning'], ...plan['sat-afternoon']];
+    const satItems = [
+        ...(plan['sat-morning'] || []),
+        ...(plan['sat-afternoon'] || []),
+        ...(plan['sat-sunset'] || []),
+        ...(plan['sat-evening'] || [])
+    ];
     let satHours = 0;
     let satDrive = 0;
     let lastZone = 'north';
@@ -957,18 +1204,27 @@ function updateDaySummaries() {
         const act = activities.find(a => a.id === id);
         if (act) {
             satHours += act.duration || 0;
-            const key = `${lastZone}-${act.zone || 'central'}`;
-            satDrive += zoneToZone[key] || 15;
-            lastZone = act.zone || 'central';
+            if (act.zone && act.zone !== 'home') {
+                const key = `${lastZone}-${act.zone}`;
+                satDrive += zoneToZone[key] || 15;
+                lastZone = act.zone;
+            }
         }
     });
 
-    document.getElementById('satActivities').textContent = satItems.length;
-    document.getElementById('satHours').textContent = satHours.toFixed(1) + 'h';
-    document.getElementById('satDrive').textContent = satDrive + 'm';
+    const satActivitiesEl = document.getElementById('satActivities');
+    const satHoursEl = document.getElementById('satHours');
+    const satDriveEl = document.getElementById('satDrive');
+    if (satActivitiesEl) satActivitiesEl.textContent = satItems.length;
+    if (satHoursEl) satHoursEl.textContent = satHours.toFixed(1) + 'h';
+    if (satDriveEl) satDriveEl.textContent = satDrive + 'm';
 
     // Sunday
-    const sunItems = [...plan['sun-morning'], ...plan['sun-afternoon']];
+    const sunItems = [
+        ...(plan['sun-morning'] || []),
+        ...(plan['sun-afternoon'] || []),
+        ...(plan['sun-sunset'] || [])
+    ];
     let sunHours = 0;
     let sunDrive = 0;
     lastZone = 'north';
@@ -977,19 +1233,26 @@ function updateDaySummaries() {
         const act = activities.find(a => a.id === id);
         if (act) {
             sunHours += act.duration || 0;
-            const key = `${lastZone}-${act.zone || 'carmel'}`;
-            sunDrive += zoneToZone[key] || 15;
-            lastZone = act.zone || 'carmel';
+            if (act.zone && act.zone !== 'home') {
+                const key = `${lastZone}-${act.zone}`;
+                sunDrive += zoneToZone[key] || 15;
+                lastZone = act.zone;
+            }
         }
     });
 
-    const totalTime = 7 + sunHours + (sunDrive / 60) + 2;
+    // Calculate home ETA (checkout at 7am + activities + drive home)
+    const hasDriveHome = sunItems.includes('drive-home');
+    const totalTime = 7 + sunHours + (sunDrive / 60) + (hasDriveHome ? 2 : 0);
     const etaHour = Math.floor(totalTime);
-    const etaDisplay = etaHour > 12 ? `~${etaHour - 12}pm` : `~${etaHour}am`;
+    const etaDisplay = hasDriveHome ? (etaHour > 12 ? `~${etaHour - 12}pm` : `~${etaHour}am`) : '--';
 
-    document.getElementById('sunActivities').textContent = sunItems.length;
-    document.getElementById('sunHours').textContent = sunHours.toFixed(1) + 'h';
-    document.getElementById('sunEta').textContent = etaDisplay;
+    const sunActivitiesEl = document.getElementById('sunActivities');
+    const sunHoursEl = document.getElementById('sunHours');
+    const sunEtaEl = document.getElementById('sunEta');
+    if (sunActivitiesEl) sunActivitiesEl.textContent = sunItems.length;
+    if (sunHoursEl) sunHoursEl.textContent = sunHours.toFixed(1) + 'h';
+    if (sunEtaEl) sunEtaEl.textContent = etaDisplay;
 }
 
 function renderAll() {
@@ -1356,6 +1619,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.template-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             renderTemplates();
+        });
+    });
+
+    // Day tabs for schedule
+    document.querySelectorAll('.day-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            switchScheduleDay(tab.dataset.day);
         });
     });
 
