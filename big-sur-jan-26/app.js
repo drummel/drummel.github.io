@@ -60,7 +60,7 @@ const activities = [
 
     // TRAVEL (special category - not shown in discovery but used in scheduling)
     { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', subtype: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
-    { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', subtype: 'travel', tag: 'Return', duration: 2, desc: '~2 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
+    { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', subtype: 'travel', tag: 'Return', duration: 2.5, desc: '~2.5 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
 
     // LIFESTYLE (cabin/rest activities)
     { id: 'cozy-airbnb', name: 'Cozy Time at Cabin', emoji: '🏡', cat: 'lifestyle', subtype: 'rest', tag: 'Relax', duration: 2, desc: 'Enjoy the cabin! Hot tub, fireplace, ocean views. Make dinner, play games.', zone: 'north', coords: [36.4583, -121.9217], isLifestyle: true },
@@ -724,6 +724,10 @@ function switchScheduleDay(day) {
 
 // ============ FAVORITES MAP ============
 let favoritesMap = null;
+let favoritesBounds = [];
+
+// Cabin/Airbnb location at Garrapata
+const CABIN_COORDS = [36.4583, -121.9217];
 
 function renderFavoritesMap(categoryFilter = 'all') {
     const user = getCurrentUser();
@@ -758,19 +762,7 @@ function renderFavoritesMap(categoryFilter = 'all') {
         });
     }
 
-    if (favorites.length === 0) {
-        mapPlaceholder.classList.remove('hidden');
-        mapPlaceholder.querySelector('span').textContent = categoryFilter === 'all'
-            ? 'Mark some favorites above to see them on the map!'
-            : `No favorites in this category yet`;
-        if (favoritesMap) {
-            favoritesMap.remove();
-            favoritesMap = null;
-        }
-        mapLegend.innerHTML = '';
-        return;
-    }
-
+    // Always show map if we have cabin (even with no favorites)
     mapPlaceholder.classList.add('hidden');
 
     // Initialize map if not exists
@@ -786,7 +778,7 @@ function renderFavoritesMap(categoryFilter = 'all') {
 
     // Clear existing markers
     favoritesMap.eachLayer(layer => {
-        if (layer instanceof L.Marker) {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
             favoritesMap.removeLayer(layer);
         }
     });
@@ -807,6 +799,18 @@ function renderFavoritesMap(categoryFilter = 'all') {
     // Add markers
     const bounds = [];
     const usedSubtypes = new Set();
+
+    // Always add cabin/home marker first
+    const homeIcon = L.divIcon({
+        className: 'custom-marker home-marker',
+        html: '🏠',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+    L.marker(CABIN_COORDS, { icon: homeIcon })
+        .addTo(favoritesMap)
+        .bindPopup('<strong>🏠 Your Cabin</strong><br>Garrapata area - home base for the weekend!');
+    bounds.push(CABIN_COORDS);
 
     favorites.forEach(act => {
         const subtype = act.subtype || act.cat;
@@ -829,6 +833,9 @@ function renderFavoritesMap(categoryFilter = 'all') {
         bounds.push([act.coords[0], act.coords[1]]);
     });
 
+    // Store bounds for refit button
+    favoritesBounds = bounds;
+
     // Fit bounds
     if (bounds.length > 1) {
         favoritesMap.fitBounds(bounds, { padding: [30, 30] });
@@ -843,7 +850,7 @@ function renderFavoritesMap(categoryFilter = 'all') {
         'beach-activity': 'Beach Time', dining: 'Dining', cafe: 'Cafes',
         deli: 'Delis', store: 'Stores'
     };
-    let legendHtml = '';
+    let legendHtml = '<div class="map-legend-item"><span class="map-legend-dot home"></span>Cabin</div>';
     usedSubtypes.forEach(subtype => {
         const name = subtypeNames[subtype] || subtype.charAt(0).toUpperCase() + subtype.slice(1);
         legendHtml += `<div class="map-legend-item"><span class="map-legend-dot ${subtype}"></span>${name}</div>`;
@@ -851,9 +858,20 @@ function renderFavoritesMap(categoryFilter = 'all') {
     mapLegend.innerHTML = legendHtml;
 }
 
+function refitFavoritesMap() {
+    if (favoritesMap && favoritesBounds.length > 0) {
+        if (favoritesBounds.length > 1) {
+            favoritesMap.fitBounds(favoritesBounds, { padding: [30, 30] });
+        } else {
+            favoritesMap.setView(favoritesBounds[0], 12);
+        }
+    }
+}
+
 // ============ ITINERARY MAP ============
 let itineraryMap = null;
 let routeLines = [];
+let itineraryBounds = [];
 
 function renderItineraryMap() {
     const plan = getCurrentPlan();
@@ -895,16 +913,7 @@ function renderItineraryMap() {
         mapTitle.textContent = `🗺️ ${dayNames[day]}'s Route`;
     }
 
-    if (stops.length === 0) {
-        if (mapPlaceholder) mapPlaceholder.classList.remove('hidden');
-        if (itineraryMap) {
-            itineraryMap.remove();
-            itineraryMap = null;
-        }
-        if (legend) legend.innerHTML = '';
-        return;
-    }
-
+    // Always show map with cabin even if no stops
     if (mapPlaceholder) mapPlaceholder.classList.add('hidden');
 
     // Initialize map if not exists
@@ -929,8 +938,23 @@ function renderItineraryMap() {
     const bounds = [];
     const routeColors = ['#0ea5e9', '#f97316', '#2d7d5f', '#ec4899'];
 
+    // Always add cabin/home marker
+    const homeIcon = L.divIcon({
+        className: 'custom-marker home-marker',
+        html: '🏠',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+    L.marker(CABIN_COORDS, { icon: homeIcon })
+        .addTo(itineraryMap)
+        .bindPopup('<strong>🏠 Your Cabin</strong><br>Home base for the weekend!');
+    bounds.push(CABIN_COORDS);
+
     stops.forEach((act, index) => {
         const color = routeColors[index % routeColors.length];
+
+        // Skip adding travel items to map (San Rafael is too far)
+        if (act.zone === 'home') return;
 
         // Create numbered marker
         const icon = L.divIcon({
@@ -946,15 +970,20 @@ function renderItineraryMap() {
 
         bounds.push([act.coords[0], act.coords[1]]);
 
-        // Draw line to next stop
+        // Draw line to next stop (skip if next is home zone)
         if (index < stops.length - 1) {
             const nextAct = stops[index + 1];
-            L.polyline(
-                [[act.coords[0], act.coords[1]], [nextAct.coords[0], nextAct.coords[1]]],
-                { color: color, weight: 3, opacity: 0.7, dashArray: '10, 5' }
-            ).addTo(itineraryMap);
+            if (nextAct.zone !== 'home') {
+                L.polyline(
+                    [[act.coords[0], act.coords[1]], [nextAct.coords[0], nextAct.coords[1]]],
+                    { color: color, weight: 3, opacity: 0.7, dashArray: '10, 5' }
+                ).addTo(itineraryMap);
+            }
         }
     });
+
+    // Store bounds for refit
+    itineraryBounds = bounds;
 
     // Fit bounds
     if (bounds.length > 1) {
@@ -976,45 +1005,57 @@ function renderItineraryMap() {
     if (legend) legend.innerHTML = legendHtml;
 }
 
+function refitItineraryMap() {
+    if (itineraryMap && itineraryBounds.length > 0) {
+        if (itineraryBounds.length > 1) {
+            itineraryMap.fitBounds(itineraryBounds, { padding: [40, 40] });
+        } else {
+            itineraryMap.setView(itineraryBounds[0], 12);
+        }
+    }
+}
+
+function toggleTemplates(day) {
+    const picker = document.getElementById(day + 'Templates');
+    if (picker) {
+        picker.classList.toggle('expanded');
+    }
+}
+
 function renderTemplates() {
-    const activeTab = document.querySelector('.template-tab.active');
-    const day = activeTab ? activeTab.dataset.day : 'friday';
-    const container = document.getElementById('templateOptions');
-    const templates = templatePlans[day] || [];
+    // Render templates into each day's inline container
+    ['friday', 'saturday', 'sunday'].forEach(day => {
+        const container = document.querySelector(`.template-options-inline[data-day="${day}"]`);
+        if (!container) return;
 
-    let html = '';
+        const templates = templatePlans[day] || [];
+        let html = '';
 
-    templates.forEach(t => {
-        // For Friday templates, show departure/arrival timing
-        const timingHtml = t.fri ? `
-            <div class="template-timing">
-                <span class="timing-badge">🚗 ${t.fri.departure}</span>
-                <span class="timing-badge">📍 ${t.fri.arrival}</span>
-            </div>
-        ` : '';
+        templates.forEach(t => {
+            // Build description for tooltip
+            let desc = t.desc;
+            if (t.fri?.departure) desc = `Leave ${t.fri.departure} → ${desc}`;
+            if (t.sun?.homeEta) desc = `${desc} → Home ${t.sun.homeEta}`;
 
-        // For Sunday templates, show home ETA
-        const etaHtml = t.sun?.homeEta ? `
-            <div class="template-timing">
-                <span class="timing-badge">🏠 ${t.sun.homeEta}</span>
-            </div>
-        ` : '';
+            html += `
+                <button class="template-chip" data-template="${t.id}" data-desc="${desc}">
+                    <span class="chip-emoji">${t.emoji}</span>
+                    ${t.name}
+                </button>
+            `;
+        });
 
-        html += `
-            <div class="template-card" data-template="${t.id}">
-                <div class="template-emoji">${t.emoji}</div>
-                <div class="template-name">${t.name}</div>
-                <div class="template-desc">${t.desc}</div>
-                ${timingHtml}${etaHtml}
-            </div>
-        `;
-    });
+        container.innerHTML = html;
 
-    container.innerHTML = html;
-
-    // Add click handlers
-    container.querySelectorAll('.template-card').forEach(card => {
-        card.addEventListener('click', () => applyTemplate(card.dataset.template));
+        // Add click handlers
+        container.querySelectorAll('.template-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                applyTemplate(chip.dataset.template);
+                // Collapse after applying
+                const picker = chip.closest('.template-picker');
+                if (picker) picker.classList.remove('expanded');
+            });
+        });
     });
 }
 
@@ -1423,29 +1464,75 @@ function spawnSeaCreature() {
     creature.className = `sea-creature ${isWhale ? 'whale' : 'otter'}`;
     creature.textContent = isWhale ? '🐋' : '🦦';
 
-    // Random vertical position
-    const topPos = 40 + Math.random() * 40; // Between 40% and 80% from top
-    creature.style.top = `${topPos}%`;
+    // Add click handler for explosion
+    creature.addEventListener('click', (e) => {
+        e.stopPropagation();
+        createCreatureExplosion(isWhale ? '🐋' : '🦦', e.clientX, e.clientY, isWhale);
+        creature.remove();
+    });
 
     container.appendChild(creature);
 
     // Remove after animation completes
-    const duration = isWhale ? 30000 : 20000;
+    const duration = isWhale ? 35000 : 25000;
     setTimeout(() => creature.remove(), duration);
 
     // Schedule next creature
     scheduleNextCreature();
 }
 
+function createCreatureExplosion(emoji, x, y, isWhale) {
+    const container = document.createElement('div');
+    container.className = 'creature-explosion';
+    container.style.left = x + 'px';
+    container.style.top = y + 'px';
+    document.body.appendChild(container);
+
+    // Create explosion particles
+    const particleCount = isWhale ? 12 : 15;
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = `explosion-particle ${isWhale ? 'whale' : ''}`;
+        particle.textContent = emoji;
+
+        // Random trajectory
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const distance = 100 + Math.random() * 150;
+        const ex = Math.cos(angle) * distance;
+        const ey = Math.sin(angle) * distance - 50; // Bias upward
+        const rot = (Math.random() - 0.5) * 720;
+
+        particle.style.setProperty('--ex', `${ex}px`);
+        particle.style.setProperty('--ey', `${ey}px`);
+        particle.style.setProperty('--erot', `${rot}deg`);
+
+        container.appendChild(particle);
+    }
+
+    // Add splash text
+    const splash = document.createElement('div');
+    splash.className = 'explosion-particle';
+    splash.textContent = isWhale ? '🌊 SPLASH! 🌊' : '🌊 Boop! 🌊';
+    splash.style.fontSize = '1.5rem';
+    splash.style.whiteSpace = 'nowrap';
+    splash.style.setProperty('--ex', '0px');
+    splash.style.setProperty('--ey', '-80px');
+    splash.style.setProperty('--erot', '0deg');
+    container.appendChild(splash);
+
+    // Remove after animation
+    setTimeout(() => container.remove(), 1500);
+}
+
 function scheduleNextCreature() {
-    // Random interval between 45 seconds and 2 minutes
-    const delay = 45000 + Math.random() * 75000;
+    // Random interval between 30 seconds and 1.5 minutes
+    const delay = 30000 + Math.random() * 60000;
     seaCreatureTimeout = setTimeout(spawnSeaCreature, delay);
 }
 
 function startSeaCreatures() {
-    // First creature after 10-30 seconds
-    const initialDelay = 10000 + Math.random() * 20000;
+    // First creature after 5-15 seconds
+    const initialDelay = 5000 + Math.random() * 10000;
     seaCreatureTimeout = setTimeout(spawnSeaCreature, initialDelay);
 }
 
@@ -1687,15 +1774,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Import buttons
     document.getElementById('importBtn').addEventListener('click', importSharedPlan);
     document.getElementById('dismissImport').addEventListener('click', dismissSharedView);
-
-    // Template tabs
-    document.querySelectorAll('.template-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.template-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            renderTemplates();
-        });
-    });
 
     // Day tabs for schedule
     document.querySelectorAll('.day-tab').forEach(tab => {

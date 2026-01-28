@@ -418,91 +418,106 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .passed-chip .undo { font-size: 0.65rem; opacity: 0.7; }
 
-/* ============ TEMPLATE PLANS ============ */
-.template-plans {
-    background: linear-gradient(135deg, var(--ocean-pale) 0%, var(--sand) 100%);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
+/* ============ INLINE TEMPLATE PICKER ============ */
+.template-picker {
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.template-plans h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--stone);
-    margin-bottom: 0.25rem;
-}
-
-.template-plans .template-desc {
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 0.75rem;
-}
-
-.template-tabs {
+.template-toggle {
+    width: 100%;
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid rgba(255,255,255,0.5);
-    padding-bottom: 0.5rem;
-}
-
-.template-tab {
-    padding: 0.5rem 1rem;
-    background: white;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--ocean-pale) 0%, var(--sand) 100%);
     border: none;
-    border-radius: 8px 8px 0 0;
     font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--stone);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.template-toggle:hover {
+    background: linear-gradient(135deg, var(--ocean-light) 0%, var(--sand-dark) 100%);
+}
+
+.template-toggle .toggle-arrow {
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+}
+
+.template-picker.expanded .toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.template-options-inline {
+    display: none;
+    padding: 0.75rem;
+    background: var(--sand);
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.template-picker.expanded .template-options-inline {
+    display: flex;
+}
+
+.template-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
     font-weight: 500;
     color: var(--stone);
     cursor: pointer;
     transition: all 0.2s;
+    position: relative;
 }
 
-.template-tab:hover { background: var(--ocean-pale); }
-.template-tab.active { background: var(--ocean); color: white; }
-
-.template-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-}
-
-.template-card {
-    background: white;
-    border-radius: 10px;
-    padding: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-}
-
-.template-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.template-chip:hover {
     border-color: var(--ocean);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.template-card .template-emoji { font-size: 1.5rem; margin-bottom: 0.25rem; }
-.template-card .template-name { font-weight: 600; font-size: 0.9rem; color: var(--stone); }
-.template-card .template-desc { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
-
-/* Friday timing display */
-.template-card .template-timing {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    font-size: 0.7rem;
+.template-chip .chip-emoji {
+    font-size: 1rem;
 }
 
-.template-card .timing-badge {
-    background: var(--ocean-pale);
-    color: var(--ocean);
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-weight: 600;
+/* Template tooltip on hover */
+.template-chip::after {
+    content: attr(data-desc);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 0.75rem;
+    background: var(--stone);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 400;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    z-index: 10;
+    margin-bottom: 5px;
+    max-width: 250px;
+    white-space: normal;
+    text-align: center;
+}
+
+.template-chip:hover::after {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ============ FAVORITES MAP ============ */
@@ -515,31 +530,61 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     top: 1rem;
 }
 
-.favorites-map-container h3 {
+.favorites-map-container h3,
+.itinerary-map-container h3 {
     font-family: 'Outfit', sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--stone);
+    margin: 0;
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 0.75rem;
+}
+
+.refit-btn {
+    background: var(--ocean-pale);
+    border: 1px solid var(--ocean);
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ocean);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.refit-btn:hover {
+    background: var(--ocean);
+    color: white;
 }
 
 .map-wrapper {
     position: relative;
-    height: 500px;
+    height: calc(100vh - 120px);
+    min-height: 400px;
+    max-height: 800px;
     border-radius: 10px;
     overflow: hidden;
     background: var(--sky);
 }
 
 /* On mobile, map goes below and is shorter */
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
     .favorites-map-container {
         position: static;
         margin-top: 1.5rem;
     }
 
     .map-wrapper {
-        height: 350px;
+        height: 400px;
+        min-height: unset;
+        max-height: unset;
     }
 }
 
@@ -618,6 +663,15 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .custom-marker.heart-marker { border-color: var(--heart); }
 .custom-marker.star-marker { border-color: var(--gold); }
+.custom-marker.home-marker {
+    border-color: var(--forest);
+    background: var(--forest);
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+}
+
+.map-legend-dot.home { background: var(--forest); }
 
 /* ============ CATEGORY FILTERS ============ */
 .category-filters {
@@ -663,12 +717,18 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 /* ============ DISCOVERY LAYOUT (Grid + Map side by side) ============ */
 .discovery-layout {
     display: grid;
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: 1fr 45%;
     gap: 1.5rem;
     align-items: start;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+    .discovery-layout {
+        grid-template-columns: 1fr 40%;
+    }
+}
+
+@media (max-width: 1000px) {
     .discovery-layout {
         grid-template-columns: 1fr;
     }
@@ -1020,12 +1080,18 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 /* ============ SCHEDULE CONTENT & DAY TABS ============ */
 .schedule-content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 45%;
     gap: 1.5rem;
     align-items: start;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+    .schedule-content-wrapper {
+        grid-template-columns: 1fr 40%;
+    }
+}
+
+@media (max-width: 1000px) {
     .schedule-content-wrapper {
         grid-template-columns: 1fr;
     }
@@ -1306,87 +1372,142 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .sea-creature {
     position: absolute;
     font-size: 2.5rem;
-    opacity: 0;
-    pointer-events: none;
+    bottom: 20px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.1s;
+    z-index: 51;
+}
+
+.sea-creature:hover {
+    transform: scale(1.2) !important;
 }
 
 .sea-creature.otter {
-    animation: otterSwim 20s ease-in-out forwards;
+    animation: otterDrift 25s ease-in-out forwards;
 }
 
 .sea-creature.whale {
     font-size: 4rem;
-    animation: whaleSwim 30s ease-in-out forwards;
+    bottom: 15px;
+    animation: whaleDrift 35s ease-in-out forwards;
 }
 
-@keyframes otterSwim {
+/* Otter drifts along bottom, bobbing up and down */
+@keyframes otterDrift {
     0% {
-        left: -100px;
-        top: 60%;
+        left: -80px;
         opacity: 0;
-        transform: scaleX(1) rotate(-5deg);
+        transform: scaleX(1) translateY(0) rotate(0deg);
     }
-    5% { opacity: 0.7; }
-    15% { transform: scaleX(1) rotate(5deg); }
-    30% { transform: scaleX(1) rotate(-5deg); top: 55%; }
-    45% { transform: scaleX(1) rotate(5deg); top: 65%; }
-    60% { transform: scaleX(1) rotate(-3deg); }
-    75% { opacity: 0.7; }
-    85% { opacity: 0.3; }
+    3% { opacity: 0.9; }
+    8% { transform: scaleX(1) translateY(-15px) rotate(8deg); }
+    12% { transform: scaleX(1) translateY(5px) rotate(-5deg); }
+    18% { transform: scaleX(1) translateY(-20px) rotate(10deg); }
+    24% { transform: scaleX(1) translateY(8px) rotate(-8deg); }
+    30% { transform: scaleX(1) translateY(-12px) rotate(5deg); }
+    36% { transform: scaleX(1) translateY(10px) rotate(-10deg); }
+    42% { transform: scaleX(1) translateY(-25px) rotate(12deg); /* little jump! */ }
+    48% { transform: scaleX(1) translateY(5px) rotate(-3deg); }
+    54% { transform: scaleX(1) translateY(-10px) rotate(6deg); }
+    60% { transform: scaleX(1) translateY(8px) rotate(-7deg); }
+    66% { transform: scaleX(1) translateY(-18px) rotate(9deg); }
+    72% { transform: scaleX(1) translateY(3px) rotate(-4deg); }
+    78% { transform: scaleX(1) translateY(-8px) rotate(5deg); }
+    84% { transform: scaleX(1) translateY(6px) rotate(-6deg); }
+    90% { opacity: 0.9; transform: scaleX(1) translateY(-5px) rotate(3deg); }
+    95% { opacity: 0.5; }
     100% {
-        left: calc(100% + 100px);
-        top: 58%;
+        left: calc(100% + 80px);
         opacity: 0;
-        transform: scaleX(1) rotate(0deg);
+        transform: scaleX(1) translateY(0) rotate(0deg);
     }
 }
 
-@keyframes whaleSwim {
+/* Whale drifts from right, majestic with occasional spouting */
+@keyframes whaleDrift {
     0% {
-        right: -200px;
-        bottom: 30%;
+        right: -150px;
         opacity: 0;
-        transform: scaleX(-1) rotate(0deg);
+        transform: scaleX(-1) translateY(0) rotate(0deg);
     }
-    3% { opacity: 0.5; }
-    10% { transform: scaleX(-1) rotate(-3deg); bottom: 25%; }
-    20% {
-        transform: scaleX(-1) rotate(5deg);
-        bottom: 35%;
-    }
+    2% { opacity: 0.8; }
+    8% { transform: scaleX(-1) translateY(-10px) rotate(-3deg); }
+    14% { transform: scaleX(-1) translateY(5px) rotate(2deg); }
+    20% { transform: scaleX(-1) translateY(-15px) rotate(-4deg); }
     25% {
-        /* Breach! */
-        transform: scaleX(-1) rotate(15deg) translateY(-30px);
-        opacity: 0.7;
+        /* Spout moment - little hop! */
+        transform: scaleX(-1) translateY(-35px) rotate(5deg);
     }
-    30% {
-        transform: scaleX(-1) rotate(-5deg) translateY(0);
-        bottom: 28%;
+    30% { transform: scaleX(-1) translateY(0px) rotate(-2deg); }
+    38% { transform: scaleX(-1) translateY(-8px) rotate(3deg); }
+    46% { transform: scaleX(-1) translateY(6px) rotate(-3deg); }
+    52% { transform: scaleX(-1) translateY(-12px) rotate(4deg); }
+    58% { transform: scaleX(-1) translateY(4px) rotate(-2deg); }
+    65% {
+        /* Another little hop */
+        transform: scaleX(-1) translateY(-25px) rotate(6deg);
     }
-    50% { transform: scaleX(-1) rotate(3deg); }
-    70% { opacity: 0.5; }
-    85% { opacity: 0.2; }
+    70% { transform: scaleX(-1) translateY(3px) rotate(-1deg); }
+    78% { transform: scaleX(-1) translateY(-6px) rotate(2deg); }
+    85% { opacity: 0.8; transform: scaleX(-1) translateY(2px) rotate(-1deg); }
+    92% { opacity: 0.4; }
     100% {
-        right: calc(100% + 200px);
-        bottom: 32%;
+        right: calc(100% + 150px);
         opacity: 0;
-        transform: scaleX(-1) rotate(0deg);
+        transform: scaleX(-1) translateY(0) rotate(0deg);
     }
 }
 
-/* Subtle water ripple effect when creature appears */
+/* Splash bubbles behind creature */
 .sea-creature::after {
     content: '💨';
     position: absolute;
-    font-size: 0.8rem;
-    opacity: 0.3;
-    left: -10px;
-    animation: ripple 2s ease-out infinite;
+    font-size: 1rem;
+    opacity: 0.4;
+    right: -15px;
+    top: 50%;
+    animation: bubbles 1.5s ease-out infinite;
 }
 
-@keyframes ripple {
-    0%, 100% { transform: scale(0.8); opacity: 0.3; }
-    50% { transform: scale(1.2); opacity: 0.1; }
+.sea-creature.whale::after {
+    font-size: 1.5rem;
+    right: -25px;
+}
+
+@keyframes bubbles {
+    0% { transform: translateY(0) scale(0.8); opacity: 0.4; }
+    50% { transform: translateY(-10px) scale(1.1); opacity: 0.2; }
+    100% { transform: translateY(-20px) scale(0.6); opacity: 0; }
+}
+
+/* Explosion burst when clicked */
+.creature-explosion {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.explosion-particle {
+    position: absolute;
+    font-size: 2rem;
+    animation: explodeOut 1.2s ease-out forwards;
+}
+
+.explosion-particle.whale { font-size: 2.5rem; }
+
+@keyframes explodeOut {
+    0% {
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+        opacity: 1;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--ex), var(--ey)) scale(1.5) rotate(var(--erot));
+        opacity: 0;
+    }
 }
 
 /* ============ CARD PREFERENCE ANIMATIONS ============ */
@@ -1440,21 +1561,25 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .itinerary-map-wrapper {
     position: relative;
-    height: 450px;
+    height: calc(100vh - 120px);
+    min-height: 400px;
+    max-height: 800px;
     border-radius: 10px;
     overflow: hidden;
     background: var(--sky);
 }
 
 /* On mobile, itinerary map goes below and is shorter */
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
     .itinerary-map-container {
         position: static;
         margin-top: 1.5rem;
     }
 
     .itinerary-map-wrapper {
-        height: 300px;
+        height: 400px;
+        min-height: unset;
+        max-height: unset;
     }
 }
 

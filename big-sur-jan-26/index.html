@@ -149,7 +149,10 @@
 
                 <!-- Favorites Map (shows where selected activities are located) -->
                 <div class="favorites-map-container" id="favoritesMapContainer">
-                    <h3 id="favoritesMapTitle">🗺️ Your Favorites Map</h3>
+                    <div class="map-header">
+                        <h3 id="favoritesMapTitle">🗺️ Your Favorites Map</h3>
+                        <button class="refit-btn" onclick="refitFavoritesMap()" title="Fit all markers">🎯 Refit</button>
+                    </div>
                     <div class="map-wrapper" id="mapWrapper">
                         <div class="map-placeholder" id="mapPlaceholder">
                             <span>Mark some favorites to see them on the map!</span>
@@ -178,19 +181,6 @@
                 <button class="plan-btn" id="deletePlanBtn">🗑️ Delete</button>
             </div>
 
-            <!-- Template Plans (for quick schedule setup) -->
-            <div class="template-plans">
-                <h3>🎯 Quick Start Templates</h3>
-                <p class="template-desc">Load a sample schedule to get started, then customize it.</p>
-                <div class="template-tabs">
-                    <button class="template-tab active" data-day="friday">Friday</button>
-                    <button class="template-tab" data-day="saturday">Saturday</button>
-                    <button class="template-tab" data-day="sunday">Sunday</button>
-                </div>
-                <div class="template-options" id="templateOptions">
-                    <!-- Rendered by JS based on selected day -->
-                </div>
-            </div>
 
             <div class="schedule-layout">
                 <!-- Available Items Sidebar -->
@@ -228,6 +218,13 @@
                         <div class="day-panel" id="fridayPanel" data-day="friday">
                             <div class="day-column">
                                 <div class="day-header friday">Friday, Jan 30 — Arrival Day</div>
+                                <div class="template-picker" id="fridayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('friday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-arrow">▼</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="friday"></div>
+                                </div>
                                 <div class="time-bucket" data-bucket="fri-afternoon">
                                     <div class="bucket-header">
                                         <span>Afternoon</span>
@@ -272,6 +269,13 @@
                         <div class="day-panel active" id="saturdayPanel" data-day="saturday">
                             <div class="day-column">
                                 <div class="day-header">Saturday, Jan 31 — Full Day</div>
+                                <div class="template-picker" id="saturdayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('saturday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-arrow">▼</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="saturday"></div>
+                                </div>
                                 <div class="time-bucket" data-bucket="sat-morning">
                                     <div class="bucket-header">
                                         <span>Morning</span>
@@ -329,6 +333,13 @@
                         <div class="day-panel" id="sundayPanel" data-day="sunday">
                             <div class="day-column">
                                 <div class="day-header sunday">Sunday, Feb 1 — Heading Home</div>
+                                <div class="template-picker" id="sundayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('sunday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-arrow">▼</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="sunday"></div>
+                                </div>
                                 <div class="time-bucket" data-bucket="sun-morning">
                                     <div class="bucket-header">
                                         <span>Morning</span>
@@ -377,7 +388,10 @@
 
                     <!-- Itinerary Map (vertical on right for desktop) -->
                     <div class="itinerary-map-container" id="itineraryMapContainer">
-                        <h3>🗺️ Today's Route</h3>
+                        <div class="map-header">
+                            <h3>🗺️ Today's Route</h3>
+                            <button class="refit-btn" onclick="refitItineraryMap()" title="Fit all markers">🎯 Refit</button>
+                        </div>
                         <div class="itinerary-map-wrapper" id="itineraryMapWrapper">
                             <div class="map-placeholder" id="itineraryMapPlaceholder">
                                 <span>Add activities to see your route!</span>
