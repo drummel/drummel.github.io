@@ -61,10 +61,12 @@
             <div class="header-controls">
                 <div class="user-selector">
                     <span>👤</span>
-                    <select id="userSelect"></select>
-                    <button class="add-user-btn" id="addUserTrigger" title="Add person">➕</button>
+                    <select id="userSelect" title="Switch between different people's plans"></select>
+                    <button class="add-user-btn" id="addUserTrigger" title="Add another person">➕</button>
                 </div>
-                <button class="clear-data-btn" id="clearDataBtn" title="Clear all data">🗑️</button>
+                <button class="clear-data-btn" id="clearDataBtn" title="Clear this person's data">
+                    🗑️ <span class="clear-label">Clear</span>
+                </button>
             </div>
         </div>
     </header>
@@ -150,8 +152,14 @@
                 <!-- Favorites Map (shows where selected activities are located) -->
                 <div class="favorites-map-container" id="favoritesMapContainer">
                     <div class="map-header">
-                        <h3 id="favoritesMapTitle">🗺️ Your Favorites Map</h3>
-                        <button class="refit-btn" onclick="refitFavoritesMap()" title="Fit all markers">🎯 Refit</button>
+                        <h3 id="favoritesMapTitle">🗺️ Activities</h3>
+                        <div class="map-controls">
+                            <div class="map-filter-toggle">
+                                <button class="map-filter-btn active" data-filter="all">All</button>
+                                <button class="map-filter-btn" data-filter="favorites">⭐❤️ Only</button>
+                            </div>
+                            <button class="refit-btn" onclick="refitFavoritesMap()" title="Fit all markers">🎯 Refit</button>
+                        </div>
                     </div>
                     <div class="map-wrapper" id="mapWrapper">
                         <div class="map-placeholder" id="mapPlaceholder">
@@ -187,6 +195,11 @@
                 <div class="available-sidebar">
                     <h3>Activities to Add</h3>
 
+                    <!-- Search box -->
+                    <div class="sidebar-search">
+                        <input type="text" id="sidebarSearchInput" placeholder="🔍 Search activities..." />
+                    </div>
+
                     <!-- Sidebar category filters -->
                     <div class="sidebar-filters" id="sidebarFilters">
                         <button class="sidebar-filter active" data-cat="all">All</button>
@@ -218,10 +231,10 @@
                         <div class="day-panel" id="fridayPanel" data-day="friday">
                             <div class="day-column">
                                 <div class="day-header friday">Friday, Jan 30 — Arrival Day</div>
-                                <div class="template-picker" id="fridayTemplates">
+                                <div class="template-picker expanded" id="fridayTemplates">
                                     <button class="template-toggle" onclick="toggleTemplates('friday')">
                                         <span>🎯 Quick Start Ideas</span>
-                                        <span class="toggle-arrow">▼</span>
+                                        <span class="toggle-text">Hide</span>
                                     </button>
                                     <div class="template-options-inline" data-day="friday"></div>
                                 </div>
@@ -269,10 +282,10 @@
                         <div class="day-panel active" id="saturdayPanel" data-day="saturday">
                             <div class="day-column">
                                 <div class="day-header">Saturday, Jan 31 — Full Day</div>
-                                <div class="template-picker" id="saturdayTemplates">
+                                <div class="template-picker expanded" id="saturdayTemplates">
                                     <button class="template-toggle" onclick="toggleTemplates('saturday')">
                                         <span>🎯 Quick Start Ideas</span>
-                                        <span class="toggle-arrow">▼</span>
+                                        <span class="toggle-text">Hide</span>
                                     </button>
                                     <div class="template-options-inline" data-day="saturday"></div>
                                 </div>
@@ -333,10 +346,10 @@
                         <div class="day-panel" id="sundayPanel" data-day="sunday">
                             <div class="day-column">
                                 <div class="day-header sunday">Sunday, Feb 1 — Heading Home</div>
-                                <div class="template-picker" id="sundayTemplates">
+                                <div class="template-picker expanded" id="sundayTemplates">
                                     <button class="template-toggle" onclick="toggleTemplates('sunday')">
                                         <span>🎯 Quick Start Ideas</span>
-                                        <span class="toggle-arrow">▼</span>
+                                        <span class="toggle-text">Hide</span>
                                     </button>
                                     <div class="template-options-inline" data-day="sunday"></div>
                                 </div>

@@ -290,7 +290,9 @@ let state = {
     sharedData: null,
     isViewingShared: false,
     sidebarFilter: 'all',  // For filtering available items in schedule
-    currentScheduleDay: 'saturday'  // Which day is currently shown in schedule
+    currentScheduleDay: 'saturday',  // Which day is currently shown in schedule
+    mapViewMode: 'all',  // 'all' or 'favorites' for discovery map
+    sidebarSearch: ''  // Text search filter for sidebar
 };
 
 // ============ LOCAL STORAGE ============
@@ -736,33 +738,45 @@ function renderFavoritesMap(categoryFilter = 'all') {
     const mapPlaceholder = document.getElementById('mapPlaceholder');
     const mapLegend = document.getElementById('mapLegend');
     const mapTitle = document.getElementById('favoritesMapTitle');
+    const viewMode = state.mapViewMode; // 'all' or 'favorites'
 
     if (!mapWrapper || !mapCanvas) return;
 
-    // Update map title based on filter
+    // Update map title based on category filter
     if (mapTitle) {
         const info = categoryInfo[categoryFilter] || categoryInfo.all;
-        mapTitle.textContent = categoryFilter === 'all'
-            ? '🗺️ Your Favorites Map'
-            : `🗺️ ${info.title} Locations`;
+        if (categoryFilter === 'all') {
+            mapTitle.textContent = '🗺️ Activities';
+        } else {
+            mapTitle.textContent = `🗺️ Activities (${info.title})`;
+        }
     }
 
-    // Get all favorited activities with coordinates, filtered by category
-    const favorites = [];
+    // Get activities to show on map based on view mode
+    const mapItems = [];
     if (user) {
-        [...user.favorites, ...user.mustDos].forEach(id => {
-            const act = activities.find(a => a.id === id);
-            if (act && act.coords && act.cat !== 'travel' && act.cat !== 'lifestyle') {
-                // Apply category filter
-                if (categoryFilter !== 'all' && act.cat !== categoryFilter) return;
+        // Get all activities (excluding travel, lifestyle, bigfoot)
+        const allActivities = activities.filter(act =>
+            act.coords &&
+            act.cat !== 'travel' &&
+            act.cat !== 'lifestyle' &&
+            act.id !== 'bigfoot'
+        );
 
-                const pref = user.mustDos.includes(id) ? 'heart' : 'star';
-                favorites.push({ ...act, pref });
-            }
+        allActivities.forEach(act => {
+            // Apply category filter
+            if (categoryFilter !== 'all' && act.cat !== categoryFilter) return;
+
+            const pref = getPreference(act.id);
+
+            // In "favorites" mode, only show starred/hearted items
+            if (viewMode === 'favorites' && pref !== 'star' && pref !== 'heart') return;
+
+            mapItems.push({ ...act, pref });
         });
     }
 
-    // Always show map if we have cabin (even with no favorites)
+    // Always show map if we have cabin (even with no items)
     mapPlaceholder.classList.add('hidden');
 
     // Initialize map if not exists
@@ -812,12 +826,17 @@ function renderFavoritesMap(categoryFilter = 'all') {
         .bindPopup('<strong>🏠 Your Cabin</strong><br>Garrapata area - home base for the weekend!');
     bounds.push(CABIN_COORDS);
 
-    favorites.forEach(act => {
+    mapItems.forEach(act => {
         const subtype = act.subtype || act.cat;
         const color = subtypeColors[subtype] || catColors[act.cat] || '#666';
         usedSubtypes.add(subtype);
 
-        const markerClass = act.pref === 'heart' ? 'heart-marker' : 'star-marker';
+        // Determine marker class based on preference
+        let markerClass = '';
+        if (act.pref === 'heart') markerClass = 'heart-marker';
+        else if (act.pref === 'star') markerClass = 'star-marker';
+        else if (act.pref === 'pass') markerClass = 'passed-marker';
+        // else: no special class (neutral)
 
         const icon = L.divIcon({
             className: 'custom-marker ' + markerClass,
@@ -1019,6 +1038,11 @@ function toggleTemplates(day) {
     const picker = document.getElementById(day + 'Templates');
     if (picker) {
         picker.classList.toggle('expanded');
+        // Update the Show/Hide text
+        const toggleText = picker.querySelector('.toggle-text');
+        if (toggleText) {
+            toggleText.textContent = picker.classList.contains('expanded') ? 'Hide' : 'Show';
+        }
     }
 }
 
@@ -1119,9 +1143,19 @@ function renderAvailableItems() {
     });
 
     // Filter by sidebar category
-    const filtered = state.sidebarFilter === 'all'
+    let filtered = state.sidebarFilter === 'all'
         ? available
         : available.filter(act => act.cat === state.sidebarFilter);
+
+    // Apply text search filter
+    const searchTerm = state.sidebarSearch.toLowerCase().trim();
+    if (searchTerm) {
+        filtered = filtered.filter(act =>
+            act.name.toLowerCase().includes(searchTerm) ||
+            act.desc.toLowerCase().includes(searchTerm) ||
+            (act.tag && act.tag.toLowerCase().includes(searchTerm))
+        );
+    }
 
     let html = '';
 
@@ -1537,12 +1571,40 @@ function startSeaCreatures() {
 }
 
 // ============ CLEAR DATA ============
-function clearAllData() {
-    if (confirm('Are you sure you want to clear all data? This will delete all users, favorites, and plans.')) {
-        localStorage.removeItem('bigSurPlanner');
-        window.location.hash = '';
-        window.location.reload();
+function clearCurrentUserData() {
+    const userName = state.currentUser;
+    const userCount = Object.keys(state.users).length;
+
+    if (userCount === 0) {
+        showToast('No data to clear!');
+        return;
     }
+
+    // Show explanatory toast first
+    showToast(`🗑️ This will clear ${userName}'s favorites, plans & selections from your browser.`);
+
+    setTimeout(() => {
+        if (confirm(`Clear all data for "${userName}"? This removes their favorites, plans, and selections from your local browser. You can start fresh!`)) {
+            // Remove current user
+            delete state.users[userName];
+
+            // Check if there are other users
+            const remainingUsers = Object.keys(state.users);
+
+            if (remainingUsers.length > 0) {
+                // Switch to next available user
+                state.currentUser = remainingUsers[0];
+                saveState();
+                renderAll();
+                showToast(`✓ Cleared ${userName}'s data. Now viewing ${state.currentUser}'s plan.`);
+            } else {
+                // No users left - clear everything and show welcome modal
+                localStorage.removeItem('bigSurPlanner');
+                window.location.hash = '';
+                window.location.reload();
+            }
+        }
+    }, 100);
 }
 
 // ============ SHARING ============
@@ -1725,6 +1787,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Sidebar search input
+    const searchInput = document.getElementById('sidebarSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            state.sidebarSearch = e.target.value;
+            renderAvailableItems();
+        });
+    }
+
+    // Map filter toggle (All vs Favorites)
+    document.querySelectorAll('.map-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.mapViewMode = btn.dataset.filter;
+            // Re-render map with current category filter
+            const activeFilter = document.querySelector('.cat-filter.active');
+            const categoryFilter = activeFilter ? activeFilter.dataset.cat : 'all';
+            renderFavoritesMap(categoryFilter);
+        });
+    });
+
     // Preference buttons (delegated)
     document.getElementById('activityGrid').addEventListener('click', (e) => {
         const btn = e.target.closest('.pref-btn');
@@ -1783,7 +1867,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Clear data button
-    document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+    document.getElementById('clearDataBtn').addEventListener('click', clearCurrentUserData);
 
     // Start sea creatures swimming!
     startSeaCreatures();

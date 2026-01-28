@@ -206,19 +206,29 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .add-user-btn:hover { background: var(--sky); }
 
 .clear-data-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     background: white;
-    border: none;
-    font-size: 1.1rem;
+    border: 2px solid #e5e5e5;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 8px;
-    opacity: 0.6;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    color: var(--stone);
     transition: all 0.2s;
 }
 
 .clear-data-btn:hover {
-    opacity: 1;
     background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.clear-data-btn .clear-label {
+    font-size: 0.8rem;
 }
 
 /* ============ WEATHER & SEASONAL ============ */
@@ -443,13 +453,12 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     background: linear-gradient(135deg, var(--ocean-light) 0%, var(--sand-dark) 100%);
 }
 
-.template-toggle .toggle-arrow {
-    font-size: 0.7rem;
-    transition: transform 0.2s;
-}
-
-.template-picker.expanded .toggle-arrow {
-    transform: rotate(180deg);
+.template-toggle .toggle-text {
+    font-size: 0.75rem;
+    color: var(--ocean);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 .template-options-inline {
@@ -544,6 +553,42 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.map-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.map-filter-toggle {
+    display: flex;
+    background: #f0f0f0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.map-filter-btn {
+    padding: 0.35rem 0.65rem;
+    border: none;
+    background: transparent;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--stone);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.map-filter-btn:hover {
+    background: #e5e5e5;
+}
+
+.map-filter-btn.active {
+    background: var(--ocean);
+    color: white;
 }
 
 .refit-btn {
@@ -663,6 +708,11 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .custom-marker.heart-marker { border-color: var(--heart); }
 .custom-marker.star-marker { border-color: var(--gold); }
+.custom-marker.passed-marker {
+    border-color: #ccc;
+    opacity: 0.4;
+    filter: grayscale(80%);
+}
 .custom-marker.home-marker {
     border-color: var(--forest);
     background: var(--forest);
@@ -998,6 +1048,29 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     font-weight: 600;
     color: var(--stone);
     margin-bottom: 0.75rem;
+}
+
+.sidebar-search {
+    margin-bottom: 0.75rem;
+}
+
+.sidebar-search input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #e5e5e5;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    transition: border-color 0.2s;
+}
+
+.sidebar-search input:focus {
+    outline: none;
+    border-color: var(--ocean);
+}
+
+.sidebar-search input::placeholder {
+    color: #bbb;
 }
 
 .sidebar-filters {
