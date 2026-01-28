@@ -57,6 +57,137 @@ const driveTimes = {
     'unknown': 30
 };
 
+// ============ TEMPLATE PLANS ============
+const templatePlans = {
+    friday: [
+        {
+            id: 'friday-scenic',
+            emoji: '🌅',
+            name: 'Scenic Arrival',
+            desc: 'Bixby Bridge sunset, dinner at Nepenthe',
+            activities: ['bixby', 'nepenthe']
+        },
+        {
+            id: 'friday-chill',
+            emoji: '🍷',
+            name: 'Cozy Evening',
+            desc: 'Quick grocery stop, settle in',
+            activities: ['big-sur-general', 'big-sur-taphouse']
+        },
+        {
+            id: 'friday-explore',
+            emoji: '🔍',
+            name: 'Early Explorer',
+            desc: 'Garrapata Bluffs + local dinner',
+            activities: ['garrapata-bluffs', 'river-inn']
+        }
+    ],
+    saturday: [
+        {
+            id: 'sat-nepenthe-sunset',
+            emoji: '🌄',
+            name: 'Nepenthe Sunset',
+            desc: 'Hike + sunset dinner at Nepenthe',
+            sat: {
+                morning: ['ewoldsen', 'mcway-falls'],
+                afternoon: ['pfeiffer-beach', 'nepenthe']
+            }
+        },
+        {
+            id: 'sat-coastal-adventure',
+            emoji: '🌊',
+            name: 'Coastal Adventure',
+            desc: 'Beach hopping & seasonal wonders',
+            sat: {
+                morning: ['calla-lily', 'soberanes', 'whale-watch'],
+                afternoon: ['garrapata-beach', 'cafe-kevah']
+            }
+        },
+        {
+            id: 'sat-best-hikes',
+            emoji: '🥾',
+            name: 'Best Hikes Day',
+            desc: 'Tackle the epic trails',
+            sat: {
+                morning: ['ewoldsen'],
+                afternoon: ['pfeiffer-falls', 'big-sur-bakery']
+            }
+        },
+        {
+            id: 'sat-romantic',
+            emoji: '💕',
+            name: 'Romantic Day',
+            desc: 'Scenic spots + Deetjen\'s dinner',
+            sat: {
+                morning: ['calla-lily', 'partington-cove'],
+                afternoon: ['mcway-falls', 'deetjens']
+            }
+        },
+        {
+            id: 'sat-chill',
+            emoji: '😌',
+            name: 'Relaxed Saturday',
+            desc: 'Easy pace, great food',
+            sat: {
+                morning: ['garrapata-bluffs', 'big-sur-bakery'],
+                afternoon: ['pfeiffer-beach', 'river-inn']
+            }
+        }
+    ],
+    sunday: [
+        {
+            id: 'sun-lazy',
+            emoji: '😴',
+            name: 'Lazy Sunday',
+            desc: 'Sleep in, brunch, one stop, home ~5pm',
+            sun: {
+                morning: ['point-lobos'],
+                afternoon: ['stationary']
+            }
+        },
+        {
+            id: 'sun-early-checkout',
+            emoji: '🌅',
+            name: 'Early Checkout',
+            desc: '7am start, pack it in, home ~3pm',
+            sun: {
+                morning: ['calla-lily', 'bixby'],
+                afternoon: ['carmel-bakery']
+            }
+        },
+        {
+            id: 'sun-maximize',
+            emoji: '🌟',
+            name: 'Maximize Sunday',
+            desc: 'Full day, Carmel exploration, home ~7pm',
+            sun: {
+                morning: ['point-lobos', '17-mile'],
+                afternoon: ['stationary', 'brunos']
+            }
+        },
+        {
+            id: 'sun-carmel-crawl',
+            emoji: '🦪',
+            name: 'Carmel Crawl',
+            desc: 'Food tour through Carmel, home ~6pm',
+            sun: {
+                morning: ['carmel-bakery', 'point-lobos'],
+                afternoon: ['carmel-belle', 'la-bicyclette']
+            }
+        },
+        {
+            id: 'sun-one-more-hike',
+            emoji: '🥾',
+            name: 'One More Hike',
+            desc: 'Morning hike, then head home ~4pm',
+            sun: {
+                morning: ['soberanes'],
+                afternoon: ['brunos']
+            }
+        }
+    ]
+};
+
 // Drive time between zones
 const zoneToZone = {
     'north-north': 5, 'north-central': 20, 'north-south': 35, 'north-carmel': 25,
@@ -371,12 +502,12 @@ function renderPassedItems() {
     });
 }
 
-function renderSelectionsSummary() {
+function renderHighlightsSummary() {
     const user = getCurrentUser();
-    const list = document.getElementById('selectionsList');
+    const list = document.getElementById('highlightsList');
 
     if (!user || (user.favorites.length === 0 && user.mustDos.length === 0)) {
-        list.innerHTML = '<span class="selections-empty">Mark activities below to build your list</span>';
+        list.innerHTML = '<span class="highlights-empty">Mark activities below to build your list</span>';
         return;
     }
 
@@ -384,15 +515,113 @@ function renderSelectionsSummary() {
 
     user.mustDos.forEach(id => {
         const act = activities.find(a => a.id === id);
-        if (act) html += `<span class="selection-chip heart">❤️ ${act.name}</span>`;
+        if (act) html += `<span class="highlight-chip heart">❤️ ${act.name}</span>`;
     });
 
     user.favorites.forEach(id => {
         const act = activities.find(a => a.id === id);
-        if (act) html += `<span class="selection-chip star">⭐ ${act.name}</span>`;
+        if (act) html += `<span class="highlight-chip star">⭐ ${act.name}</span>`;
     });
 
     list.innerHTML = html;
+}
+
+function renderPassedSummary() {
+    const user = getCurrentUser();
+    const container = document.getElementById('passedSummary');
+
+    if (!user || user.passed.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+    }
+
+    container.classList.remove('hidden');
+
+    let html = `<h3>🚫 Passed (${user.passed.length})</h3><div class="passed-chips">`;
+
+    user.passed.forEach(id => {
+        const act = activities.find(a => a.id === id);
+        if (act) {
+            html += `<span class="passed-chip" data-id="${id}">${act.emoji} ${act.name} <span class="undo">↩</span></span>`;
+        }
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Add click handlers to undo
+    container.querySelectorAll('.passed-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            setPreference(chip.dataset.id, null);
+        });
+    });
+}
+
+function renderTemplates() {
+    const activeTab = document.querySelector('.template-tab.active');
+    const day = activeTab ? activeTab.dataset.day : 'friday';
+    const container = document.getElementById('templateOptions');
+    const templates = templatePlans[day] || [];
+
+    let html = '';
+
+    templates.forEach(t => {
+        html += `
+            <div class="template-card" data-template="${t.id}">
+                <div class="template-emoji">${t.emoji}</div>
+                <div class="template-name">${t.name}</div>
+                <div class="template-desc">${t.desc}</div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    // Add click handlers
+    container.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', () => applyTemplate(card.dataset.template));
+    });
+}
+
+function applyTemplate(templateId) {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    // Find the template
+    let template = null;
+    for (const day of Object.keys(templatePlans)) {
+        template = templatePlans[day].find(t => t.id === templateId);
+        if (template) break;
+    }
+
+    if (!template) return;
+
+    // Mark activities as interested
+    const allActivities = template.activities ||
+        [...(template.sat?.morning || []), ...(template.sat?.afternoon || []),
+         ...(template.sun?.morning || []), ...(template.sun?.afternoon || [])];
+
+    allActivities.forEach(id => {
+        if (!user.favorites.includes(id) && !user.mustDos.includes(id) && !user.passed.includes(id)) {
+            user.favorites.push(id);
+        }
+    });
+
+    // If it's a Saturday or Sunday template, populate the schedule
+    const plan = getCurrentPlan();
+    if (template.sat) {
+        plan['sat-morning'] = [...template.sat.morning];
+        plan['sat-afternoon'] = [...template.sat.afternoon];
+    }
+    if (template.sun) {
+        plan['sun-morning'] = [...template.sun.morning];
+        plan['sun-afternoon'] = [...template.sun.afternoon];
+    }
+
+    saveState();
+    renderAll();
+    showToast(`✨ Applied "${template.name}" template!`);
 }
 
 function renderAvailableItems() {
@@ -562,7 +791,9 @@ function renderAll() {
     renderUserSelector();
     renderPlanSelector();
     renderActivityGrid();
-    renderSelectionsSummary();
+    renderHighlightsSummary();
+    renderPassedSummary();
+    renderTemplates();
     renderAvailableItems();
     renderSchedule();
 }
@@ -604,6 +835,84 @@ function handleDrop(e) {
     }
 
     addToBucket(activityId, targetBucket);
+}
+
+// ============ EMOJI BURST ANIMATIONS ============
+function createEmojiBurst(type, x, y) {
+    const container = document.getElementById('emojiBurstContainer');
+    if (!container) return;
+
+    const emojis = {
+        star: ['⭐', '✨', '🌟', '💫'],
+        heart: ['❤️', '💕', '💗', '💖', '💝'],
+        pass: ['🙅‍♀️', '🚫', '❌', '👋']
+    };
+
+    const particleCount = type === 'pass' ? 5 : 8;
+    const emojiSet = emojis[type] || emojis.star;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = `emoji-particle ${type}`;
+        particle.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+
+        // Random trajectory
+        const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+        const distance = 80 + Math.random() * 60;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance - 30; // Bias upward
+        const rot = (Math.random() - 0.5) * 720;
+
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        particle.style.setProperty('--rot', `${rot}deg`);
+
+        container.appendChild(particle);
+
+        // Remove after animation
+        setTimeout(() => particle.remove(), 1000);
+    }
+}
+
+// ============ SEA CREATURES ============
+let seaCreatureTimeout = null;
+
+function spawnSeaCreature() {
+    const container = document.getElementById('seaCreatures');
+    if (!container) return;
+
+    // Random creature type
+    const isWhale = Math.random() < 0.3; // 30% chance for whale
+    const creature = document.createElement('div');
+    creature.className = `sea-creature ${isWhale ? 'whale' : 'otter'}`;
+    creature.textContent = isWhale ? '🐋' : '🦦';
+
+    // Random vertical position
+    const topPos = 40 + Math.random() * 40; // Between 40% and 80% from top
+    creature.style.top = `${topPos}%`;
+
+    container.appendChild(creature);
+
+    // Remove after animation completes
+    const duration = isWhale ? 30000 : 20000;
+    setTimeout(() => creature.remove(), duration);
+
+    // Schedule next creature
+    scheduleNextCreature();
+}
+
+function scheduleNextCreature() {
+    // Random interval between 45 seconds and 2 minutes
+    const delay = 45000 + Math.random() * 75000;
+    seaCreatureTimeout = setTimeout(spawnSeaCreature, delay);
+}
+
+function startSeaCreatures() {
+    // First creature after 10-30 seconds
+    const initialDelay = 10000 + Math.random() * 20000;
+    seaCreatureTimeout = setTimeout(spawnSeaCreature, initialDelay);
 }
 
 // ============ SHARING ============
@@ -796,6 +1105,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentPref = getPreference(activityId);
         const clickedPref = btn.dataset.pref;
 
+        // Only trigger effects if it's a new preference
+        if (currentPref !== clickedPref) {
+            // Emoji burst animation
+            const rect = btn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            createEmojiBurst(clickedPref, x, y);
+
+            // Card animation class
+            card.classList.remove('just-starred', 'just-hearted', 'just-passed');
+            if (clickedPref === 'star') card.classList.add('just-starred');
+            else if (clickedPref === 'heart') card.classList.add('just-hearted');
+            else if (clickedPref === 'pass') card.classList.add('just-passed');
+
+            setTimeout(() => {
+                card.classList.remove('just-starred', 'just-hearted', 'just-passed');
+            }, 500);
+        }
+
         if (currentPref === clickedPref) {
             setPreference(activityId, null);
         } else {
@@ -816,4 +1144,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Import buttons
     document.getElementById('importBtn').addEventListener('click', importSharedPlan);
     document.getElementById('dismissImport').addEventListener('click', dismissSharedView);
+
+    // Template tabs
+    document.querySelectorAll('.template-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.template-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            renderTemplates();
+        });
+    });
+
+    // Start sea creatures swimming!
+    startSeaCreatures();
 });

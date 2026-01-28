@@ -109,11 +109,29 @@
                 </div>
             </div>
 
-            <!-- Selections Summary -->
-            <div class="selections-summary">
-                <h3>📌 Your Selections</h3>
-                <div class="selections-list" id="selectionsList">
-                    <span class="selections-empty">Mark activities below to build your list</span>
+            <!-- Highlights & Passed Summary -->
+            <div class="highlights-container">
+                <div class="highlights-summary">
+                    <h3>✨ Your Highlights</h3>
+                    <div class="highlights-list" id="highlightsList">
+                        <span class="highlights-empty">Mark activities below to build your list</span>
+                    </div>
+                </div>
+                <div class="passed-summary" id="passedSummary">
+                    <!-- Rendered by JS when items are passed -->
+                </div>
+            </div>
+
+            <!-- Template Plans -->
+            <div class="template-plans">
+                <h3>🎯 Quick Start Templates</h3>
+                <div class="template-tabs">
+                    <button class="template-tab active" data-day="friday">Friday Arrival</button>
+                    <button class="template-tab" data-day="saturday">Saturday</button>
+                    <button class="template-tab" data-day="sunday">Sunday</button>
+                </div>
+                <div class="template-options" id="templateOptions">
+                    <!-- Rendered by JS based on selected day -->
                 </div>
             </div>
 
@@ -259,6 +277,12 @@
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+
+    <!-- Emoji Burst Container -->
+    <div class="emoji-burst-container" id="emojiBurstContainer"></div>
+
+    <!-- Sneaky Sea Creatures -->
+    <div class="sea-creatures" id="seaCreatures"></div>
 
     <script src="app.js"></script>
 </body>
