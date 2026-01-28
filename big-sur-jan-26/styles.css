@@ -1472,8 +1472,8 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .sea-creature {
     position: absolute;
-    font-size: 2.5rem;
-    bottom: 20px;
+    font-size: 7.5rem;
+    bottom: 30px;
     cursor: pointer;
     pointer-events: auto;
     transition: transform 0.1s;
@@ -1489,8 +1489,8 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 }
 
 .sea-creature.whale {
-    font-size: 4rem;
-    bottom: 15px;
+    font-size: 12rem;
+    bottom: 20px;
     animation: whaleDrift 35s ease-in-out forwards;
 }
 
@@ -1564,16 +1564,16 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .sea-creature::after {
     content: '💨';
     position: absolute;
-    font-size: 1rem;
+    font-size: 3rem;
     opacity: 0.4;
-    right: -15px;
+    right: -40px;
     top: 50%;
     animation: bubbles 1.5s ease-out infinite;
 }
 
 .sea-creature.whale::after {
-    font-size: 1.5rem;
-    right: -25px;
+    font-size: 4.5rem;
+    right: -70px;
 }
 
 @keyframes bubbles {
