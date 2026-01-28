@@ -1,17 +1,17 @@
 // ============ ACTIVITY DATA ============
 const activities = [
     // EXPLORE - Hikes (subtype: hike)
-    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'explore', subtype: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.2380, -121.7850] },
+    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'explore', subtype: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.1601, -121.6685] },
     { id: 'soberanes', name: 'Soberanes Canyon', emoji: '🌲', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3, desc: 'Lush redwood canyon near your stay. Whale watching from Soberanes Point!', zone: 'north', coords: [36.4467, -121.9283] },
-    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Easy Walk', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4583, -121.9217] },
+    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Easy Walk', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4508, -121.9169] },
     { id: 'pfeiffer-falls', name: 'Pfeiffer Falls + Valley View', emoji: '💧', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3.2, desc: 'Waterfall through redwood forest, then climb to sweeping valley panorama.', zone: 'central', coords: [36.2500, -121.7833] },
-    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'explore', subtype: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1783, -121.7017] },
+    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'explore', subtype: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1770, -121.6937] },
     { id: 'point-lobos', name: 'Point Lobos Reserve', emoji: '🦭', cat: 'explore', subtype: 'coastal', tag: 'Crown Jewel', duration: 2, miles: 3, desc: 'Best state park in CA. Sea otters, seals, tide pools. Bird Island Trail stunning. $10.', zone: 'carmel', coords: [36.5167, -121.9500] },
 
     // EXPLORE - Beaches (subtype: beach)
     { id: 'pfeiffer-beach', name: 'Pfeiffer Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Must-See', duration: 1.5, desc: 'Famous Keyhole Rock, purple sand, dramatic sunset through the arch. $15.', zone: 'central', coords: [36.2383, -121.8150] },
     { id: 'garrapata-beach', name: 'Garrapata Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Hidden', duration: 1, desc: 'Secluded sandy beach near Calla Lily Valley. Driftwood shelters, great for picnics.', zone: 'north', coords: [36.4617, -121.9267] },
-    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2850, -121.8517] },
+    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2874, -121.8441] },
     { id: 'carmel-river-beach', name: 'Carmel River State Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Accessible', duration: 1, desc: 'Wide sandy beach at Carmel River mouth. Great for sunset walks, birdwatching.', zone: 'carmel', coords: [36.5367, -121.9283] },
 
     // EXPLORE - Scenic Stops (subtype: scenic)
@@ -25,7 +25,7 @@ const activities = [
     { id: 'whale-watch', name: 'Gray Whale Watching', emoji: '🐋', cat: 'experience', subtype: 'seasonal', tag: 'Peak Migration!', duration: 0.5, desc: 'Mid-January is PEAK! Bring binoculars. Best from Soberanes Point or any overlook.', zone: 'north', coords: [36.4467, -121.9283] },
     { id: 'stargaze-garrapata', name: 'Stargazing at Cabin', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Near Cabin', duration: 1, desc: 'Dark skies right by your cabin! Minimal light pollution. Bring blankets, hot cocoa.', zone: 'north', coords: [36.4583, -121.9217] },
     { id: 'stargaze-pfeiffer', name: 'Pfeiffer Beach Night Sky', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Dramatic', duration: 1.5, desc: 'Stars through Keyhole Rock! Check tide times. Bortle Scale 2 - exceptional darkness.', zone: 'central', coords: [36.2383, -121.8150] },
-    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2850, -121.8517] },
+    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2874, -121.8441] },
     { id: 'stargaze-carmel', name: 'Carmel Beach Stars', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Easy Access', duration: 1, desc: 'Most accessible spot. Easy parking, flat beach. Good for casual stargazing.', zone: 'carmel', coords: [36.5367, -121.9283] },
 
     // EXPERIENCES - Beach Activities
@@ -36,9 +36,9 @@ const activities = [
     // RESTAURANTS & CAFES - Big Sur
     { id: 'nepenthe', name: 'Nepenthe', emoji: '🍽️', cat: 'restaurant', subtype: 'dining', tag: 'Essential', duration: 1.5, price: '$$$', desc: 'THE Big Sur restaurant. Terrace 800ft above Pacific. Ambrosia Burger legendary. Sunset dinner!', zone: 'central', coords: [36.2217, -121.7583] },
     { id: 'cafe-kevah', name: 'Cafe Kevah', emoji: '☕', cat: 'restaurant', subtype: 'cafe', tag: 'Casual', duration: 1, price: '$$', desc: 'Below Nepenthe. Same views, lighter fare. Fresh smoothies, sandwiches.', zone: 'central', coords: [36.2217, -121.7583] },
-    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2417, -121.7750] },
+    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2358, -121.7690] },
     { id: 'river-inn', name: 'Big Sur River Inn', emoji: '🍺', cat: 'restaurant', subtype: 'dining', tag: 'Local Fave', duration: 1.5, price: '$$', desc: 'Chairs IN the river! Classic roadhouse vibes, good burgers. Grab a beer, sit in the creek.', zone: 'central', coords: [36.2700, -121.8200] },
-    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', subtype: 'dining', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2017, -121.7400] },
+    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', subtype: 'dining', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2174, -121.7509] },
     { id: 'big-sur-taphouse', name: 'Big Sur Taphouse', emoji: '🍻', cat: 'restaurant', subtype: 'dining', tag: 'Craft Beer', duration: 1, price: '$$', desc: 'Rotating craft beers, hearty sandwiches. Local hangout spot.', zone: 'central', coords: [36.2700, -121.8200] },
 
     // RESTAURANTS & CAFES - Carmel
