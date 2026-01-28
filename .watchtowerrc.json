@@ -1,0 +1,14 @@
+{
+  "server": {
+    "mode": "static",
+    "staticDir": "big-sur-jan-26",
+    "command": "",
+    "port": 3000,
+    "restartOnSwitch": true
+  },
+  "remoteName": "origin",
+  "autoPull": true,
+  "gitPollInterval": 5000,
+  "soundEnabled": true,
+  "visibleBranches": 7
+}
