@@ -683,6 +683,7 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .map-legend-dot.dining { background: var(--sunset); }
 .map-legend-dot.cafe { background: #d97706; }
 .map-legend-dot.deli { background: var(--redwood); }
+.map-legend-dot.takeout { background: #f472b6; }
 .map-legend-dot.store { background: #78716c; }
 .map-legend-dot.culture { background: #8b5cf6; }
 .map-legend-dot.explore { background: var(--forest); }
@@ -719,6 +720,20 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     width: 36px;
     height: 36px;
     font-size: 1.2rem;
+}
+
+/* Hover highlight for activity card -> map connection */
+.custom-marker.hover-highlight {
+    transform: scale(1.5);
+    z-index: 1000 !important;
+    box-shadow: 0 0 20px var(--ocean), 0 0 40px rgba(14, 165, 233, 0.4);
+    border-color: var(--ocean);
+    animation: markerPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+    0%, 100% { box-shadow: 0 0 20px var(--ocean), 0 0 40px rgba(14, 165, 233, 0.4); }
+    50% { box-shadow: 0 0 30px var(--ocean), 0 0 60px rgba(14, 165, 233, 0.6); }
 }
 
 .map-legend-dot.home { background: var(--forest); }
@@ -799,10 +814,23 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     transition: all 0.2s;
     position: relative;
+    border: 2px solid transparent;
+    cursor: pointer;
 }
 
 .activity-card:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.2);
+    border-color: var(--ocean-light);
+    transform: translateY(-2px);
+}
+
+.activity-card:hover::after {
+    content: '📍';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.75rem;
+    opacity: 0.7;
 }
 
 .activity-card.passed {

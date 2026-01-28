@@ -47,6 +47,12 @@ const activities = [
     { id: 'la-bicyclette', name: 'La Bicyclette', emoji: '🍽️', cat: 'restaurant', subtype: 'dining', tag: 'French', duration: 1.5, price: '$$$', desc: 'Rustic European charm. Wood-fired pizzas, hearty French-California cuisine.', zone: 'carmel', coords: [36.5550, -121.9233] },
     { id: 'carmel-bakery', name: 'Carmel Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Early Open', duration: 0.5, price: '$', desc: 'Opens 7am! Coffee and pastries for early birds. Cute dog treats too.', zone: 'carmel', coords: [36.5550, -121.9217] },
 
+    // SUNSET TAKEOUT - Carmel area (order ahead for beach picnic)
+    { id: 'fifth-avenue-deli', name: '5th Avenue Deli', emoji: '🥡', cat: 'provisions', subtype: 'takeout', tag: 'Sunset Picnic', duration: 0.5, price: '$$', desc: 'Order ahead! Gourmet sandwiches, salads, and picnic provisions. Perfect for Carmel Beach sunset.', zone: 'carmel', coords: [36.5548, -121.9211] },
+    { id: 'ricos-tacos', name: "Rico's Tacos & Burritos", emoji: '🌮', cat: 'provisions', subtype: 'takeout', tag: 'Sunset Picnic', duration: 0.5, price: '$', desc: 'Fresh, fast, delicious! Grab tacos and burritos for a casual sunset beach dinner.', zone: 'carmel', coords: [36.5530, -121.9200] },
+    { id: 'culture-kombucha', name: 'Culture Kombucha & Deli', emoji: '🥗', cat: 'provisions', subtype: 'takeout', tag: 'Healthy', duration: 0.5, price: '$$', desc: 'Healthy bowls, salads, and wraps. Craft kombucha on tap! Light and fresh for beach sunset.', zone: 'carmel', coords: [36.5533, -121.9217] },
+    { id: 'il-tegamino', name: 'Il Tegamino To-Go', emoji: '🍝', cat: 'provisions', subtype: 'takeout', tag: 'Italian', duration: 0.5, price: '$$', desc: 'Fresh pasta, meatballs, Italian specialties to-go. Order ahead for sunset beach feast!', zone: 'carmel', coords: [36.5560, -121.9225] },
+
     // SUPPLIES & PROVISIONS
     { id: 'big-sur-deli', name: 'Big Sur Deli', emoji: '🥪', cat: 'provisions', subtype: 'deli', tag: 'Grab & Go', duration: 0.5, price: '$', desc: 'Grab-and-go sandwiches, snacks, drinks. Perfect for trail picnics.', zone: 'central', coords: [36.2700, -121.8200] },
     { id: 'big-sur-general', name: 'Big Sur General Store', emoji: '🏪', cat: 'provisions', subtype: 'store', tag: 'Supplies', duration: 0.5, price: '$', desc: 'Groceries, camping supplies, firewood. Gas station attached (expensive!).', zone: 'central', coords: [36.2700, -121.8200] },
@@ -563,6 +569,12 @@ function renderActivityGrid() {
         card.className = 'activity-card';
         card.dataset.id = act.id;
 
+        // Add hover handlers for map highlight (only if activity has coords)
+        if (act.coords) {
+            card.addEventListener('mouseenter', () => highlightMarkerOnMap(act.id));
+            card.addEventListener('mouseleave', () => unhighlightMarker());
+        }
+
         // Use subtype for tag styling if available
         const tagClass = 'tag-' + (act.subtype || act.cat);
 
@@ -727,6 +739,8 @@ function switchScheduleDay(day) {
 // ============ FAVORITES MAP ============
 let favoritesMap = null;
 let favoritesBounds = [];
+let favoritesMarkers = {}; // Store markers by activity ID for hover highlight
+let highlightedMarker = null; // Track currently highlighted marker
 
 // Cabin/Airbnb location at Garrapata
 const CABIN_COORDS = [36.4583, -121.9217];
@@ -790,19 +804,21 @@ function renderFavoritesMap(categoryFilter = 'all') {
         }).addTo(favoritesMap);
     }
 
-    // Clear existing markers
+    // Clear existing markers and marker references
     favoritesMap.eachLayer(layer => {
         if (layer instanceof L.Marker || layer instanceof L.Polyline) {
             favoritesMap.removeLayer(layer);
         }
     });
+    favoritesMarkers = {}; // Reset marker references
+    highlightedMarker = null;
 
     // Subtype colors for explore
     const subtypeColors = {
         hike: '#2d7d5f', beach: '#0ea5e9', coastal: '#14b8a6', scenic: '#eab308',
         culture: '#8b5cf6', seasonal: '#ec4899', stargazing: '#6366f1',
         'beach-activity': '#06b6d4', dining: '#f97316', cafe: '#d97706',
-        deli: '#8b5a3c', store: '#78716c', roadstop: '#3b82f6', adventure: '#10b981'
+        deli: '#8b5a3c', takeout: '#f472b6', store: '#78716c', roadstop: '#3b82f6', adventure: '#10b981'
     };
 
     // Category colors fallback
@@ -845,9 +861,16 @@ function renderFavoritesMap(categoryFilter = 'all') {
             iconAnchor: [16, 16]
         });
 
-        L.marker([act.coords[0], act.coords[1]], { icon })
+        const marker = L.marker([act.coords[0], act.coords[1]], { icon })
             .addTo(favoritesMap)
             .bindPopup(`<strong>${act.emoji} ${act.name}</strong><br>${act.desc}`);
+
+        // Store marker reference for hover highlighting
+        favoritesMarkers[act.id] = {
+            marker: marker,
+            coords: [act.coords[0], act.coords[1]],
+            originalClass: 'custom-marker ' + markerClass
+        };
 
         bounds.push([act.coords[0], act.coords[1]]);
     });
@@ -867,7 +890,7 @@ function renderFavoritesMap(categoryFilter = 'all') {
         hike: 'Hikes', beach: 'Beaches', coastal: 'Coastal', scenic: 'Scenic',
         culture: 'Culture', seasonal: 'Seasonal', stargazing: 'Stargazing',
         'beach-activity': 'Beach Time', dining: 'Dining', cafe: 'Cafes',
-        deli: 'Delis', store: 'Stores'
+        deli: 'Delis', takeout: 'Sunset Takeout', store: 'Stores'
     };
     let legendHtml = '<div class="map-legend-item"><span class="map-legend-dot home"></span>Cabin</div>';
     usedSubtypes.forEach(subtype => {
@@ -884,6 +907,41 @@ function refitFavoritesMap() {
         } else {
             favoritesMap.setView(favoritesBounds[0], 12);
         }
+    }
+}
+
+// Highlight marker on map when hovering over activity card
+function highlightMarkerOnMap(activityId) {
+    const markerInfo = favoritesMarkers[activityId];
+    if (!markerInfo || !favoritesMap) return;
+
+    // Remove previous highlight
+    unhighlightMarker();
+
+    // Store reference
+    highlightedMarker = markerInfo;
+
+    // Add highlight class to marker
+    const markerElement = markerInfo.marker.getElement();
+    if (markerElement) {
+        markerElement.classList.add('hover-highlight');
+    }
+
+    // Pan to the marker location with a slight zoom
+    favoritesMap.setView(markerInfo.coords, 13, { animate: true, duration: 0.5 });
+
+    // Open popup
+    markerInfo.marker.openPopup();
+}
+
+function unhighlightMarker() {
+    if (highlightedMarker) {
+        const markerElement = highlightedMarker.marker.getElement();
+        if (markerElement) {
+            markerElement.classList.remove('hover-highlight');
+        }
+        highlightedMarker.marker.closePopup();
+        highlightedMarker = null;
     }
 }
 
