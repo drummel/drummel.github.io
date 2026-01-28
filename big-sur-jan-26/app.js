@@ -604,8 +604,8 @@ function renderActivityGrid() {
             </div>
             <div class="card-desc">${act.desc}</div>
             <div class="card-actions">
-                <button class="pref-btn star ${pref === 'star' ? 'active' : ''}" data-pref="star">⭐ Interested</button>
                 <button class="pref-btn heart ${pref === 'heart' ? 'active' : ''}" data-pref="heart">❤️ Must-Do</button>
+                <button class="pref-btn star ${pref === 'star' ? 'active' : ''}" data-pref="star">⭐ Interested</button>
                 <button class="pref-btn pass ${pref === 'pass' ? 'active' : ''}" data-pref="pass">🚫 Pass</button>
             </div>
         `;
