@@ -205,6 +205,22 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .add-user-btn:hover { background: var(--sky); }
 
+.clear-data-btn {
+    background: white;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+.clear-data-btn:hover {
+    opacity: 1;
+    background: #fee2e2;
+}
+
 /* ============ WEATHER & SEASONAL ============ */
 .weather-strip {
     background: white;

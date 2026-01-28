@@ -787,6 +787,17 @@ function renderFavoritesMap(categoryFilter = 'all') {
 
     // Subtype colors for explore
     const subtypeColors = {
+        hike: '#2d7d5f', beach: '#0ea5e9', coastal: '#14b8a6', scenic: '#eab308',
+        culture: '#8b5cf6', seasonal: '#ec4899', stargazing: '#6366f1',
+        'beach-activity': '#06b6d4', dining: '#f97316', cafe: '#d97706',
+        deli: '#8b5a3c', store: '#78716c'
+    };
+
+    // Category colors fallback
+    const catColors = {
+        explore: '#2d7d5f', experience: '#ec4899', restaurant: '#f97316', provisions: '#8b5a3c'
+    };
+
     // Add markers
     const bounds = [];
     const usedSubtypes = new Set();
@@ -1432,6 +1443,15 @@ function startSeaCreatures() {
     seaCreatureTimeout = setTimeout(spawnSeaCreature, initialDelay);
 }
 
+// ============ CLEAR DATA ============
+function clearAllData() {
+    if (confirm('Are you sure you want to clear all data? This will delete all users, favorites, and plans.')) {
+        localStorage.removeItem('bigSurPlanner');
+        window.location.hash = '';
+        window.location.reload();
+    }
+}
+
 // ============ SHARING ============
 function shareCurrentPlan() {
     const url = window.location.origin + window.location.pathname + '#' + encodeState();
@@ -1677,6 +1697,9 @@ document.addEventListener('DOMContentLoaded', () => {
             switchScheduleDay(tab.dataset.day);
         });
     });
+
+    // Clear data button
+    document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
 
     // Start sea creatures swimming!
     startSeaCreatures();
