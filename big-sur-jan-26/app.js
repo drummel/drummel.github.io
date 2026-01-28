@@ -347,6 +347,7 @@ function loadState() {
 }
 
 // ============ URL HASH ENCODING ============
+// Uses LZ-String compression for shorter, iMessage-friendly URLs
 function encodeState() {
     const user = state.users[state.currentUser];
     if (!user) return '';
@@ -361,10 +362,22 @@ function encodeState() {
     };
 
     const json = JSON.stringify(data);
-    return btoa(encodeURIComponent(json));
+    // Use LZ-String compression for much shorter URLs
+    return LZString.compressToEncodedURIComponent(json);
 }
 
 function decodeState(hash) {
+    // Try LZ-String decompression first (new format)
+    try {
+        const json = LZString.decompressFromEncodedURIComponent(hash);
+        if (json) {
+            return JSON.parse(json);
+        }
+    } catch (e) {
+        // Not LZ-String format, try legacy
+    }
+
+    // Fall back to legacy base64 format for old shared links
     try {
         const json = decodeURIComponent(atob(hash));
         return JSON.parse(json);
