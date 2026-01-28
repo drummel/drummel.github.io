@@ -927,11 +927,19 @@ function highlightMarkerOnMap(activityId) {
         markerElement.classList.add('hover-highlight');
     }
 
-    // Pan to the marker location with a slight zoom
-    favoritesMap.setView(markerInfo.coords, 13, { animate: true, duration: 0.5 });
+    // Smooth fly to the marker location - cinematic pan+zoom
+    favoritesMap.flyTo(markerInfo.coords, 13, {
+        animate: true,
+        duration: 1.2,  // seconds for the animation
+        easeLinearity: 0.25  // smoother curve
+    });
 
-    // Open popup
-    markerInfo.marker.openPopup();
+    // Open popup after a slight delay so it appears at destination
+    setTimeout(() => {
+        if (highlightedMarker === markerInfo) {
+            markerInfo.marker.openPopup();
+        }
+    }, 800);
 }
 
 function unhighlightMarker() {
