@@ -760,6 +760,35 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .cat-filter:hover { border-color: var(--ocean); }
 .cat-filter.active { background: var(--ocean); color: white; border-color: var(--ocean); }
 
+/* Zone Filters */
+.zone-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.zone-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.zone-filter {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid #e5e5e5;
+    background: white;
+    border-radius: 15px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.zone-filter:hover { border-color: var(--forest); background: var(--sky); }
+.zone-filter.active { background: var(--forest); color: white; border-color: var(--forest); }
+
 /* Category Title */
 .category-title {
     margin-bottom: 1rem;
@@ -1394,6 +1423,83 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .toast.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
+}
+
+/* ============ STORY MODAL ============ */
+.story-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1002;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.story-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.story-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 1.75rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.story-modal-overlay.show .story-modal {
+    transform: scale(1);
+}
+
+.story-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.story-emoji {
+    font-size: 2rem;
+}
+
+.story-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.25rem;
+    color: var(--forest-dark);
+}
+
+.story-content {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--stone);
+    margin-bottom: 1.25rem;
+}
+
+.story-close-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--ocean);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.story-close-btn:hover {
+    background: var(--forest);
 }
 
 /* ============ FLOATING SHARE BUTTON ============ */

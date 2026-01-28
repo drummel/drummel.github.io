@@ -60,9 +60,16 @@ const activities = [
     { id: 'nielsen-bros', name: 'Nielsen Bros. Market', emoji: '🧺', cat: 'provisions', subtype: 'store', tag: 'Gourmet', duration: 0.5, price: '$$', desc: 'Upscale market with great deli, wine, cheese. Perfect picnic provisions.', zone: 'carmel', coords: [36.5550, -121.9200] },
 
     // ROAD TRIP STOPS (between San Rafael and Big Sur)
+    { id: 'devils-slide', name: "Devil's Slide Trail", emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1, desc: 'Abandoned highway turned 1.3-mile coastal trail! Dramatic cliffs, old bootlegger history. Easy walk with stunning views.', zone: 'roadtrip', coords: [37.5750, -122.5150] },
+    { id: 'fitzgerald-tidepools', name: 'Fitzgerald Marine Reserve', emoji: '🦀', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1.5, desc: 'Best tide pools in CA! Giant anemones, purple sea stars, hermit crabs. Check tide charts - go at low tide. Free!', zone: 'roadtrip', coords: [37.5233, -122.5167] },
+    { id: 'sams-chowder', name: "Sam's Chowder House", emoji: '🦞', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'Famous lobster rolls and clam chowder with ocean views! Great outdoor patio. Worth the stop in Half Moon Bay.', zone: 'roadtrip', coords: [37.4283, -122.4367] },
     { id: 'pie-ranch', name: 'Pie Ranch Farm Stand', emoji: '🥧', cat: 'provisions', subtype: 'roadstop', tag: 'Road Trip', duration: 0.5, price: '$', desc: 'Roadside farm stand on Hwy 1 near Pescadero. Fresh seasonal pies, local produce, preserves. Non-profit farm supporting food justice.', zone: 'roadtrip', coords: [37.1083, -122.3567] },
+    { id: 'pigeon-point', name: 'Pigeon Point Lighthouse', emoji: '🏠', cat: 'explore', subtype: 'scenic', tag: 'Road Trip', duration: 0.5, desc: 'One of tallest lighthouses in America! Great photo op. Hostel on-site has hot tub with ocean views (book ahead).', zone: 'roadtrip', coords: [37.1822, -122.3939] },
     { id: 'duartes-tavern', name: "Duarte's Tavern", emoji: '🍲', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'James Beard Award winner since 1894! Famous artichoke soup (get it "half & half" with green chile). Also great crab cioppino.', zone: 'roadtrip', coords: [37.2553, -122.3836] },
+    { id: 'ano-nuevo', name: 'Año Nuevo Elephant Seals', emoji: '🦭', cat: 'experience', subtype: 'seasonal', tag: 'Seasonal!', duration: 2.5, price: '$10', desc: 'PEAK SEASON! Massive elephant seals breeding on the beach. Guided tours required Dec-Mar. Book ahead - sells out!', zone: 'roadtrip', coords: [37.1197, -122.3375] },
+    { id: 'santa-cruz-wharf', name: 'Santa Cruz Wharf', emoji: '🎡', cat: 'explore', subtype: 'scenic', tag: 'Road Trip', duration: 1, desc: 'Longest wooden wharf on West Coast! Sea lions, shops, restaurants. Boardwalk amusement park nearby. Fun detour!', zone: 'roadtrip', coords: [36.9575, -122.0172] },
     { id: 'moss-landing-kayak', name: 'Sea Otter Kayaking', emoji: '🦦', cat: 'experience', subtype: 'adventure', tag: 'Sunday Fun', duration: 3, price: '$75', desc: 'Kayak Elkhorn Slough at Moss Landing! Hundreds of sea otters, harbor seals, shore birds. No experience needed. Book ahead!', zone: 'roadtrip', coords: [36.8047, -121.7856] },
+    { id: 'phil-fish-market', name: "Phil's Fish Market", emoji: '🦪', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'Legendary cioppino at Moss Landing! Cash only, always packed. The fish is ridiculously fresh. Get the crab.', zone: 'roadtrip', coords: [36.8044, -121.7878] },
 
     // TRAVEL (special category - not shown in discovery but used in scheduling)
     { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', subtype: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
@@ -95,6 +102,7 @@ const templatePlans = {
             emoji: '🌅',
             name: 'Scenic Arrival',
             desc: 'Leave 1pm → Bixby sunset → Nepenthe dinner',
+            story: "Leave San Rafael around 1pm for a leisurely drive down Highway 1. You'll arrive in Big Sur around 4pm with time to drop bags at the cabin. Head to iconic Bixby Bridge for golden hour photos, then drive up to Nepenthe for dinner at sunset. The views from the terrace 800 feet above the Pacific are unforgettable. End the night cozied up at the cabin!",
             fri: {
                 departure: '1:00 PM',
                 arrival: '~4:00 PM',
@@ -108,6 +116,7 @@ const templatePlans = {
             emoji: '🍷',
             name: 'Cozy Evening',
             desc: 'Leave 2pm → Groceries → Taphouse → Cabin',
+            story: "A relaxed start - leave San Rafael around 2pm and arrive at the cabin by 5pm. Stop at the Big Sur General Store for groceries and firewood, then unwind with craft beers and hearty food at the Taphouse. Head back to the cabin for a cozy first night - fire up the hot tub, open some wine, and settle into vacation mode.",
             fri: {
                 departure: '2:00 PM',
                 arrival: '~5:00 PM',
@@ -121,6 +130,7 @@ const templatePlans = {
             emoji: '🔍',
             name: 'Early Explorer',
             desc: 'Leave 12pm → Bluffs walk → River Inn',
+            story: "Get an early jump on the weekend! Leave San Rafael by noon and arrive around 3pm. Take a short walk along the stunning Garrapata Bluffs - wildflowers, sea lions, and sweeping coastal views just minutes from your cabin. Watch sunset from the River Inn with a beer and your feet in the creek, then back to the cabin for a relaxing evening.",
             fri: {
                 departure: '12:00 PM',
                 arrival: '~3:00 PM',
@@ -134,6 +144,7 @@ const templatePlans = {
             emoji: '🌌',
             name: 'Stargazing Night',
             desc: 'Leave 1pm → Settle in → Night sky!',
+            story: "Leave San Rafael around 1pm, arriving by 4pm. Grab groceries at the General Store and spend sunset settling into your cabin - unpack, explore the property, maybe take a quick dip in the hot tub. After dark, bundle up and head outside for incredible stargazing. Big Sur has some of the darkest skies in California - perfect for spotting constellations and the Milky Way!",
             fri: {
                 departure: '1:00 PM',
                 arrival: '~4:00 PM',
@@ -149,6 +160,7 @@ const templatePlans = {
             emoji: '🌄',
             name: 'Nepenthe Sunset',
             desc: 'Epic hike → Beach → Sunset dinner at Nepenthe',
+            story: "Wake up early for the most rewarding hike in Big Sur - Ewoldsen Trail takes you through a magical redwood canyon up to panoramic ocean views. Afterward, catch the iconic McWay Falls overlook and spend the afternoon at Pfeiffer Beach watching the waves crash through Keyhole Rock. End the day with sunset dinner at Nepenthe, the legendary Big Sur restaurant perched 800 feet above the Pacific. Try the famous Ambrosia Burger!",
             sat: {
                 morning: ['early-start', 'ewoldsen'],
                 afternoon: ['mcway-falls', 'pfeiffer-beach'],
@@ -161,6 +173,7 @@ const templatePlans = {
             emoji: '🌊',
             name: 'Coastal Adventure',
             desc: 'Beach hopping & seasonal wonders',
+            story: "Start the day at magical Calla Lily Valley - it's peak bloom in late January with white lilies carpeting the hillside! Then hike the lush Soberanes Canyon through redwoods. After lunch, scan the horizon for migrating gray whales (January is peak season!) and relax on the secluded Garrapata Beach. Light dinner at Cafe Kevah with the same stunning views as Nepenthe, then end with stargazing right from your cabin's backyard.",
             sat: {
                 morning: ['calla-lily', 'soberanes'],
                 afternoon: ['whale-watch', 'garrapata-beach'],
@@ -173,6 +186,7 @@ const templatePlans = {
             emoji: '🥾',
             name: 'Best Hikes Day',
             desc: 'Tackle the epic trails',
+            story: "For the adventurous! Start early with Ewoldsen Trail - Big Sur's most rewarding hike through a redwood canyon to ocean panoramas. In the afternoon, tackle Pfeiffer Falls through the forest up to Valley View for sweeping vistas. Refuel with legendary pastries and coffee at Big Sur Bakery (their wood-fired bread is famous). A satisfying day of trails followed by a cozy evening at the cabin.",
             sat: {
                 morning: ['early-start', 'ewoldsen'],
                 afternoon: ['pfeiffer-falls'],
@@ -185,6 +199,7 @@ const templatePlans = {
             emoji: '💕',
             name: 'Romantic Day',
             desc: 'Scenic spots + candlelit Deetjen\'s',
+            story: "Sleep in and enjoy a lazy morning at the cabin. Then visit the enchanting Calla Lily Valley in full bloom! Explore the secret Partington Cove through a 60-foot bootlegger tunnel to a hidden beach. Stop at the iconic McWay Falls overlook for photos. The evening is magical - romantic candlelit dinner at historic Deetjen's Inn (reserve ahead!), then stargazing at Pfeiffer Beach with the Milky Way framed through Keyhole Rock.",
             sat: {
                 morning: ['sleep-in', 'calla-lily'],
                 afternoon: ['partington-cove', 'mcway-falls'],
@@ -197,6 +212,7 @@ const templatePlans = {
             emoji: '😌',
             name: 'Relaxed Saturday',
             desc: 'Sleep in, easy pace, great food',
+            story: "No alarms! Wake up naturally and enjoy the cabin. When hunger strikes, head to Big Sur Bakery for their legendary wood-fired pastries and coffee. Take an easy stroll along the Garrapata Bluffs - stunning views with minimal effort. Spend the afternoon at purple-sand Pfeiffer Beach, then catch sunset at the River Inn with your feet in the creek and a cold beer in hand. Back to the cabin for a relaxed evening.",
             sat: {
                 morning: ['sleep-in', 'big-sur-bakery'],
                 afternoon: ['garrapata-bluffs', 'pfeiffer-beach'],
@@ -211,6 +227,7 @@ const templatePlans = {
             emoji: '😴',
             name: 'Lazy Sunday',
             desc: 'Sleep in, Point Lobos, brunch → home ~5pm',
+            story: "Sleep in and enjoy a slow morning at the cabin. Around 10am, head to Point Lobos - California's most stunning state park. Spot sea otters, seals, and gorgeous tide pools on an easy coastal walk. Mid-afternoon, treat yourself to brunch at Stationæry (Michelin Bib Gourmand!) - their shakshuka and house-made pastries are incredible. Drive home relaxed, arriving around 5pm.",
             sun: {
                 morning: ['sleep-in', 'point-lobos'],
                 afternoon: ['stationary'],
@@ -223,6 +240,7 @@ const templatePlans = {
             emoji: '🌅',
             name: 'Early Checkout',
             desc: '7am checkout → Calla Lily → home ~1pm',
+            story: "Early birds! Check out at 7am and catch Calla Lily Valley in the soft morning light - the lilies are magical this time of year. Stop at Bixby Bridge for photos without the crowds, then grab coffee and pastries at Carmel Bakery before hitting the road. You'll be home by 1pm with the whole afternoon free!",
             sun: {
                 morning: ['early-start', 'calla-lily', 'bixby'],
                 afternoon: ['carmel-bakery', 'drive-home'],
@@ -235,6 +253,7 @@ const templatePlans = {
             emoji: '🌟',
             name: 'Maximize Sunday',
             desc: 'Full day in Carmel → home ~7pm',
+            story: "Make the most of your last day! Explore Point Lobos first (arrive early to beat crowds), then drive the famous 17-Mile Drive through Pebble Beach - see the Lone Cypress, Ghost Trees, and stunning coastline. Enjoy a leisurely brunch at Stationæry, grab picnic supplies at Bruno's, and head home around 4pm. You'll arrive around 7pm, tired but happy!",
             sun: {
                 morning: ['point-lobos', '17-mile'],
                 afternoon: ['stationary', 'brunos'],
@@ -247,6 +266,7 @@ const templatePlans = {
             emoji: '🦪',
             name: 'Carmel Crawl',
             desc: 'Food tour through Carmel → home ~6pm',
+            story: "A food lover's farewell! Start with pastries at Carmel Bakery (opens 7am), then explore Point Lobos while working up an appetite. Lunch at cozy Carmel Belle for farm-to-table sandwiches, then wander the charming Carmel streets. Late afternoon meal at La Bicyclette for their wood-fired pizzas before heading home around 4pm, arriving by 6pm.",
             sun: {
                 morning: ['carmel-bakery', 'point-lobos'],
                 afternoon: ['carmel-belle', 'la-bicyclette'],
@@ -259,6 +279,7 @@ const templatePlans = {
             emoji: '🥾',
             name: 'One More Hike',
             desc: 'Early Soberanes hike → home ~4pm',
+            story: "One last adventure! Wake early and tackle Soberanes Canyon - a beautiful hike through lush redwoods with ocean views, right near your cabin. Finish by late morning and grab legendary sandwiches at Bruno's in Carmel for the road. You'll be back home by 4pm, leaving time to unpack and rest before the work week.",
             sun: {
                 morning: ['early-start', 'soberanes'],
                 afternoon: ['brunos', 'drive-home'],
@@ -271,6 +292,7 @@ const templatePlans = {
             emoji: '🌙',
             name: 'Stay Till Sunset',
             desc: 'Full day + dinner → home ~9pm',
+            story: "Squeeze every last drop out of the weekend! Sleep in, then explore Point Lobos in the late morning. Drive the scenic 17-Mile Drive in the afternoon, stopping at Carmel Belle for lunch. End with a proper sit-down dinner at La Bicyclette - their wood-fired pizzas and French-California cuisine are the perfect farewell meal. Drive home under the stars, arriving around 9pm. Worth it!",
             sun: {
                 morning: ['sleep-in', 'point-lobos'],
                 afternoon: ['17-mile', 'carmel-belle'],
@@ -298,7 +320,8 @@ let state = {
     sidebarFilter: 'all',  // For filtering available items in schedule
     currentScheduleDay: 'saturday',  // Which day is currently shown in schedule
     mapViewMode: 'all',  // 'all' or 'favorites' for discovery map
-    sidebarSearch: ''  // Text search filter for sidebar
+    sidebarSearch: '',  // Text search filter for sidebar
+    zoneFilter: 'all'  // Zone filter: 'all', 'bigsur', 'carmel', 'roadtrip'
 };
 
 // ============ LOCAL STORAGE ============
@@ -531,14 +554,17 @@ const categoryInfo = {
 function renderActivityGrid() {
     const grid = document.getElementById('activityGrid');
     const activeFilter = document.querySelector('.cat-filter.active').dataset.cat;
+    const zoneFilter = state.zoneFilter;
     const user = getCurrentUser();
 
-    // Update category title
+    // Update category title based on both category and zone
     const titleEl = document.getElementById('categoryTitle');
     if (titleEl) {
         const info = categoryInfo[activeFilter] || categoryInfo.all;
+        const zoneNames = { all: '', bigsur: ' in Big Sur', carmel: ' in Carmel', roadtrip: ' On the Way' };
+        const zoneSuffix = zoneNames[zoneFilter] || '';
         titleEl.innerHTML = `
-            <h3>${info.emoji} ${info.title}</h3>
+            <h3>${info.emoji} ${info.title}${zoneSuffix}</h3>
             <p class="category-desc">${info.desc}</p>
         `;
     }
@@ -558,6 +584,18 @@ function renderActivityGrid() {
 
         // Filter by category
         if (activeFilter !== 'all' && act.cat !== activeFilter) return false;
+
+        // Filter by zone
+        if (zoneFilter !== 'all') {
+            if (zoneFilter === 'bigsur') {
+                // Big Sur = north, central, south zones
+                if (!['north', 'central', 'south'].includes(act.zone)) return false;
+            } else if (zoneFilter === 'carmel') {
+                if (act.zone !== 'carmel') return false;
+            } else if (zoneFilter === 'roadtrip') {
+                if (act.zone !== 'roadtrip') return false;
+            }
+        }
 
         return true;
     });
@@ -1189,7 +1227,13 @@ function applyTemplate(templateId) {
 
     saveState();
     renderAll();
-    showToast(`📅 Loaded "${template.name}" schedule!`);
+
+    // Show the story description if available
+    if (template.story) {
+        showStoryModal(template.emoji, template.name, template.story);
+    } else {
+        showToast(`📅 Loaded "${template.name}" schedule!`);
+    }
 }
 
 function renderAvailableItems() {
@@ -1725,6 +1769,41 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function showStoryModal(emoji, name, story) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('storyModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'storyModal';
+        modal.className = 'story-modal-overlay';
+        modal.innerHTML = `
+            <div class="story-modal">
+                <div class="story-header">
+                    <span class="story-emoji"></span>
+                    <span class="story-title"></span>
+                </div>
+                <p class="story-content"></p>
+                <button class="story-close-btn">Got it!</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Close on button click or overlay click
+        modal.querySelector('.story-close-btn').addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('show');
+        });
+    }
+
+    // Populate and show
+    modal.querySelector('.story-emoji').textContent = emoji;
+    modal.querySelector('.story-title').textContent = name;
+    modal.querySelector('.story-content').textContent = story;
+    modal.classList.add('show');
+}
+
 // ============ EVENT LISTENERS ============
 document.addEventListener('DOMContentLoaded', () => {
     const hasSharedData = checkUrlHash();
@@ -1839,6 +1918,16 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.cat-filter').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            renderActivityGrid();
+        });
+    });
+
+    // Zone filters (discovery section location filter)
+    document.querySelectorAll('.zone-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.zone-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.zoneFilter = btn.dataset.zone;
             renderActivityGrid();
         });
     });
