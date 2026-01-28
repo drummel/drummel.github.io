@@ -1731,34 +1731,95 @@ function importSharedPlan() {
     if (!state.sharedData) return;
 
     const data = state.sharedData;
-    const user = getCurrentUser();
+    const sharedUserName = data.u;
 
-    if (!user) return;
+    // Create a unique user name if one already exists
+    let newUserName = sharedUserName;
+    let counter = 1;
+    while (state.users[newUserName]) {
+        newUserName = `${sharedUserName} (${counter})`;
+        counter++;
+    }
 
-    user.favorites = [...new Set([...user.favorites, ...data.f])];
-    user.mustDos = [...new Set([...user.mustDos, ...data.m])];
+    // Create a new user with the shared data
+    state.users[newUserName] = {
+        favorites: [...(data.f || [])],
+        mustDos: [...(data.m || [])],
+        passed: [...(data.n || [])],
+        plans: { [data.p]: data.s || createEmptyPlan() },
+        currentPlan: data.p
+    };
 
-    const planName = `${data.u}'s ${data.p}`;
-    user.plans[planName] = data.s;
-    user.currentPlan = planName;
+    // Switch to the new user
+    state.currentUser = newUserName;
 
     state.isViewingShared = false;
     state.sharedData = null;
 
-    document.getElementById('importBanner').classList.add('hidden');
+    document.getElementById('importModal').classList.add('hidden');
     window.location.hash = '';
 
     saveState();
     renderAll();
-    showToast('✅ Imported! You can now edit your copy.');
+    showToast(`✅ Imported as ${newUserName}!`);
+
+    // Show bounce animation on user selector to highlight switching
+    highlightUserSelector();
 }
 
 function dismissSharedView() {
     state.isViewingShared = false;
     state.sharedData = null;
-    document.getElementById('importBanner').classList.add('hidden');
+    document.getElementById('importModal').classList.add('hidden');
     window.location.hash = '';
     renderAll();
+}
+
+function highlightUserSelector() {
+    const userSelector = document.querySelector('.user-selector');
+    if (!userSelector) return;
+
+    // Add attention class for bounce animation
+    userSelector.classList.add('attention');
+
+    // Create and show tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'user-selector-tooltip';
+    tooltip.textContent = 'Switch profiles here!';
+    userSelector.appendChild(tooltip);
+
+    // Remove after animation completes
+    setTimeout(() => {
+        userSelector.classList.remove('attention');
+        tooltip.remove();
+    }, 4000);
+}
+
+function showImportModal(data) {
+    const modal = document.getElementById('importModal');
+    const authorEl = document.getElementById('importAuthor');
+    const nameEl = document.getElementById('importAsName');
+    const previewEl = document.getElementById('importPreview');
+
+    // Set the author info
+    authorEl.textContent = `${data.u}'s ${data.p}`;
+    nameEl.textContent = data.u;
+
+    // Build preview stats
+    const favCount = (data.f || []).length;
+    const mustDoCount = (data.m || []).length;
+    const scheduleCount = Object.values(data.s || {}).flat().length;
+
+    previewEl.innerHTML = `
+        <div class="import-preview-stats">
+            ${mustDoCount > 0 ? `<div class="import-preview-stat"><span class="emoji">❤️</span> <span class="count">${mustDoCount}</span> must-dos</div>` : ''}
+            ${favCount > 0 ? `<div class="import-preview-stat"><span class="emoji">⭐</span> <span class="count">${favCount}</span> favorites</div>` : ''}
+            ${scheduleCount > 0 ? `<div class="import-preview-stat"><span class="emoji">📅</span> <span class="count">${scheduleCount}</span> scheduled</div>` : ''}
+            ${favCount === 0 && mustDoCount === 0 && scheduleCount === 0 ? '<div class="import-preview-stat">Empty plan - start fresh!</div>' : ''}
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
 }
 
 // ============ TOAST ============
@@ -1811,13 +1872,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (hasSharedData && state.sharedData) {
         state.isViewingShared = true;
-        document.getElementById('importBanner').classList.remove('hidden');
-        document.getElementById('importAuthor').textContent = state.sharedData.u + "'s " + state.sharedData.p;
 
         if (!hasLocalState) {
+            // New user - show welcome modal first, import modal after
             document.getElementById('welcomeModal').classList.remove('hidden');
         } else {
+            // Existing user - show import modal immediately
             document.getElementById('welcomeModal').classList.add('hidden');
+            showImportModal(state.sharedData);
             renderAll();
         }
     } else if (hasLocalState) {
@@ -1840,8 +1902,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('welcomeModal').classList.add('hidden');
             renderAll();
 
+            // If there's shared data, show the import modal
             if (state.sharedData) {
-                showToast('Click "Save a Copy" to import the shared plan!');
+                showImportModal(state.sharedData);
             }
         }
     });

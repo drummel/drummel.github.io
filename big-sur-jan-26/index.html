@@ -44,11 +44,26 @@
         </div>
     </div>
 
-    <!-- Import Banner -->
-    <div class="import-banner hidden" id="importBanner">
-        <p>📍 You're viewing <strong id="importAuthor">Someone</strong>'s trip plan</p>
-        <button class="import-btn import-btn-primary" id="importBtn">Save a Copy</button>
-        <button class="import-btn import-btn-secondary" id="dismissImport">Just Browsing</button>
+    <!-- Import Modal -->
+    <div class="modal-overlay hidden" id="importModal">
+        <div class="modal import-modal">
+            <div class="import-modal-header">
+                <span class="import-modal-emoji">📍</span>
+                <h2>Someone Shared a Trip!</h2>
+            </div>
+            <p class="import-modal-subtitle">You're viewing <strong id="importAuthor">Someone</strong>'s plan</p>
+            <div class="import-modal-preview" id="importPreview">
+                <!-- Preview of shared content -->
+            </div>
+            <div class="import-modal-actions">
+                <button class="modal-btn import-modal-primary" id="importBtn">
+                    <span class="btn-icon">👤</span>
+                    <span class="btn-text">Import as <strong id="importAsName">Their</strong> Plan</span>
+                </button>
+                <button class="modal-btn import-modal-secondary" id="dismissImport">Just Browsing</button>
+            </div>
+            <p class="import-modal-hint">This creates a separate profile so you can both plan independently!</p>
+        </div>
     </div>
 
     <!-- Header -->
