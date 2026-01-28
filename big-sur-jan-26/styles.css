@@ -510,8 +510,9 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     background: white;
     border-radius: 12px;
     padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 1rem;
 }
 
 .favorites-map-container h3 {
@@ -524,10 +525,22 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .map-wrapper {
     position: relative;
-    height: 300px;
+    height: 500px;
     border-radius: 10px;
     overflow: hidden;
     background: var(--sky);
+}
+
+/* On mobile, map goes below and is shorter */
+@media (max-width: 1100px) {
+    .favorites-map-container {
+        position: static;
+        margin-top: 1.5rem;
+    }
+
+    .map-wrapper {
+        height: 350px;
+    }
 }
 
 .map-placeholder {
@@ -586,6 +599,8 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .map-legend-dot.experience { background: var(--heart); }
 .map-legend-dot.restaurant { background: var(--sunset); }
 .map-legend-dot.provisions { background: var(--redwood); }
+.map-legend-dot.roadstop { background: #3b82f6; }
+.map-legend-dot.adventure { background: #10b981; }
 
 /* Custom Leaflet marker styling */
 .custom-marker {
@@ -643,6 +658,20 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     font-size: 0.9rem;
     color: #666;
     margin: 0;
+}
+
+/* ============ DISCOVERY LAYOUT (Grid + Map side by side) ============ */
+.discovery-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .discovery-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ============ ACTIVITY GRID ============ */
@@ -733,6 +762,10 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 /* Provisions subtypes */
 .tag-deli { background: #fed7aa; color: #9a3412; }
 .tag-store { background: #f5f5f4; color: #57534e; }
+.tag-roadstop { background: #dbeafe; color: #1e40af; border: 1px dashed #3b82f6; }
+
+/* Adventure subtype */
+.tag-adventure { background: #d1fae5; color: #047857; border: 1px dashed #10b981; }
 
 /* Subtype icon in card meta */
 .subtype-icon {
@@ -985,6 +1018,19 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 }
 
 /* ============ SCHEDULE CONTENT & DAY TABS ============ */
+.schedule-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .schedule-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
 .schedule-content {
     flex: 1;
 }
@@ -1379,8 +1425,9 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     background: white;
     border-radius: 12px;
     padding: 1rem 1.25rem;
-    margin-top: 1.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 1rem;
 }
 
 .itinerary-map-container h3 {
@@ -1393,10 +1440,22 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .itinerary-map-wrapper {
     position: relative;
-    height: 250px;
+    height: 450px;
     border-radius: 10px;
     overflow: hidden;
     background: var(--sky);
+}
+
+/* On mobile, itinerary map goes below and is shorter */
+@media (max-width: 1100px) {
+    .itinerary-map-container {
+        position: static;
+        margin-top: 1.5rem;
+    }
+
+    .itinerary-map-wrapper {
+        height: 300px;
+    }
 }
 
 .itinerary-map-canvas {

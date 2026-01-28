@@ -18,7 +18,7 @@ const activities = [
     { id: 'mcway-falls', name: 'McWay Falls Overlook', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 0.5, desc: '80-foot waterfall onto pristine beach. THE Big Sur postcard shot.', zone: 'south', coords: [36.1583, -121.6717] },
     { id: 'bixby', name: 'Bixby Bridge', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Classic', duration: 0.5, desc: 'The Instagram shot. Park north of bridge, walk back. Big Little Lies fame!', zone: 'north', coords: [36.3717, -121.9017] },
     { id: '17-mile', name: '17-Mile Drive', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 1.5, desc: 'The Lone Cypress! Ghost Trees! Pebble Beach! $12.25 toll (refunded with $35 restaurant purchase).', zone: 'carmel', coords: [36.5700, -121.9617] },
-    { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'explore', subtype: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
+    { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'experience', subtype: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
 
     // EXPERIENCES - Seasonal & Special Activities
     { id: 'calla-lily', name: 'Calla Lily Valley', emoji: '🌸', cat: 'experience', subtype: 'seasonal', tag: 'Peak Bloom!', duration: 0.75, desc: 'Hidden valley BURSTING with white calla lilies in late Jan! Gate 18 at Garrapata. Waterproof shoes!', zone: 'north', coords: [36.4650, -121.9233] },
@@ -53,6 +53,11 @@ const activities = [
     { id: 'brunos', name: "Bruno's Market & Deli", emoji: '🥪', cat: 'provisions', subtype: 'deli', tag: 'Institution', duration: 0.5, price: '$', desc: 'Carmel institution since 1953. Great sandwiches, picnic supplies, wine selection.', zone: 'carmel', coords: [36.5517, -121.9183] },
     { id: 'nielsen-bros', name: 'Nielsen Bros. Market', emoji: '🧺', cat: 'provisions', subtype: 'store', tag: 'Gourmet', duration: 0.5, price: '$$', desc: 'Upscale market with great deli, wine, cheese. Perfect picnic provisions.', zone: 'carmel', coords: [36.5550, -121.9200] },
 
+    // ROAD TRIP STOPS (between San Rafael and Big Sur)
+    { id: 'pie-ranch', name: 'Pie Ranch Farm Stand', emoji: '🥧', cat: 'provisions', subtype: 'roadstop', tag: 'Road Trip', duration: 0.5, price: '$', desc: 'Roadside farm stand on Hwy 1 near Pescadero. Fresh seasonal pies, local produce, preserves. Non-profit farm supporting food justice.', zone: 'roadtrip', coords: [37.1083, -122.3567] },
+    { id: 'duartes-tavern', name: "Duarte's Tavern", emoji: '🍲', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'James Beard Award winner since 1894! Famous artichoke soup (get it "half & half" with green chile). Also great crab cioppino.', zone: 'roadtrip', coords: [37.2553, -122.3836] },
+    { id: 'moss-landing-kayak', name: 'Sea Otter Kayaking', emoji: '🦦', cat: 'experience', subtype: 'adventure', tag: 'Sunday Fun', duration: 3, price: '$75', desc: 'Kayak Elkhorn Slough at Moss Landing! Hundreds of sea otters, harbor seals, shore birds. No experience needed. Book ahead!', zone: 'roadtrip', coords: [36.8047, -121.7856] },
+
     // TRAVEL (special category - not shown in discovery but used in scheduling)
     { id: 'leave-san-rafael', name: 'Leave San Rafael', emoji: '🚗', cat: 'travel', subtype: 'travel', tag: 'Departure', duration: 2.5, desc: 'Start of the adventure! ~2.5 hour drive to Big Sur via Highway 1.', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
     { id: 'drive-home', name: 'Drive Home to San Rafael', emoji: '🏠', cat: 'travel', subtype: 'travel', tag: 'Return', duration: 2, desc: '~2 hour drive back. Consider stops in Carmel or Monterey!', zone: 'home', coords: [37.9735, -122.5311], isTravel: true },
@@ -72,6 +77,7 @@ const driveTimes = {
     'central': 25,   // Big Sur Village, Nepenthe
     'south': 40,     // McWay, Ewoldsen
     'carmel': 25,    // Point Lobos, Carmel
+    'roadtrip': 60,  // Pescadero, Moss Landing (en route)
     'unknown': 30
 };
 
@@ -790,7 +796,7 @@ function renderFavoritesMap(categoryFilter = 'all') {
         hike: '#2d7d5f', beach: '#0ea5e9', coastal: '#14b8a6', scenic: '#eab308',
         culture: '#8b5cf6', seasonal: '#ec4899', stargazing: '#6366f1',
         'beach-activity': '#06b6d4', dining: '#f97316', cafe: '#d97706',
-        deli: '#8b5a3c', store: '#78716c'
+        deli: '#8b5a3c', store: '#78716c', roadstop: '#3b82f6', adventure: '#10b981'
     };
 
     // Category colors fallback
@@ -1456,7 +1462,7 @@ function clearAllData() {
 function shareCurrentPlan() {
     const url = window.location.origin + window.location.pathname + '#' + encodeState();
     navigator.clipboard.writeText(url).then(() => {
-        showToast('📋 Link copied! Share it with your travel buddy.');
+        showToast('📋 Link copied! Share it with your adventure buddy.');
     }).catch(() => {
         showToast('Failed to copy link');
     });
