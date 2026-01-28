@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Sur Trip Planner | Jan 30 - Feb 1, 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal">
+            <h2>🌊 Welcome to Big Sur!</h2>
+            <p>Let's personalize your trip planner. What's your name?</p>
+            <input type="text" id="userName" placeholder="Your name" autofocus>
+            <button class="modal-btn" id="startBtn" disabled>Let's Plan!</button>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay hidden" id="addUserModal">
+        <div class="modal">
+            <h2>👋 Add a Traveler</h2>
+            <p>Add another person to plan their own version.</p>
+            <input type="text" id="newUserName" placeholder="Their name">
+            <button class="modal-btn" id="addUserBtn" disabled>Add</button>
+            <button class="modal-btn" style="background:#e5e5e5;color:#666;margin-top:0.5rem;" onclick="document.getElementById('addUserModal').classList.add('hidden')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- New Plan Modal -->
+    <div class="modal-overlay hidden" id="newPlanModal">
+        <div class="modal new-plan-modal">
+            <h2>📋 New Plan</h2>
+            <p>Create a new schedule to try different combinations.</p>
+            <input type="text" id="newPlanName" placeholder="Plan name (e.g., Epic Weekend)">
+            <button class="modal-btn" id="createPlanBtn" disabled>Create Plan</button>
+            <button class="modal-btn" style="background:#e5e5e5;color:#666;margin-top:0.5rem;" onclick="document.getElementById('newPlanModal').classList.add('hidden')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Import Banner -->
+    <div class="import-banner hidden" id="importBanner">
+        <p>📍 You're viewing <strong id="importAuthor">Someone</strong>'s trip plan</p>
+        <button class="import-btn import-btn-primary" id="importBtn">Save a Copy</button>
+        <button class="import-btn import-btn-secondary" id="dismissImport">Just Browsing</button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-title">
+                <h1>🌊 Big Sur Trip Planner</h1>
+                <div class="header-dates">January 30 – February 1, 2026</div>
+            </div>
+            <div class="header-controls">
+                <div class="user-selector">
+                    <span>👤</span>
+                    <select id="userSelect" title="Switch between different people's plans"></select>
+                    <button class="add-user-btn" id="addUserTrigger" title="Add another person">➕</button>
+                </div>
+                <button class="clear-data-btn" id="clearDataBtn" title="Clear this person's data">
+                    🗑️ <span class="clear-label">Clear</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Weather Strip -->
+    <div class="weather-strip">
+        <div class="weather-day">
+            <span class="label">Fri</span>
+            <span>🌤️</span>
+            <span class="temp">60°/45°</span>
+            <span class="rain">18%</span>
+        </div>
+        <div class="weather-day">
+            <span class="label">Sat</span>
+            <span>⛅</span>
+            <span class="temp">60°/46°</span>
+            <span class="rain">26%</span>
+        </div>
+        <div class="weather-day">
+            <span class="label">Sun</span>
+            <span>🌤️</span>
+            <span class="temp">59°/44°</span>
+            <span class="rain">22%</span>
+        </div>
+    </div>
+
+    <!-- Seasonal Banner -->
+    <div class="seasonal-banner">
+        ✨ Perfect timing! <span>🌸 Calla Lily bloom starting</span><span>🐋 Peak whale migration</span><span>🦦 Sea otter pup season</span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- ============ DISCOVERY SECTION ============ -->
+        <section class="discovery-section">
+            <div class="discovery-header">
+                <div class="discovery-intro">
+                    <h2>🔍 Discover Activities</h2>
+                    <p>Mark your interests to build your list. Pass on things you're not interested in.</p>
+                </div>
+                <div class="legend">
+                    <div class="legend-item"><span>⭐</span> Interested</div>
+                    <div class="legend-item"><span>❤️</span> Must-Do</div>
+                    <div class="legend-item"><span>🚫</span> Pass</div>
+                </div>
+            </div>
+
+            <!-- Highlights & Passed Summary -->
+            <div class="highlights-container">
+                <div class="highlights-summary">
+                    <h3>✨ Your Highlights</h3>
+                    <div class="highlights-list" id="highlightsList">
+                        <span class="highlights-empty">Mark activities below to build your list</span>
+                    </div>
+                </div>
+                <div class="passed-summary" id="passedSummary">
+                    <!-- Rendered by JS when items are passed -->
+                </div>
+            </div>
+
+            <!-- Category Filters - consolidated -->
+            <div class="category-filters">
+                <button class="cat-filter active" data-cat="explore">🧭 Explore</button>
+                <button class="cat-filter" data-cat="experience">✨ Experiences</button>
+                <button class="cat-filter" data-cat="restaurant">🍽️ Eat & Drink</button>
+                <button class="cat-filter" data-cat="provisions">🏪 Supplies</button>
+                <button class="cat-filter" data-cat="all">All</button>
+            </div>
+
+            <!-- Zone Filters - location based -->
+            <div class="zone-filters">
+                <span class="zone-label">Location:</span>
+                <button class="zone-filter active" data-zone="all">All Areas</button>
+                <button class="zone-filter" data-zone="bigsur">🌲 Big Sur</button>
+                <button class="zone-filter" data-zone="carmel">🏖️ Carmel</button>
+                <button class="zone-filter" data-zone="roadtrip">🚗 On the Way</button>
+            </div>
+
+            <!-- Category Title -->
+            <div class="category-title" id="categoryTitle">
+                <h3>🧭 Explore Big Sur</h3>
+                <p class="category-desc">Hikes, beaches, scenic stops, and outdoor adventures</p>
+            </div>
+
+            <!-- Discovery Layout: Grid + Map side by side on desktop -->
+            <div class="discovery-layout">
+                <!-- Activity Grid -->
+                <div class="activity-grid" id="activityGrid">
+                    <!-- Cards generated by JS -->
+                </div>
+
+                <!-- Favorites Map (shows where selected activities are located) -->
+                <div class="favorites-map-container" id="favoritesMapContainer">
+                    <div class="map-header">
+                        <h3 id="favoritesMapTitle">🗺️ Activities</h3>
+                        <div class="map-controls">
+                            <div class="map-filter-toggle">
+                                <button class="map-filter-btn active" data-filter="all">All</button>
+                                <button class="map-filter-btn" data-filter="favorites">⭐❤️ Only</button>
+                            </div>
+                            <button class="refit-btn" onclick="refitFavoritesMap()" title="Fit all markers">🎯 Refit</button>
+                        </div>
+                    </div>
+                    <div class="map-wrapper" id="mapWrapper">
+                        <div class="map-placeholder" id="mapPlaceholder">
+                            <span>Mark some favorites to see them on the map!</span>
+                        </div>
+                        <div class="map-canvas" id="mapCanvas"></div>
+                    </div>
+                    <div class="map-legend" id="mapLegend"></div>
+                </div>
+            </div>
+
+            <!-- Passed items section rendered by JS -->
+        </section>
+
+        <!-- ============ SCHEDULE SECTION ============ -->
+        <section class="schedule-section">
+            <div class="section-header">
+                <h2>📅 Build Your Schedule</h2>
+                <p>Drag activities into time slots. Drive times calculated automatically.</p>
+            </div>
+
+            <!-- Plan Selector -->
+            <div class="plan-selector">
+                <label>📋 Plan:</label>
+                <select id="planSelect"></select>
+                <button class="plan-btn" id="newPlanTrigger">+ New Plan</button>
+                <button class="plan-btn" id="deletePlanBtn">🗑️ Delete</button>
+            </div>
+
+
+            <div class="schedule-layout">
+                <!-- Available Items Sidebar -->
+                <div class="available-sidebar">
+                    <h3>Activities to Add</h3>
+
+                    <!-- Search box -->
+                    <div class="sidebar-search">
+                        <input type="text" id="sidebarSearchInput" placeholder="🔍 Search activities..." />
+                    </div>
+
+                    <!-- Sidebar category filters -->
+                    <div class="sidebar-filters" id="sidebarFilters">
+                        <button class="sidebar-filter active" data-cat="all">All</button>
+                        <button class="sidebar-filter" data-cat="lifestyle">🏡</button>
+                        <button class="sidebar-filter" data-cat="explore">🧭</button>
+                        <button class="sidebar-filter" data-cat="experience">✨</button>
+                        <button class="sidebar-filter" data-cat="restaurant">🍽️</button>
+                        <button class="sidebar-filter" data-cat="provisions">🏪</button>
+                    </div>
+
+                    <div id="availableItems">
+                        <p class="bucket-empty">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Schedule Content with Map -->
+                <div class="schedule-content-wrapper">
+                    <div class="schedule-content">
+                        <!-- Day Tabs -->
+                        <div class="day-tabs">
+                            <button class="day-tab" data-day="friday">🚗 Friday</button>
+                            <button class="day-tab active" data-day="saturday">🌄 Saturday</button>
+                            <button class="day-tab" data-day="sunday">🏠 Sunday</button>
+                        </div>
+
+                        <!-- Day Panels (one visible at a time) -->
+                        <div class="day-panels">
+                        <!-- Friday Panel -->
+                        <div class="day-panel" id="fridayPanel" data-day="friday">
+                            <div class="day-column">
+                                <div class="day-header friday">Friday, Jan 30 — Arrival Day</div>
+                                <div class="template-picker expanded" id="fridayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('friday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-text">Hide</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="friday"></div>
+                                </div>
+                                <div class="time-bucket" data-bucket="fri-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">Leave SF / travel</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="fri-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset</span>
+                                        <span class="bucket-time">~5:30pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="fri-evening">
+                                    <div class="bucket-header">
+                                        <span>Evening</span>
+                                        <span class="bucket-time">Dinner & settle in</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="fri-evening">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="friSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="friActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="friArrival">~4pm</div>
+                                        <div class="label">Est. Arrival</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Saturday Panel -->
+                        <div class="day-panel active" id="saturdayPanel" data-day="saturday">
+                            <div class="day-column">
+                                <div class="day-header">Saturday, Jan 31 — Full Day</div>
+                                <div class="template-picker expanded" id="saturdayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('saturday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-text">Hide</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="saturday"></div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-morning">
+                                    <div class="bucket-header">
+                                        <span>Morning</span>
+                                        <span class="bucket-time">~7am - 12pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-morning">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">~12pm - 5pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset</span>
+                                        <span class="bucket-time">~5:30pm</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sat-evening">
+                                    <div class="bucket-header">
+                                        <span>Evening</span>
+                                        <span class="bucket-time">Dinner & stargazing</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sat-evening">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="satSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="satActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="satHours">0h</div>
+                                        <div class="label">Est. Time</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="satDrive">0m</div>
+                                        <div class="label">Driving</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sunday Panel -->
+                        <div class="day-panel" id="sundayPanel" data-day="sunday">
+                            <div class="day-column">
+                                <div class="day-header sunday">Sunday, Feb 1 — Heading Home</div>
+                                <div class="template-picker expanded" id="sundayTemplates">
+                                    <button class="template-toggle" onclick="toggleTemplates('sunday')">
+                                        <span>🎯 Quick Start Ideas</span>
+                                        <span class="toggle-text">Hide</span>
+                                    </button>
+                                    <div class="template-options-inline" data-day="sunday"></div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sun-morning">
+                                    <div class="bucket-header">
+                                        <span>Morning</span>
+                                        <span class="bucket-time">~7am checkout</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-morning">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sun-afternoon">
+                                    <div class="bucket-header">
+                                        <span>Afternoon</span>
+                                        <span class="bucket-time">Carmel exploring</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-afternoon">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="time-bucket" data-bucket="sun-sunset">
+                                    <div class="bucket-header">
+                                        <span>Sunset / Evening</span>
+                                        <span class="bucket-time">Head home</span>
+                                    </div>
+                                    <div class="bucket-items" data-bucket="sun-sunset">
+                                        <div class="bucket-empty">Drop activities here</div>
+                                    </div>
+                                </div>
+                                <div class="day-summary" id="sunSummary">
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunActivities">0</div>
+                                        <div class="label">Activities</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunHours">0h</div>
+                                        <div class="label">Est. Time</div>
+                                    </div>
+                                    <div class="summary-stat">
+                                        <div class="value" id="sunEta">~2pm</div>
+                                        <div class="label">Home ETA</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Itinerary Map (vertical on right for desktop) -->
+                    <div class="itinerary-map-container" id="itineraryMapContainer">
+                        <div class="map-header">
+                            <h3>🗺️ Today's Route</h3>
+                            <button class="refit-btn" onclick="refitItineraryMap()" title="Fit all markers">🎯 Refit</button>
+                        </div>
+                        <div class="itinerary-map-wrapper" id="itineraryMapWrapper">
+                            <div class="map-placeholder" id="itineraryMapPlaceholder">
+                                <span>Add activities to see your route!</span>
+                            </div>
+                            <div class="itinerary-map-canvas" id="itineraryMapCanvas"></div>
+                        </div>
+                        <div class="itinerary-legend" id="itineraryLegend"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Share Button -->
+    <div class="floating-share">
+        <button id="shareBtn">
+            <span>📤</span> Share This Plan
+        </button>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Emoji Burst Container -->
+    <div class="emoji-burst-container" id="emojiBurstContainer"></div>
+
+    <!-- Sneaky Sea Creatures -->
+    <div class="sea-creatures" id="seaCreatures"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
