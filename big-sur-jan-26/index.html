@@ -7,7 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body>
     <!-- Welcome Modal -->
@@ -135,13 +137,27 @@
                 </div>
             </div>
 
+            <!-- Favorites Map -->
+            <div class="favorites-map-container" id="favoritesMapContainer">
+                <h3>🗺️ Your Favorites Map</h3>
+                <div class="map-wrapper" id="mapWrapper">
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        <span>Mark some favorites below to see them on the map!</span>
+                    </div>
+                    <div class="map-canvas" id="mapCanvas"></div>
+                </div>
+                <div class="map-legend" id="mapLegend"></div>
+            </div>
+
             <!-- Category Filters - Hikes first, All last -->
             <div class="category-filters">
                 <button class="cat-filter active" data-cat="hike">🥾 Hikes</button>
                 <button class="cat-filter" data-cat="beach">🏖️ Beaches</button>
                 <button class="cat-filter" data-cat="scenic">📸 Scenic</button>
                 <button class="cat-filter" data-cat="seasonal">🌸 Seasonal</button>
-                <button class="cat-filter" data-cat="food">🍽️ Food & Drink</button>
+                <button class="cat-filter" data-cat="stargazing">🌌 Stargazing</button>
+                <button class="cat-filter" data-cat="restaurant">🍽️ Restaurants</button>
+                <button class="cat-filter" data-cat="provisions">🏪 Markets</button>
                 <button class="cat-filter" data-cat="all">All</button>
             </div>
 
@@ -180,7 +196,9 @@
                         <button class="sidebar-filter" data-cat="beach">🏖️</button>
                         <button class="sidebar-filter" data-cat="scenic">📸</button>
                         <button class="sidebar-filter" data-cat="seasonal">🌸</button>
-                        <button class="sidebar-filter" data-cat="food">🍽️</button>
+                        <button class="sidebar-filter" data-cat="stargazing">🌌</button>
+                        <button class="sidebar-filter" data-cat="restaurant">🍽️</button>
+                        <button class="sidebar-filter" data-cat="provisions">🏪</button>
                     </div>
 
                     <div id="availableItems">

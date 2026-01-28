@@ -467,6 +467,113 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .template-card .template-name { font-weight: 600; font-size: 0.9rem; color: var(--stone); }
 .template-card .template-desc { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
 
+/* Friday timing display */
+.template-card .template-timing {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+}
+
+.template-card .timing-badge {
+    background: var(--ocean-pale);
+    color: var(--ocean);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* ============ FAVORITES MAP ============ */
+.favorites-map-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.favorites-map-container h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--stone);
+    margin-bottom: 0.75rem;
+}
+
+.map-wrapper {
+    position: relative;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--sky);
+}
+
+.map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+    z-index: 1;
+}
+
+.map-placeholder.hidden { display: none; }
+
+.map-canvas {
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.map-legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.map-legend-dot.hike { background: var(--forest); }
+.map-legend-dot.beach { background: var(--ocean); }
+.map-legend-dot.scenic { background: var(--gold); }
+.map-legend-dot.seasonal { background: var(--heart); }
+.map-legend-dot.stargazing { background: #6366f1; }
+.map-legend-dot.restaurant { background: var(--sunset); }
+.map-legend-dot.provisions { background: var(--redwood); }
+.map-legend-dot.culture { background: #8b5cf6; }
+
+/* Custom Leaflet marker styling */
+.custom-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    font-size: 1rem;
+    border: 3px solid var(--ocean);
+}
+
+.custom-marker.heart-marker { border-color: var(--heart); }
+.custom-marker.star-marker { border-color: var(--gold); }
+
 /* ============ CATEGORY FILTERS ============ */
 .category-filters {
     display: flex;
@@ -551,9 +658,12 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .tag-beach { background: #e0f2fe; color: #0369a1; }
 .tag-scenic { background: #fef3c7; color: #92400e; }
 .tag-food { background: #fce7f3; color: #9d174d; }
+.tag-restaurant { background: #fce7f3; color: #9d174d; }
 .tag-culture { background: #f3e8ff; color: #7c3aed; }
 .tag-seasonal { background: #d1fae5; color: #065f46; border: 1px dashed #065f46; }
 .tag-provisions { background: #fed7aa; color: #9a3412; }
+.tag-stargazing { background: #e0e7ff; color: #4338ca; border: 1px dashed #6366f1; }
+.tag-travel { background: #f3f4f6; color: #374151; }
 
 .card-desc {
     font-size: 0.85rem;
@@ -758,6 +868,16 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 .available-item:hover {
     background: var(--sand-dark);
     transform: translateX(3px);
+}
+
+.available-item.travel-item {
+    background: linear-gradient(90deg, var(--ocean-pale) 0%, var(--sand) 100%);
+    border: 2px dashed var(--ocean);
+    margin-bottom: 1rem;
+}
+
+.available-item.travel-item:hover {
+    background: linear-gradient(90deg, var(--ocean-light) 0%, var(--sand-dark) 100%);
 }
 
 .available-item.dragging {
