@@ -1389,6 +1389,21 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     margin-bottom: 0.75rem;
 }
 
+.alltrails-link {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: #428a3a;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.alltrails-link:hover {
+    color: #2d6a27;
+    text-decoration: underline;
+}
+
 .card-actions {
     display: flex;
     gap: 0.5rem;
