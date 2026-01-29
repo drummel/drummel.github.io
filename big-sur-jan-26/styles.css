@@ -2373,6 +2373,27 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     border-bottom: 1px solid #f5f5f5;
 }
 
+.packing-list li label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.packing-list li input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--forest);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.packing-list li label:has(input:checked) {
+    color: #aaa;
+    text-decoration: line-through;
+}
+
 .packing-list li:last-child {
     border-bottom: none;
 }
@@ -2456,17 +2477,29 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 
 .snacks-list li {
     position: relative;
-    padding: 0.35rem 0 0.35rem 1.25rem;
+    padding: 0.35rem 0;
     font-size: 0.85rem;
     color: #555;
 }
 
-.snacks-list li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    color: var(--forest);
-    font-weight: bold;
+.snacks-list li label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.snacks-list li input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--forest);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.snacks-list li label:has(input:checked) {
+    color: #aaa;
+    text-decoration: line-through;
 }
 
 /* Tips card special styling */
@@ -2475,9 +2508,8 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     border: 2px dashed var(--ocean);
 }
 
-.tips-list li::before {
-    content: '→';
-    color: var(--ocean);
+.tips-list li input[type="checkbox"] {
+    accent-color: var(--ocean);
 }
 
 /* Responsive for smaller screens */
