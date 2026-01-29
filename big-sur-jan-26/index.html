@@ -88,24 +88,356 @@
     </header>
 
     <!-- Weather Strip -->
-    <div class="weather-strip">
-        <div class="weather-day">
-            <span class="label">Fri</span>
-            <span>🌤️</span>
-            <span class="temp">60°/45°</span>
-            <span class="rain">18%</span>
+    <div class="weather-section">
+        <div class="weather-strip" id="weatherStrip">
+            <div class="weather-day" data-day="thu">
+                <span class="label">Thu 30</span>
+                <span class="weather-icon">⛅</span>
+                <span class="temp">71°/56°</span>
+                <span class="condition">Partly Sunny</span>
+                <span class="rain">💧 5%</span>
+                <span class="wind">🌬️ 8 mph</span>
+            </div>
+            <div class="weather-day" data-day="fri">
+                <span class="label">Fri 31</span>
+                <span class="weather-icon">🌤️</span>
+                <span class="temp">70°/54°</span>
+                <span class="condition">Mostly Sunny</span>
+                <span class="rain">💧 2%</span>
+                <span class="wind">🌬️ 6 mph</span>
+            </div>
+            <div class="weather-day" data-day="sat">
+                <span class="label">Sat 1</span>
+                <span class="weather-icon">🌦️</span>
+                <span class="temp">67°/51°</span>
+                <span class="condition">Chance of Rain</span>
+                <span class="rain">💧 25%</span>
+                <span class="wind">🌬️ 10 mph</span>
+            </div>
+            <button class="weather-expand-btn" id="weatherExpandBtn" aria-expanded="false">
+                <span class="expand-text">Hourly Forecast</span>
+                <span class="expand-icon">▼</span>
+            </button>
         </div>
-        <div class="weather-day">
-            <span class="label">Sat</span>
-            <span>⛅</span>
-            <span class="temp">60°/46°</span>
-            <span class="rain">26%</span>
-        </div>
-        <div class="weather-day">
-            <span class="label">Sun</span>
-            <span>🌤️</span>
-            <span class="temp">59°/44°</span>
-            <span class="rain">22%</span>
+
+        <!-- Expandable Hourly Forecast -->
+        <div class="weather-details" id="weatherDetails">
+            <div class="hourly-tabs">
+                <button class="hourly-tab active" data-day="thu">Thu 30</button>
+                <button class="hourly-tab" data-day="fri">Fri 31</button>
+                <button class="hourly-tab" data-day="sat">Sat 1</button>
+            </div>
+
+            <!-- Thursday Hourly -->
+            <div class="hourly-forecast active" id="hourly-thu">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:10am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">54°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">56°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">65°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">68°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">70°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">71°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">70°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">68°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:32pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">60°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">57°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">4 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">65%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">NE 5-10 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">10+ mi</span></div>
+                </div>
+            </div>
+
+            <!-- Friday Hourly -->
+            <div class="hourly-forecast" id="hourly-fri">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:09am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">52°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">54°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">57°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">☀️</span>
+                        <span class="hourly-temp">61°</span>
+                        <span class="hourly-desc">Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">☀️</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">67°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">69°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">70°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">69°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">66°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Mostly Sunny</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:33pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">60°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">56°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">55°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">5 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">58%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">NW 5-8 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">10+ mi</span></div>
+                </div>
+            </div>
+
+            <!-- Saturday Hourly -->
+            <div class="hourly-forecast" id="hourly-sat">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:08am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">50°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">52°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">55°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">🌦️</span>
+                        <span class="hourly-temp">61°</span>
+                        <span class="hourly-desc">Chance Showers</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">🌦️</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Chance Showers</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">66°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">67°</span>
+                        <span class="hourly-desc">Partly Sunny</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">65°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">🌦️</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Chance Showers</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">59°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:34pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">57°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">55°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">53°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">52°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">3 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">72%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">SW 8-12 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">8 mi</span></div>
+                </div>
+            </div>
+
+            <div class="weather-credit">
+                <span>Data from National Weather Service</span>
+                <a href="https://forecast.weather.gov/MapClick.php?lat=36.28&lon=-121.8" target="_blank" rel="noopener">View Full Forecast</a>
+            </div>
         </div>
     </div>
 

@@ -2165,4 +2165,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start sea creatures swimming!
     startSeaCreatures();
+
+    // ============ WEATHER EXPAND/COLLAPSE ============
+    const weatherExpandBtn = document.getElementById('weatherExpandBtn');
+    const weatherDetails = document.getElementById('weatherDetails');
+    const hourlyTabs = document.querySelectorAll('.hourly-tab');
+    const hourlyForecasts = document.querySelectorAll('.hourly-forecast');
+    const weatherDays = document.querySelectorAll('.weather-day');
+
+    // Toggle weather details panel
+    if (weatherExpandBtn && weatherDetails) {
+        weatherExpandBtn.addEventListener('click', () => {
+            const isExpanded = weatherExpandBtn.getAttribute('aria-expanded') === 'true';
+            weatherExpandBtn.setAttribute('aria-expanded', !isExpanded);
+            weatherDetails.classList.toggle('open');
+        });
+    }
+
+    // Tab switching for hourly forecast
+    hourlyTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const day = tab.dataset.day;
+
+            // Update active tab
+            hourlyTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Show corresponding forecast
+            hourlyForecasts.forEach(forecast => {
+                forecast.classList.remove('active');
+                if (forecast.id === `hourly-${day}`) {
+                    forecast.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Clicking on weather day cards opens details and switches to that day
+    weatherDays.forEach(dayCard => {
+        dayCard.addEventListener('click', () => {
+            const day = dayCard.dataset.day;
+
+            // Open the details panel if not already open
+            if (!weatherDetails.classList.contains('open')) {
+                weatherExpandBtn.setAttribute('aria-expanded', 'true');
+                weatherDetails.classList.add('open');
+            }
+
+            // Switch to that day's tab
+            hourlyTabs.forEach(t => {
+                t.classList.toggle('active', t.dataset.day === day);
+            });
+            hourlyForecasts.forEach(forecast => {
+                forecast.classList.toggle('active', forecast.id === `hourly-${day}`);
+            });
+        });
+    });
 });

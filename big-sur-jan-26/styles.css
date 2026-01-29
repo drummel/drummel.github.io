@@ -393,14 +393,18 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 }
 
 /* ============ WEATHER & SEASONAL ============ */
-.weather-strip {
+.weather-section {
     background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.weather-strip {
     padding: 0.75rem 1.5rem;
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    align-items: center;
+    gap: 1.5rem;
     flex-wrap: wrap;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     font-size: 0.85rem;
 }
 
@@ -408,11 +412,289 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
 }
 
-.weather-day .label { font-weight: 600; color: var(--forest); }
+.weather-day:hover {
+    background: var(--sand);
+}
+
+.weather-day .label { font-weight: 600; color: var(--forest); min-width: 45px; }
+.weather-day .weather-icon { font-size: 1.2rem; }
 .weather-day .temp { font-weight: 700; }
+.weather-day .condition { color: #666; font-size: 0.8rem; }
 .weather-day .rain { color: var(--ocean); font-size: 0.8rem; }
+.weather-day .wind { color: #888; font-size: 0.75rem; }
+
+/* Expand Button */
+.weather-expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--forest);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.weather-expand-btn:hover {
+    background: var(--forest-dark);
+    transform: scale(1.02);
+}
+
+.weather-expand-btn .expand-icon {
+    transition: transform 0.3s;
+    font-size: 0.65rem;
+}
+
+.weather-expand-btn[aria-expanded="true"] .expand-icon {
+    transform: rotate(180deg);
+}
+
+/* Weather Details Panel */
+.weather-details {
+    display: none;
+    padding: 1rem 1.5rem 1.25rem;
+    background: linear-gradient(180deg, var(--sand) 0%, white 100%);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    animation: slideDown 0.3s ease-out;
+}
+
+.weather-details.open {
+    display: block;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hourly Tabs */
+.hourly-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+
+.hourly-tab {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.hourly-tab:hover {
+    border-color: var(--forest);
+    color: var(--forest);
+}
+
+.hourly-tab.active {
+    background: var(--forest);
+    color: white;
+    border-color: var(--forest);
+}
+
+/* Hourly Forecast */
+.hourly-forecast {
+    display: none;
+}
+
+.hourly-forecast.active {
+    display: block;
+}
+
+.hourly-scroll {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--forest) transparent;
+}
+
+.hourly-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.hourly-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hourly-scroll::-webkit-scrollbar-thumb {
+    background: var(--forest);
+    border-radius: 3px;
+}
+
+.hourly-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.6rem 0.8rem;
+    background: white;
+    border-radius: 12px;
+    min-width: 70px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hourly-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.hourly-item .hour {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--forest);
+}
+
+.hourly-item .icon {
+    font-size: 1.3rem;
+}
+
+.hourly-item .hourly-temp {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.hourly-item .hourly-desc {
+    font-size: 0.65rem;
+    color: #888;
+    text-align: center;
+    max-width: 65px;
+}
+
+/* Special hourly states */
+.hourly-item.sunrise,
+.hourly-item.sunset {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1px solid #fed7aa;
+}
+
+.hourly-item.sunrise .hour,
+.hourly-item.sunset .hour {
+    color: var(--sunset);
+}
+
+.hourly-item.night {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.hourly-item.night .hour {
+    color: #64748b;
+}
+
+.hourly-item.peak {
+    background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+    border: 1px solid #fde047;
+}
+
+.hourly-item.peak .hourly-temp {
+    color: #b45309;
+}
+
+/* Day Summary */
+.day-summary {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.summary-label {
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--forest-dark);
+}
+
+/* Weather Credit */
+.weather-credit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.7rem;
+    color: #888;
+}
+
+.weather-credit a {
+    color: var(--ocean);
+    text-decoration: none;
+}
+
+.weather-credit a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive weather */
+@media (max-width: 768px) {
+    .weather-strip {
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .weather-day {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0.4rem;
+        gap: 0.3rem;
+    }
+
+    .weather-day .condition,
+    .weather-day .wind {
+        display: none;
+    }
+
+    .hourly-tabs {
+        gap: 0.3rem;
+    }
+
+    .hourly-tab {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .day-summary {
+        gap: 1rem;
+    }
+}
 
 .seasonal-banner {
     background: var(--forest);
