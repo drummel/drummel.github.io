@@ -2513,8 +2513,15 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
 }
 
 .snacks-list li label:has(input:checked) {
-    color: #aaa;
-    text-decoration: line-through;
+    color: var(--forest-dark);
+    background: linear-gradient(90deg, var(--forest-pale) 0%, transparent 100%);
+    border-radius: 4px;
+    padding-left: 0.25rem;
+    margin-left: -0.25rem;
+}
+
+.snacks-list li label:has(input:checked)::after {
+    content: ' ';
 }
 
 /* Tips card special styling */
