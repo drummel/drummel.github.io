@@ -2209,3 +2209,192 @@ h1, h2, h3, h4 { font-family: 'Libre Baskerville', serif; font-weight: 400; }
         padding: 1rem;
     }
 }
+
+/* ============ GOOFY OFFER POPUP ============ */
+.offer-popup {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(100px) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.offer-popup.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    animation: offerBounce 2s ease-in-out infinite;
+}
+
+@keyframes offerBounce {
+    0%, 100% { transform: translateY(0) scale(1) rotate(-1deg); }
+    25% { transform: translateY(-15px) scale(1.02) rotate(1deg); }
+    50% { transform: translateY(-5px) scale(1) rotate(-0.5deg); }
+    75% { transform: translateY(-10px) scale(1.01) rotate(0.5deg); }
+}
+
+.offer-content {
+    background: linear-gradient(135deg, #fff 0%, #fef3c7 50%, #fce7f3 100%);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    max-width: 340px;
+    box-shadow:
+        0 10px 40px rgba(249, 115, 22, 0.3),
+        0 0 0 3px var(--sunset),
+        0 0 0 6px rgba(249, 115, 22, 0.2);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.offer-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 70%
+    );
+    animation: offerShine 3s ease-in-out infinite;
+}
+
+@keyframes offerShine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.offer-sparkles {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    animation: sparkleWiggle 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes sparkleWiggle {
+    from { transform: scale(1) rotate(-5deg); }
+    to { transform: scale(1.1) rotate(5deg); }
+}
+
+.offer-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--sunset);
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+.offer-text {
+    font-size: 0.95rem;
+    color: var(--stone);
+    margin: 0 0 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.offer-text em {
+    color: var(--heart);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.offer-price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.price-strikethrough {
+    font-size: 0.85rem;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.price-no {
+    font-size: 0.75rem;
+    color: var(--sunset);
+    font-weight: 600;
+}
+
+.price-final {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--heart);
+    text-shadow: 2px 2px 0 #fff;
+    animation: pricePulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes pricePulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+.offer-bonus {
+    font-size: 0.9rem;
+    color: var(--stone);
+    margin: 0 0 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.offer-fine-print {
+    font-size: 0.7rem;
+    color: #888;
+    font-style: italic;
+    margin: 0 0 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.offer-btn {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, var(--heart) 0%, var(--sunset) 100%);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+}
+
+.offer-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+}
+
+.offer-btn:active {
+    transform: scale(0.98);
+}
+
+/* Mobile positioning */
+@media (max-width: 500px) {
+    .offer-popup {
+        right: 1rem;
+        left: 1rem;
+        bottom: 1rem;
+    }
+
+    .offer-content {
+        max-width: none;
+        padding: 1.25rem 1.5rem;
+    }
+}

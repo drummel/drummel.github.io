@@ -2100,6 +2100,69 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear data button
     document.getElementById('clearDataBtn').addEventListener('click', clearCurrentUserData);
 
+    // ============ GOOFY OFFER POPUP ============
+    const offerPopup = document.getElementById('offerPopup');
+    const offerBtn = document.getElementById('offerBtn');
+
+    // Show the offer popup after 5 seconds
+    setTimeout(() => {
+        // Only show if user hasn't already dismissed it this session
+        if (!sessionStorage.getItem('offerDismissed')) {
+            offerPopup.classList.add('show');
+        }
+    }, 5000);
+
+    // Handle the "For Sure!!" button click
+    offerBtn.addEventListener('click', () => {
+        // Create a burst of love emojis
+        const rect = offerBtn.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+
+        // Multiple bursts of hearts and kisses
+        const loveEmojis = ['💖', '💕', '😘', '🥰', '💋', '✨', '💗', '😍'];
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                const emoji = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+                const particle = document.createElement('div');
+                particle.className = 'emoji-particle';
+                particle.textContent = emoji;
+
+                const angle = (Math.PI * 2 * i) / 20 + Math.random() * 0.5;
+                const distance = 80 + Math.random() * 120;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance - 50;
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+
+                document.getElementById('emojiBurstContainer').appendChild(particle);
+
+                setTimeout(() => particle.remove(), 1000);
+            }, i * 30);
+        }
+
+        // Hide the popup with a fun exit
+        offerPopup.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        offerPopup.style.transform = 'translateY(-20px) scale(1.1) rotate(5deg)';
+        offerPopup.style.opacity = '0';
+
+        setTimeout(() => {
+            offerPopup.classList.remove('show');
+            offerPopup.style.transform = '';
+            offerPopup.style.opacity = '';
+        }, 500);
+
+        // Remember they clicked it
+        sessionStorage.setItem('offerDismissed', 'true');
+
+        // Show a fun toast
+        showToast('Deal accepted! Payment of hugs & smooches now due 💕');
+    });
+
     // Start sea creatures swimming!
     startSeaCreatures();
 });
