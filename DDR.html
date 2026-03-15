@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>DANCE DANCE REVOLUTION: POCKET EDITION</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --neon-pink: #ff2d95;
+    --neon-blue: #00d4ff;
+    --neon-green: #39ff14;
+    --neon-yellow: #fff700;
+    --neon-purple: #b026ff;
+    --bg-dark: #0a0a1a;
+  }
+
+  body {
+    font-family: 'Press Start 2P', monospace;
+    background: var(--bg-dark);
+    color: white;
+    min-height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* === STARFIELD BACKGROUND === */
+  .starfield {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
+
+  /* === MAIN SCREENS === */
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+  }
+  .screen.active { display: flex; }
+
+  /* === TITLE SCREEN === */
+  #title-screen {
+    text-align: center;
+  }
+  .game-title {
+    font-size: 1.4em;
+    line-height: 1.6;
+    text-shadow:
+      0 0 10px var(--neon-pink),
+      0 0 20px var(--neon-pink),
+      0 0 40px var(--neon-pink);
+    animation: titlePulse 2s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  .game-subtitle {
+    font-size: 0.6em;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    margin-bottom: 40px;
+    animation: subtitleFloat 3s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes subtitleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .dancer-emoji {
+    font-size: 4em;
+    animation: dancerBounce 0.5s ease-in-out infinite alternate;
+    margin: 20px 0;
+  }
+  @keyframes dancerBounce {
+    0% { transform: translateY(0) rotate(-5deg); }
+    100% { transform: translateY(-15px) rotate(5deg); }
+  }
+
+  .start-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1em;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: white;
+    border: 3px solid var(--neon-blue);
+    border-radius: 12px;
+    cursor: pointer;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    box-shadow:
+      0 0 15px var(--neon-pink),
+      0 0 30px rgba(255,45,149,0.3),
+      inset 0 0 15px rgba(255,255,255,0.1);
+    animation: btnPulse 1.5s ease-in-out infinite;
+    margin-top: 20px;
+  }
+  .start-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 40px var(--neon-pink);
+  }
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 15px var(--neon-pink), 0 0 30px rgba(255,45,149,0.3); }
+    50% { box-shadow: 0 0 25px var(--neon-pink), 0 0 50px rgba(255,45,149,0.5); }
+  }
+
+  .motion-warning {
+    font-size: 0.45em;
+    color: var(--neon-yellow);
+    margin-top: 30px;
+    animation: blink 1s step-end infinite;
+    line-height: 1.8;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* === GAME SCREEN === */
+  #game-screen {
+    justify-content: flex-start;
+    padding-top: 10px;
+  }
+
+  .score-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    font-size: 0.55em;
+  }
+  .score-display {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+  }
+  .combo-display {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow);
+  }
+  .streak-fire {
+    display: none;
+    font-size: 1.5em;
+  }
+  .streak-fire.visible { display: inline; }
+
+  .timer-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin: 5px 0 10px;
+    overflow: hidden;
+  }
+  .timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-yellow), var(--neon-pink));
+    border-radius: 3px;
+    transition: width 0.1s linear;
+    width: 100%;
+  }
+
+  /* The dance zone */
+  .dance-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+  }
+
+  .move-announcement {
+    font-size: 0.8em;
+    color: var(--neon-blue);
+    text-shadow: 0 0 15px var(--neon-blue);
+    text-align: center;
+    margin-bottom: 5px;
+    min-height: 2.4em;
+    line-height: 1.4;
+  }
+
+  .move-emoji {
+    font-size: 5em;
+    animation: moveAppear 0.3s ease-out;
+    margin: 10px 0;
+  }
+  @keyframes moveAppear {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .move-instruction {
+    font-size: 0.55em;
+    color: var(--neon-yellow);
+    text-align: center;
+    margin: 8px 20px;
+    line-height: 1.6;
+    min-height: 3em;
+  }
+
+  .motion-meter {
+    width: 80%;
+    max-width: 300px;
+    margin: 15px auto;
+  }
+  .motion-meter-label {
+    font-size: 0.45em;
+    color: var(--neon-purple);
+    text-align: center;
+    margin-bottom: 5px;
+  }
+  .motion-meter-bar {
+    height: 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    border: 2px solid var(--neon-purple);
+    overflow: hidden;
+    position: relative;
+  }
+  .motion-meter-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green), var(--neon-yellow), var(--neon-pink));
+    border-radius: 8px;
+    transition: width 0.15s ease-out;
+  }
+  .motion-meter-threshold {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: white;
+    left: 60%;
+    box-shadow: 0 0 8px white;
+  }
+
+  /* Arrow indicators */
+  .arrow-display {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .arrow {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+  .arrow.active {
+    opacity: 1;
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px var(--neon-pink);
+    animation: arrowPop 0.3s ease-out;
+  }
+  @keyframes arrowPop {
+    0% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  /* Judgment text */
+  .judgment {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8em;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100;
+  }
+  .judgment.show {
+    animation: judgmentPop 0.8s ease-out forwards;
+  }
+  @keyframes judgmentPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    40% { transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -70%) scale(0.8); }
+  }
+  .judgment.perfect { color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green); }
+  .judgment.great { color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
+  .judgment.good { color: var(--neon-yellow); text-shadow: 0 0 20px var(--neon-yellow); }
+  .judgment.miss { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); }
+
+  /* Points popup */
+  .points-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7em;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 99;
+  }
+  .points-popup.show {
+    animation: pointsFly 1s ease-out forwards;
+  }
+  @keyframes pointsFly {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -60%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -120%) scale(0.6); }
+  }
+
+  /* === CONFETTI === */
+  .confetti-piece {
+    position: fixed;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  /* === DANCE FLOOR PULSE === */
+  .dance-floor-pulse {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: radial-gradient(ellipse at center bottom, rgba(176,38,255,0.15), transparent 70%);
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .dance-floor-pulse.active {
+    opacity: 1;
+    animation: floorPulse 0.4s ease-out;
+  }
+  @keyframes floorPulse {
+    0% { opacity: 0.8; }
+    100% { opacity: 0.2; }
+  }
+
+  /* === RESULTS SCREEN === */
+  #results-screen {
+    text-align: center;
+  }
+  .results-title {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: var(--neon-pink);
+    text-shadow: 0 0 20px var(--neon-pink);
+  }
+  .results-grade {
+    font-size: 4em;
+    margin: 20px 0;
+    animation: gradeReveal 1s ease-out;
+  }
+  @keyframes gradeReveal {
+    0% { transform: scale(0) rotate(-360deg); opacity: 0; }
+    60% { transform: scale(1.3) rotate(10deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .results-stats {
+    font-size: 0.5em;
+    line-height: 2.5;
+    margin: 20px 0;
+  }
+  .results-stats .stat-value {
+    color: var(--neon-green);
+  }
+  .results-comment {
+    font-size: 0.5em;
+    color: var(--neon-yellow);
+    margin: 20px 0;
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  /* === SCREEN FLASH === */
+  .screen-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .screen-flash.flash {
+    animation: screenFlash 0.3s ease-out;
+  }
+  @keyframes screenFlash {
+    0% { opacity: 0.4; }
+    100% { opacity: 0; }
+  }
+
+  /* === BOUNCING FLOOR ARROWS === */
+  .floor-arrows {
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    z-index: 1;
+    opacity: 0.3;
+  }
+  .floor-arrow {
+    font-size: 1.5em;
+    animation: floorArrowBounce 1s ease-in-out infinite;
+  }
+  .floor-arrow:nth-child(2) { animation-delay: 0.15s; }
+  .floor-arrow:nth-child(3) { animation-delay: 0.3s; }
+  .floor-arrow:nth-child(4) { animation-delay: 0.45s; }
+  @keyframes floorArrowBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.3; }
+    50% { transform: translateY(-8px); opacity: 0.7; }
+  }
+
+  /* Countdown */
+  .countdown {
+    font-size: 4em;
+    color: var(--neon-green);
+    text-shadow: 0 0 30px var(--neon-green);
+    animation: countPop 0.8s ease-out;
+  }
+  @keyframes countPop {
+    0% { transform: scale(2); opacity: 0; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  /* Shake animation for misses */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .shaking { animation: shake 0.4s ease-out; }
+
+  /* Rainbow border for high combos */
+  @keyframes rainbowBorder {
+    0% { border-color: var(--neon-pink); }
+    25% { border-color: var(--neon-blue); }
+    50% { border-color: var(--neon-green); }
+    75% { border-color: var(--neon-yellow); }
+    100% { border-color: var(--neon-pink); }
+  }
+
+  .high-combo .motion-meter-bar {
+    animation: rainbowBorder 1s linear infinite;
+  }
+</style>
+</head>
+<body>
+
+<!-- Starfield background -->
+<div class="starfield" id="starfield"></div>
+
+<!-- Dance floor glow -->
+<div class="dance-floor-pulse" id="danceFloor"></div>
+
+<!-- Screen flash overlay -->
+<div class="screen-flash" id="screenFlash"></div>
+
+<!-- Judgment display -->
+<div class="judgment" id="judgment"></div>
+<div class="points-popup" id="pointsPopup"></div>
+
+<!-- ========== TITLE SCREEN ========== -->
+<div class="screen active" id="title-screen">
+  <div class="game-title">DANCE DANCE<br>REVOLUTION</div>
+  <div class="game-subtitle">POCKET EDITION</div>
+  <div class="dancer-emoji">🕺</div>
+  <button class="start-btn" id="startBtn" onclick="requestMotion()">
+    TAP TO DANCE
+  </button>
+  <div class="motion-warning">
+    !! REQUIRES PHONE !!<br>
+    SHAKE TO PLAY
+  </div>
+</div>
+
+<!-- ========== GAME SCREEN ========== -->
+<div class="screen" id="game-screen">
+  <div class="score-bar">
+    <div class="score-display">SCORE: <span id="score">0</span></div>
+    <div class="combo-display">
+      <span class="streak-fire" id="streakFire">🔥</span>
+      x<span id="combo">0</span>
+    </div>
+  </div>
+  <div class="timer-bar">
+    <div class="timer-fill" id="timerFill"></div>
+  </div>
+
+  <div class="dance-zone" id="danceZone">
+    <div class="move-announcement" id="moveAnnouncement">GET READY...</div>
+    <div class="move-emoji" id="moveEmoji">🎶</div>
+    <div class="move-instruction" id="moveInstruction"></div>
+
+    <div class="arrow-display" id="arrowDisplay">
+      <div class="arrow" id="arrow-left">⬅️</div>
+      <div class="arrow" id="arrow-up">⬆️</div>
+      <div class="arrow" id="arrow-down">⬇️</div>
+      <div class="arrow" id="arrow-right">➡️</div>
+    </div>
+
+    <div class="motion-meter">
+      <div class="motion-meter-label">DANCE ENERGY</div>
+      <div class="motion-meter-bar">
+        <div class="motion-meter-fill" id="motionFill"></div>
+        <div class="motion-meter-threshold"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="floor-arrows">
+    <div class="floor-arrow">⬆️</div>
+    <div class="floor-arrow">⬇️</div>
+    <div class="floor-arrow">⬅️</div>
+    <div class="floor-arrow">➡️</div>
+  </div>
+</div>
+
+<!-- ========== RESULTS SCREEN ========== -->
+<div class="screen" id="results-screen">
+  <div class="results-title">ROUND COMPLETE!</div>
+  <div class="results-grade" id="resultsGrade"></div>
+  <div class="results-stats" id="resultsStats"></div>
+  <div class="results-comment" id="resultsComment"></div>
+  <button class="start-btn" onclick="startGame()">
+    DANCE AGAIN
+  </button>
+</div>
+
+<script>
+// ============================================================
+//  DANCE DANCE REVOLUTION: POCKET EDITION
+//  A very serious and competitive rhythm game
+// ============================================================
+
+// === AUDIO ENGINE (Web Audio API beeps & boops) ===
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, duration, type = 'square', volume = 0.15) {
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function sfxPerfect() {
+  playTone(880, 0.15, 'sine', 0.2);
+  setTimeout(() => playTone(1320, 0.2, 'sine', 0.15), 80);
+}
+function sfxGreat() {
+  playTone(660, 0.15, 'sine', 0.18);
+  setTimeout(() => playTone(880, 0.15, 'sine', 0.12), 100);
+}
+function sfxGood() {
+  playTone(440, 0.15, 'triangle', 0.15);
+}
+function sfxMiss() {
+  playTone(150, 0.3, 'sawtooth', 0.12);
+}
+function sfxCountdown() {
+  playTone(520, 0.12, 'square', 0.1);
+}
+function sfxGo() {
+  playTone(780, 0.1, 'square', 0.15);
+  setTimeout(() => playTone(1040, 0.15, 'square', 0.12), 80);
+  setTimeout(() => playTone(1560, 0.2, 'sine', 0.1), 160);
+}
+function sfxNewMove() {
+  playTone(600, 0.08, 'sine', 0.1);
+  setTimeout(() => playTone(800, 0.08, 'sine', 0.1), 60);
+}
+function sfxGameOver() {
+  playTone(400, 0.2, 'sine', 0.15);
+  setTimeout(() => playTone(350, 0.2, 'sine', 0.15), 200);
+  setTimeout(() => playTone(300, 0.3, 'sine', 0.15), 400);
+  setTimeout(() => playTone(200, 0.5, 'sine', 0.12), 600);
+}
+function sfxConfetti() {
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => playTone(800 + Math.random() * 800, 0.1, 'sine', 0.05), i * 60);
+  }
+}
+
+// === DANCE MOVES ===
+const DANCE_MOVES = [
+  { name: "THE WOBBLE", emoji: "🫨", instruction: "SHAKE YOUR PHONE SIDE TO SIDE!", arrows: ["left", "right"] },
+  { name: "PHONE FLIP", emoji: "🔄", instruction: "TILT YOUR PHONE FORWARD AND BACK!", arrows: ["up", "down"] },
+  { name: "DISCO FEVER", emoji: "🪩", instruction: "WAVE YOUR PHONE IN THE AIR!", arrows: ["up", "left", "right"] },
+  { name: "THE MACARENA", emoji: "💃", instruction: "SHAKE IT ALL AROUND!", arrows: ["left", "right", "up", "down"] },
+  { name: "ROBOT DANCE", emoji: "🤖", instruction: "SHARP JERKY MOVEMENTS!", arrows: ["up", "right"] },
+  { name: "BOOTY SHAKE", emoji: "🍑", instruction: "SHAKE THAT PHONE FAST!", arrows: ["left", "right", "down"] },
+  { name: "THE SPRINKLER", emoji: "💦", instruction: "SWEEP YOUR PHONE LEFT TO RIGHT!", arrows: ["left", "right"] },
+  { name: "CHICKEN DANCE", emoji: "🐔", instruction: "FLAP YOUR ARMS (WITH PHONE)!", arrows: ["up", "down", "up"] },
+  { name: "THE WORM", emoji: "🪱", instruction: "WAVE YOUR PHONE UP AND DOWN!", arrows: ["up", "down", "up", "down"] },
+  { name: "MOONWALK", emoji: "🌙", instruction: "SMOOTH SLIDE BACKWARDS!", arrows: ["right", "right", "left"] },
+  { name: "TORNADO SPIN", emoji: "🌪️", instruction: "SPIN YOUR PHONE AROUND!", arrows: ["left", "up", "right", "down"] },
+  { name: "THE FLOSS", emoji: "🧵", instruction: "SWING SIDE TO SIDE FAST!", arrows: ["left", "right", "left", "right"] },
+  { name: "JAZZ HANDS", emoji: "🤗", instruction: "SHAKE PHONE WITH RECKLESS ABANDON!", arrows: ["up", "left", "right"] },
+  { name: "LIMBO MODE", emoji: "🏝️", instruction: "LOWER YOUR PHONE SLOWLY!", arrows: ["down", "down"] },
+  { name: "JUMP AROUND", emoji: "🦘", instruction: "BOUNCE YOUR PHONE UP AND DOWN!", arrows: ["up", "up", "up"] },
+  { name: "THE DOOT", emoji: "🎺", instruction: "THRUST PHONE FORWARD LIKE A TRUMPET!", arrows: ["up", "right"] },
+  { name: "VOGUE", emoji: "✨", instruction: "STRIKE A POSE! HOLD STILL THEN SHAKE!", arrows: ["up"] },
+  { name: "SHOPPING CART", emoji: "🛒", instruction: "PUSH AND PULL YOUR PHONE!", arrows: ["up", "down"] },
+];
+
+// === GAME STATE ===
+let gameState = {
+  score: 0,
+  combo: 0,
+  maxCombo: 0,
+  perfects: 0,
+  greats: 0,
+  goods: 0,
+  misses: 0,
+  totalMoves: 0,
+  currentMove: null,
+  moveTimer: null,
+  gameTimer: null,
+  motionLevel: 0,
+  isPlaying: false,
+  roundDuration: 60, // seconds
+  timeRemaining: 60,
+  moveInterval: 4000, // ms per move
+  motionHistory: [],
+  lastMotion: { x: 0, y: 0, z: 0 },
+  motionAvailable: false,
+  fakeModeInterval: null,
+};
+
+// === STARFIELD ===
+function createStarfield() {
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 3 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 2 + 's';
+    star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+    sf.appendChild(star);
+  }
+}
+createStarfield();
+
+// === MOTION DETECTION ===
+function requestMotion() {
+  ensureAudio();
+
+  // iOS 13+ requires permission
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .then(state => {
+        if (state === 'granted') {
+          enableMotion();
+        } else {
+          enableFakeMode();
+        }
+        startGame();
+      })
+      .catch(() => {
+        enableFakeMode();
+        startGame();
+      });
+  } else if (window.DeviceMotionEvent) {
+    // Android / older iOS
+    enableMotion();
+    // Test if we actually get events
+    let gotMotion = false;
+    const testHandler = () => { gotMotion = true; };
+    window.addEventListener('devicemotion', testHandler);
+    setTimeout(() => {
+      window.removeEventListener('devicemotion', testHandler);
+      if (!gotMotion) enableFakeMode();
+    }, 1000);
+    startGame();
+  } else {
+    enableFakeMode();
+    startGame();
+  }
+}
+
+function enableMotion() {
+  gameState.motionAvailable = true;
+  window.addEventListener('devicemotion', handleMotion);
+}
+
+function enableFakeMode() {
+  // Desktop fallback: detect mouse/touch movement as "motion"
+  gameState.motionAvailable = false;
+
+  document.addEventListener('touchmove', handleTouchMotion, { passive: true });
+  document.addEventListener('touchstart', handleTouchMotion, { passive: true });
+  document.addEventListener('mousemove', handleMouseMotion);
+  document.addEventListener('click', handleClick);
+
+  // Update the warning
+  const warn = document.querySelector('.motion-warning');
+  if (warn) warn.textContent = 'TAP & SWIPE TO DANCE!';
+}
+
+let lastTouch = { x: 0, y: 0, t: 0 };
+function handleTouchMotion(e) {
+  if (!gameState.isPlaying) return;
+  const touch = e.touches[0];
+  if (!touch) return;
+  const now = Date.now();
+  const dt = now - lastTouch.t;
+  if (dt > 0) {
+    const dx = Math.abs(touch.clientX - lastTouch.x);
+    const dy = Math.abs(touch.clientY - lastTouch.y);
+    const speed = (dx + dy) / dt * 50;
+    gameState.motionLevel = Math.min(100, gameState.motionLevel + speed * 0.8);
+  }
+  lastTouch = { x: touch.clientX, y: touch.clientY, t: now };
+}
+
+let lastMouse = { x: 0, y: 0, t: 0 };
+function handleMouseMotion(e) {
+  if (!gameState.isPlaying) return;
+  const now = Date.now();
+  const dt = now - lastMouse.t;
+  if (dt > 10) {
+    const dx = Math.abs(e.clientX - lastMouse.x);
+    const dy = Math.abs(e.clientY - lastMouse.y);
+    const speed = (dx + dy) / dt * 30;
+    gameState.motionLevel = Math.min(100, gameState.motionLevel + speed * 0.5);
+  }
+  lastMouse = { x: e.clientX, y: e.clientY, t: now };
+}
+
+function handleClick() {
+  if (!gameState.isPlaying) return;
+  gameState.motionLevel = Math.min(100, gameState.motionLevel + 25);
+}
+
+function handleMotion(e) {
+  if (!gameState.isPlaying) return;
+  const acc = e.accelerationIncludingGravity || e.acceleration;
+  if (!acc) return;
+
+  const x = acc.x || 0;
+  const y = acc.y || 0;
+  const z = acc.z || 0;
+
+  const dx = Math.abs(x - gameState.lastMotion.x);
+  const dy = Math.abs(y - gameState.lastMotion.y);
+  const dz = Math.abs(z - gameState.lastMotion.z);
+
+  const totalMotion = dx + dy + dz;
+  gameState.motionLevel = Math.min(100, gameState.motionLevel + totalMotion * 2.5);
+
+  gameState.lastMotion = { x, y, z };
+
+  // Update arrow highlights based on dominant axis
+  if (gameState.isPlaying) {
+    clearArrows();
+    if (dx > 3) {
+      if (x > 0) activateArrow('right');
+      else activateArrow('left');
+    }
+    if (dy > 3) {
+      if (y > 0) activateArrow('up');
+      else activateArrow('down');
+    }
+  }
+}
+
+// === SCREEN MANAGEMENT ===
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// === ARROW MANAGEMENT ===
+function clearArrows() {
+  document.querySelectorAll('.arrow').forEach(a => a.classList.remove('active'));
+}
+function activateArrow(dir) {
+  const el = document.getElementById('arrow-' + dir);
+  if (el) {
+    el.classList.remove('active');
+    void el.offsetWidth; // reflow
+    el.classList.add('active');
+  }
+}
+
+// === JUDGMENT SYSTEM ===
+function showJudgment(type, points) {
+  const labels = {
+    perfect: 'PERFECT!! ✨',
+    great: 'GREAT! 🌟',
+    good: 'GOOD 👍',
+    miss: 'MISS... 💀'
+  };
+
+  const el = document.getElementById('judgment');
+  el.className = 'judgment ' + type;
+  el.textContent = labels[type];
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 800);
+
+  if (points > 0) {
+    const pp = document.getElementById('pointsPopup');
+    pp.className = 'points-popup';
+    pp.style.color = type === 'perfect' ? 'var(--neon-green)' : type === 'great' ? 'var(--neon-blue)' : 'var(--neon-yellow)';
+    pp.textContent = '+' + points;
+    void pp.offsetWidth;
+    pp.classList.add('show');
+    setTimeout(() => pp.classList.remove('show'), 1000);
+  }
+
+  // Screen flash
+  const flash = document.getElementById('screenFlash');
+  const colors = { perfect: 'rgba(57,255,20,0.2)', great: 'rgba(0,212,255,0.15)', good: 'rgba(255,247,0,0.1)', miss: 'rgba(255,45,149,0.15)' };
+  flash.style.background = colors[type];
+  flash.className = 'screen-flash';
+  void flash.offsetWidth;
+  flash.classList.add('flash');
+
+  // Dance floor pulse
+  const floor = document.getElementById('danceFloor');
+  floor.classList.remove('active');
+  void floor.offsetWidth;
+  floor.classList.add('active');
+}
+
+// === CONFETTI ===
+function spawnConfetti(count = 30) {
+  sfxConfetti();
+  const colors = ['#ff2d95', '#00d4ff', '#39ff14', '#fff700', '#b026ff', '#ff6b35', '#ff1493'];
+  const shapes = ['■', '●', '▲', '★', '♦', '◆'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+    piece.style.color = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.top = '-20px';
+    piece.style.fontSize = (Math.random() * 16 + 10) + 'px';
+    document.body.appendChild(piece);
+
+    const xDrift = (Math.random() - 0.5) * 200;
+    const duration = Math.random() * 2000 + 1500;
+    const rotation = Math.random() * 720 - 360;
+
+    piece.animate([
+      { transform: `translateX(0) rotate(0deg)`, opacity: 1 },
+      { transform: `translateX(${xDrift}px) translateY(${window.innerHeight + 40}px) rotate(${rotation}deg)`, opacity: 0 }
+    ], { duration, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' })
+    .onfinish = () => piece.remove();
+  }
+}
+
+// === GAME FLOW ===
+function startGame() {
+  ensureAudio();
+  gameState.score = 0;
+  gameState.combo = 0;
+  gameState.maxCombo = 0;
+  gameState.perfects = 0;
+  gameState.greats = 0;
+  gameState.goods = 0;
+  gameState.misses = 0;
+  gameState.totalMoves = 0;
+  gameState.motionLevel = 0;
+  gameState.timeRemaining = gameState.roundDuration;
+  gameState.isPlaying = false;
+
+  updateScoreDisplay();
+  showScreen('game-screen');
+
+  // Countdown
+  const announceEl = document.getElementById('moveAnnouncement');
+  const emojiEl = document.getElementById('moveEmoji');
+  const instrEl = document.getElementById('moveInstruction');
+  instrEl.textContent = '';
+
+  let count = 3;
+  emojiEl.textContent = '';
+  announceEl.innerHTML = `<span class="countdown">${count}</span>`;
+  sfxCountdown();
+
+  const countInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      announceEl.innerHTML = `<span class="countdown">${count}</span>`;
+      sfxCountdown();
+    } else {
+      clearInterval(countInterval);
+      announceEl.innerHTML = `<span class="countdown" style="color:var(--neon-pink)">DANCE!</span>`;
+      sfxGo();
+      setTimeout(() => {
+        gameState.isPlaying = true;
+        startRound();
+      }, 600);
+    }
+  }, 800);
+}
+
+function startRound() {
+  nextMove();
+
+  // Main game timer
+  gameState.gameTimer = setInterval(() => {
+    gameState.timeRemaining -= 0.1;
+    const pct = (gameState.timeRemaining / gameState.roundDuration) * 100;
+    document.getElementById('timerFill').style.width = Math.max(0, pct) + '%';
+
+    if (gameState.timeRemaining <= 0) {
+      endGame();
+    }
+  }, 100);
+
+  // Motion decay
+  setInterval(() => {
+    if (gameState.isPlaying) {
+      gameState.motionLevel = Math.max(0, gameState.motionLevel - 3);
+      document.getElementById('motionFill').style.width = gameState.motionLevel + '%';
+    }
+  }, 50);
+}
+
+function nextMove() {
+  if (!gameState.isPlaying) return;
+
+  // Grade previous move if there was one
+  if (gameState.currentMove) {
+    gradeMove();
+  }
+
+  // Pick new move
+  let move;
+  do {
+    move = DANCE_MOVES[Math.floor(Math.random() * DANCE_MOVES.length)];
+  } while (move === gameState.currentMove && DANCE_MOVES.length > 1);
+
+  gameState.currentMove = move;
+  gameState.totalMoves++;
+  gameState.motionLevel = 0;
+
+  // Update display
+  const announceEl = document.getElementById('moveAnnouncement');
+  const emojiEl = document.getElementById('moveEmoji');
+  const instrEl = document.getElementById('moveInstruction');
+
+  announceEl.textContent = move.name;
+  emojiEl.textContent = move.emoji;
+  emojiEl.style.animation = 'none';
+  void emojiEl.offsetWidth;
+  emojiEl.style.animation = 'moveAppear 0.3s ease-out';
+  instrEl.textContent = move.instruction;
+
+  // Flash arrows
+  clearArrows();
+  move.arrows.forEach((dir, i) => {
+    setTimeout(() => activateArrow(dir), i * 150);
+  });
+
+  sfxNewMove();
+
+  // Set timer for this move
+  clearTimeout(gameState.moveTimer);
+  gameState.moveTimer = setTimeout(() => nextMove(), gameState.moveInterval);
+}
+
+function gradeMove() {
+  const level = gameState.motionLevel;
+  let judgment, points;
+
+  if (level >= 75) {
+    judgment = 'perfect';
+    points = 300;
+    gameState.perfects++;
+    gameState.combo++;
+    sfxPerfect();
+    if (gameState.combo >= 5 && gameState.combo % 5 === 0) spawnConfetti(20);
+  } else if (level >= 50) {
+    judgment = 'great';
+    points = 200;
+    gameState.greats++;
+    gameState.combo++;
+    sfxGreat();
+  } else if (level >= 25) {
+    judgment = 'good';
+    points = 100;
+    gameState.goods++;
+    gameState.combo++;
+    sfxGood();
+  } else {
+    judgment = 'miss';
+    points = 0;
+    gameState.misses++;
+    gameState.combo = 0;
+    sfxMiss();
+    // Shake the screen
+    document.getElementById('danceZone').classList.add('shaking');
+    setTimeout(() => document.getElementById('danceZone').classList.remove('shaking'), 400);
+  }
+
+  // Combo multiplier
+  const multiplier = 1 + Math.floor(gameState.combo / 5) * 0.5;
+  points = Math.floor(points * multiplier);
+
+  gameState.score += points;
+  gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
+
+  showJudgment(judgment, points);
+  updateScoreDisplay();
+
+  // High combo effects
+  const dz = document.getElementById('danceZone');
+  if (gameState.combo >= 10) {
+    dz.classList.add('high-combo');
+  } else {
+    dz.classList.remove('high-combo');
+  }
+}
+
+function updateScoreDisplay() {
+  document.getElementById('score').textContent = gameState.score.toLocaleString();
+  document.getElementById('combo').textContent = gameState.combo;
+
+  const fire = document.getElementById('streakFire');
+  if (gameState.combo >= 3) {
+    fire.classList.add('visible');
+    if (gameState.combo >= 10) fire.textContent = '🔥🔥🔥';
+    else if (gameState.combo >= 5) fire.textContent = '🔥🔥';
+    else fire.textContent = '🔥';
+  } else {
+    fire.classList.remove('visible');
+  }
+}
+
+function endGame() {
+  gameState.isPlaying = false;
+  clearTimeout(gameState.moveTimer);
+  clearInterval(gameState.gameTimer);
+
+  // Grade final move
+  if (gameState.currentMove) gradeMove();
+
+  sfxGameOver();
+
+  // Calculate grade
+  const totalJudged = gameState.perfects + gameState.greats + gameState.goods + gameState.misses;
+  const accuracy = totalJudged > 0 ? (gameState.perfects * 3 + gameState.greats * 2 + gameState.goods) / (totalJudged * 3) * 100 : 0;
+
+  let grade, gradeEmoji, comment;
+  if (accuracy >= 95 && gameState.misses === 0) {
+    grade = 'SSS'; gradeEmoji = '👑';
+    comment = "YOU ARE THE DANCE DEITY. MORTALS TREMBLE.";
+  } else if (accuracy >= 85) {
+    grade = 'S'; gradeEmoji = '⭐';
+    comment = "INCREDIBLE! You might actually be a professional dancer!";
+  } else if (accuracy >= 75) {
+    grade = 'A'; gradeEmoji = '🌟';
+    comment = "Amazing moves! The dance floor is yours!";
+  } else if (accuracy >= 60) {
+    grade = 'B'; gradeEmoji = '💪';
+    comment = "Not bad! Your phone got a workout!";
+  } else if (accuracy >= 40) {
+    grade = 'C'; gradeEmoji = '😅';
+    comment = "Were you... actually dancing? Hard to tell.";
+  } else if (accuracy >= 20) {
+    grade = 'D'; gradeEmoji = '🫠';
+    comment = "Your phone is concerned for your wellbeing.";
+  } else {
+    grade = 'F'; gradeEmoji = '💀';
+    comment = "Did you just... set your phone down? ON THE FLOOR?";
+  }
+
+  // Show results
+  setTimeout(() => {
+    showScreen('results-screen');
+    document.getElementById('resultsGrade').textContent = gradeEmoji + ' ' + grade + ' ' + gradeEmoji;
+
+    document.getElementById('resultsStats').innerHTML = `
+      SCORE: <span class="stat-value">${gameState.score.toLocaleString()}</span><br>
+      MAX COMBO: <span class="stat-value">${gameState.maxCombo}x</span><br>
+      PERFECTS: <span class="stat-value">${gameState.perfects}</span> |
+      GREATS: <span class="stat-value">${gameState.greats}</span><br>
+      GOODS: <span class="stat-value">${gameState.goods}</span> |
+      MISSES: <span class="stat-value">${gameState.misses}</span><br>
+      ACCURACY: <span class="stat-value">${accuracy.toFixed(1)}%</span>
+    `;
+
+    document.getElementById('resultsComment').textContent = '"' + comment + '"';
+
+    if (accuracy >= 60) spawnConfetti(50);
+  }, 800);
+}
+
+// Prevent scrolling/zooming during gameplay
+document.addEventListener('touchmove', e => {
+  if (gameState.isPlaying) e.preventDefault();
+}, { passive: false });
+
+// Wake lock to keep screen on
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      await navigator.wakeLock.request('screen');
+    }
+  } catch (e) { /* ignore */ }
+}
+
+// Init
+document.getElementById('startBtn').addEventListener('click', requestWakeLock);
+
+</script>
+</body>
+</html>
