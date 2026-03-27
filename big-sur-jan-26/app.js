@@ -1,31 +1,31 @@
 // ============ ACTIVITY DATA ============
 const activities = [
     // EXPLORE - Hikes (subtype: hike)
-    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'explore', subtype: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.2380, -121.7850] },
-    { id: 'soberanes', name: 'Soberanes Canyon', emoji: '🌲', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3, desc: 'Lush redwood canyon near your stay. Whale watching from Soberanes Point!', zone: 'north', coords: [36.4467, -121.9283] },
-    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Easy Walk', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4583, -121.9217] },
-    { id: 'pfeiffer-falls', name: 'Pfeiffer Falls + Valley View', emoji: '💧', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3.2, desc: 'Waterfall through redwood forest, then climb to sweeping valley panorama.', zone: 'central', coords: [36.2500, -121.7833] },
-    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'explore', subtype: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1783, -121.7017] },
-    { id: 'point-lobos', name: 'Point Lobos Reserve', emoji: '🦭', cat: 'explore', subtype: 'coastal', tag: 'Crown Jewel', duration: 2, miles: 3, desc: 'Best state park in CA. Sea otters, seals, tide pools. Bird Island Trail stunning. $10.', zone: 'carmel', coords: [36.5167, -121.9500] },
+    { id: 'ewoldsen', name: 'Ewoldsen Trail', emoji: '⛰️', cat: 'explore', subtype: 'hike', tag: 'Challenging', duration: 3.5, miles: 4.5, desc: 'Epic redwood canyon to ocean panorama. The most rewarding hike in Big Sur.', zone: 'south', coords: [36.1601, -121.6685], alltrails: 'https://www.alltrails.com/trail/us/california/ewoldsen-trail' },
+    { id: 'soberanes', name: 'Soberanes Canyon', emoji: '🌲', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3, desc: 'Lush redwood canyon near your stay. Whale watching from Soberanes Point!', zone: 'north', coords: [36.4467, -121.9283], alltrails: 'https://www.alltrails.com/trail/us/california/soberanes-canyon-trail' },
+    { id: 'garrapata-bluffs', name: 'Garrapata Bluffs', emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Easy Walk', duration: 1, miles: 2, desc: 'Coastal cliffs, wildflowers, sea lions. Quick scenic walk by your cabin.', zone: 'north', coords: [36.4508, -121.9169], alltrails: 'https://www.alltrails.com/trail/us/california/garrapata-bluff-trail' },
+    { id: 'pfeiffer-falls', name: 'Pfeiffer Falls + Valley View', emoji: '💧', cat: 'explore', subtype: 'hike', tag: 'Moderate', duration: 2, miles: 3.2, desc: 'Waterfall through redwood forest, then climb to sweeping valley panorama.', zone: 'central', coords: [36.2500, -121.7833], alltrails: 'https://www.alltrails.com/trail/us/california/pfeiffer-falls-and-valley-view-trail' },
+    { id: 'partington-cove', name: 'Partington Cove Tunnel', emoji: '🚪', cat: 'explore', subtype: 'hike', tag: 'Hidden Gem', duration: 0.75, miles: 1, desc: 'Secret 60-ft bootlegger tunnel to hidden cove. Spot sea otters!', zone: 'south', coords: [36.1770, -121.6937], alltrails: 'https://www.alltrails.com/trail/us/california/partington-cove-trail' },
+    { id: 'point-lobos', name: 'Point Lobos Reserve', emoji: '🦭', cat: 'explore', subtype: 'coastal', tag: 'Crown Jewel', duration: 2, miles: 3, desc: 'Best state park in CA. Sea otters, seals, tide pools. Bird Island Trail stunning. $10.', zone: 'carmel', coords: [36.5167, -121.9500], alltrails: 'https://www.alltrails.com/parks/us/california/point-lobos-state-natural-reserve' },
 
     // EXPLORE - Beaches (subtype: beach)
-    { id: 'pfeiffer-beach', name: 'Pfeiffer Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Must-See', duration: 1.5, desc: 'Famous Keyhole Rock, purple sand, dramatic sunset through the arch. $15.', zone: 'central', coords: [36.2383, -121.8150] },
-    { id: 'garrapata-beach', name: 'Garrapata Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Hidden', duration: 1, desc: 'Secluded sandy beach near Calla Lily Valley. Driftwood shelters, great for picnics.', zone: 'north', coords: [36.4617, -121.9267] },
-    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2850, -121.8517] },
-    { id: 'carmel-river-beach', name: 'Carmel River State Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Accessible', duration: 1, desc: 'Wide sandy beach at Carmel River mouth. Great for sunset walks, birdwatching.', zone: 'carmel', coords: [36.5367, -121.9283] },
+    { id: 'pfeiffer-beach', name: 'Pfeiffer Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Must-See', duration: 1.5, desc: 'Famous Keyhole Rock, purple sand, dramatic sunset through the arch. $15.', zone: 'central', coords: [36.2383, -121.8150], alltrails: 'https://www.alltrails.com/trail/us/california/pfeiffer-beach-trail' },
+    { id: 'garrapata-beach', name: 'Garrapata Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Hidden', duration: 1, desc: 'Secluded sandy beach near Calla Lily Valley. Driftwood shelters, great for picnics.', zone: 'north', coords: [36.4617, -121.9267], alltrails: 'https://www.alltrails.com/trail/us/california/garrapata-beach' },
+    { id: 'andrew-molera', name: 'Andrew Molera Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Expansive', duration: 1.5, miles: 2, desc: 'Longest beach in Big Sur. River crossing, monarch butterflies, wild and empty.', zone: 'central', coords: [36.2874, -121.8441], alltrails: 'https://www.alltrails.com/trail/us/california/andrew-molera-beach-trail' },
+    { id: 'carmel-river-beach', name: 'Carmel River State Beach', emoji: '🏖️', cat: 'explore', subtype: 'beach', tag: 'Accessible', duration: 1, desc: 'Wide sandy beach at Carmel River mouth. Great for sunset walks, birdwatching.', zone: 'carmel', coords: [36.5367, -121.9283], alltrails: 'https://www.alltrails.com/trail/us/california/carmel-river-state-beach' },
 
     // EXPLORE - Scenic Stops (subtype: scenic)
-    { id: 'mcway-falls', name: 'McWay Falls Overlook', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 0.5, desc: '80-foot waterfall onto pristine beach. THE Big Sur postcard shot.', zone: 'south', coords: [36.1583, -121.6717] },
+    { id: 'mcway-falls', name: 'McWay Falls Overlook', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 0.5, desc: '80-foot waterfall onto pristine beach. THE Big Sur postcard shot.', zone: 'south', coords: [36.1583, -121.6717], alltrails: 'https://www.alltrails.com/trail/us/california/mcway-falls-overlook-trail' },
     { id: 'bixby', name: 'Bixby Bridge', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Classic', duration: 0.5, desc: 'The Instagram shot. Park north of bridge, walk back. Big Little Lies fame!', zone: 'north', coords: [36.3717, -121.9017] },
     { id: '17-mile', name: '17-Mile Drive', emoji: '📸', cat: 'explore', subtype: 'scenic', tag: 'Iconic', duration: 1.5, desc: 'The Lone Cypress! Ghost Trees! Pebble Beach! $12.25 toll (refunded with $35 restaurant purchase).', zone: 'carmel', coords: [36.5700, -121.9617] },
     { id: 'henry-miller', name: 'Henry Miller Library', emoji: '📚', cat: 'experience', subtype: 'culture', tag: 'Quirky', duration: 1, desc: '"Where nothing happens." Funky bookstore/art space. RHCP played here! WiFi works.', zone: 'central', coords: [36.1883, -121.7217] },
 
     // EXPERIENCES - Seasonal & Special Activities
-    { id: 'calla-lily', name: 'Calla Lily Valley', emoji: '🌸', cat: 'experience', subtype: 'seasonal', tag: 'Peak Bloom!', duration: 0.75, desc: 'Hidden valley BURSTING with white calla lilies in late Jan! Gate 18 at Garrapata. Waterproof shoes!', zone: 'north', coords: [36.4650, -121.9233] },
+    { id: 'calla-lily', name: 'Calla Lily Valley', emoji: '🌸', cat: 'experience', subtype: 'seasonal', tag: 'Peak Bloom!', duration: 0.75, desc: 'Hidden valley BURSTING with white calla lilies in late Jan! Gate 18 at Garrapata. Waterproof shoes!', zone: 'north', coords: [36.4650, -121.9233], alltrails: 'https://www.alltrails.com/trail/us/california/garrapata-beach' },
     { id: 'whale-watch', name: 'Gray Whale Watching', emoji: '🐋', cat: 'experience', subtype: 'seasonal', tag: 'Peak Migration!', duration: 0.5, desc: 'Mid-January is PEAK! Bring binoculars. Best from Soberanes Point or any overlook.', zone: 'north', coords: [36.4467, -121.9283] },
     { id: 'stargaze-garrapata', name: 'Stargazing at Cabin', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Near Cabin', duration: 1, desc: 'Dark skies right by your cabin! Minimal light pollution. Bring blankets, hot cocoa.', zone: 'north', coords: [36.4583, -121.9217] },
     { id: 'stargaze-pfeiffer', name: 'Pfeiffer Beach Night Sky', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Dramatic', duration: 1.5, desc: 'Stars through Keyhole Rock! Check tide times. Bortle Scale 2 - exceptional darkness.', zone: 'central', coords: [36.2383, -121.8150] },
-    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2850, -121.8517] },
+    { id: 'stargaze-andrew-molera', name: 'Andrew Molera Stargazing', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Wide Open', duration: 1.5, desc: 'Expansive beach, unobstructed views. Milky Way reflected on water. Bring telescope!', zone: 'central', coords: [36.2874, -121.8441] },
     { id: 'stargaze-carmel', name: 'Carmel Beach Stars', emoji: '🌌', cat: 'experience', subtype: 'stargazing', tag: 'Easy Access', duration: 1, desc: 'Most accessible spot. Easy parking, flat beach. Good for casual stargazing.', zone: 'carmel', coords: [36.5367, -121.9283] },
 
     // EXPERIENCES - Beach Activities
@@ -36,9 +36,9 @@ const activities = [
     // RESTAURANTS & CAFES - Big Sur
     { id: 'nepenthe', name: 'Nepenthe', emoji: '🍽️', cat: 'restaurant', subtype: 'dining', tag: 'Essential', duration: 1.5, price: '$$$', desc: 'THE Big Sur restaurant. Terrace 800ft above Pacific. Ambrosia Burger legendary. Sunset dinner!', zone: 'central', coords: [36.2217, -121.7583] },
     { id: 'cafe-kevah', name: 'Cafe Kevah', emoji: '☕', cat: 'restaurant', subtype: 'cafe', tag: 'Casual', duration: 1, price: '$$', desc: 'Below Nepenthe. Same views, lighter fare. Fresh smoothies, sandwiches.', zone: 'central', coords: [36.2217, -121.7583] },
-    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2417, -121.7750] },
+    { id: 'big-sur-bakery', name: 'Big Sur Bakery', emoji: '🥐', cat: 'restaurant', subtype: 'cafe', tag: 'Legendary', duration: 1, price: '$$', desc: 'Famous wood-fired breads, ginger scones, croissants. Fairy tale garden seating.', zone: 'central', coords: [36.2358, -121.7690] },
     { id: 'river-inn', name: 'Big Sur River Inn', emoji: '🍺', cat: 'restaurant', subtype: 'dining', tag: 'Local Fave', duration: 1.5, price: '$$', desc: 'Chairs IN the river! Classic roadhouse vibes, good burgers. Grab a beer, sit in the creek.', zone: 'central', coords: [36.2700, -121.8200] },
-    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', subtype: 'dining', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2017, -121.7400] },
+    { id: 'deetjens', name: "Deetjen's Big Sur Inn", emoji: '🕯️', cat: 'restaurant', subtype: 'dining', tag: 'Historic', duration: 1.5, price: '$$$', desc: 'Romantic candlelit dining in 1930s inn. Famous breakfast pancakes. Reservations needed.', zone: 'central', coords: [36.2174, -121.7509] },
     { id: 'big-sur-taphouse', name: 'Big Sur Taphouse', emoji: '🍻', cat: 'restaurant', subtype: 'dining', tag: 'Craft Beer', duration: 1, price: '$$', desc: 'Rotating craft beers, hearty sandwiches. Local hangout spot.', zone: 'central', coords: [36.2700, -121.8200] },
 
     // RESTAURANTS & CAFES - Carmel
@@ -60,13 +60,13 @@ const activities = [
     { id: 'nielsen-bros', name: 'Nielsen Bros. Market', emoji: '🧺', cat: 'provisions', subtype: 'store', tag: 'Gourmet', duration: 0.5, price: '$$', desc: 'Upscale market with great deli, wine, cheese. Perfect picnic provisions.', zone: 'carmel', coords: [36.5550, -121.9200] },
 
     // ROAD TRIP STOPS (between San Rafael and Big Sur)
-    { id: 'devils-slide', name: "Devil's Slide Trail", emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1, desc: 'Abandoned highway turned 1.3-mile coastal trail! Dramatic cliffs, old bootlegger history. Easy walk with stunning views.', zone: 'roadtrip', coords: [37.5750, -122.5150] },
-    { id: 'fitzgerald-tidepools', name: 'Fitzgerald Marine Reserve', emoji: '🦀', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1.5, desc: 'Best tide pools in CA! Giant anemones, purple sea stars, hermit crabs. Check tide charts - go at low tide. Free!', zone: 'roadtrip', coords: [37.5233, -122.5167] },
+    { id: 'devils-slide', name: "Devil's Slide Trail", emoji: '🌊', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1, desc: 'Abandoned highway turned 1.3-mile coastal trail! Dramatic cliffs, old bootlegger history. Easy walk with stunning views.', zone: 'roadtrip', coords: [37.5750, -122.5150], alltrails: 'https://www.alltrails.com/trail/us/california/devils-slide-trail' },
+    { id: 'fitzgerald-tidepools', name: 'Fitzgerald Marine Reserve', emoji: '🦀', cat: 'explore', subtype: 'coastal', tag: 'Road Trip', duration: 1.5, desc: 'Best tide pools in CA! Giant anemones, purple sea stars, hermit crabs. Check tide charts - go at low tide. Free!', zone: 'roadtrip', coords: [37.5233, -122.5167], alltrails: 'https://www.alltrails.com/trail/us/california/fitzgerald-marine-reserve-trail' },
     { id: 'sams-chowder', name: "Sam's Chowder House", emoji: '🦞', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'Famous lobster rolls and clam chowder with ocean views! Great outdoor patio. Worth the stop in Half Moon Bay.', zone: 'roadtrip', coords: [37.4283, -122.4367] },
     { id: 'pie-ranch', name: 'Pie Ranch Farm Stand', emoji: '🥧', cat: 'provisions', subtype: 'roadstop', tag: 'Road Trip', duration: 0.5, price: '$', desc: 'Roadside farm stand on Hwy 1 near Pescadero. Fresh seasonal pies, local produce, preserves. Non-profit farm supporting food justice.', zone: 'roadtrip', coords: [37.1083, -122.3567] },
     { id: 'pigeon-point', name: 'Pigeon Point Lighthouse', emoji: '🏠', cat: 'explore', subtype: 'scenic', tag: 'Road Trip', duration: 0.5, desc: 'One of tallest lighthouses in America! Great photo op. Hostel on-site has hot tub with ocean views (book ahead).', zone: 'roadtrip', coords: [37.1822, -122.3939] },
     { id: 'duartes-tavern', name: "Duarte's Tavern", emoji: '🍲', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'James Beard Award winner since 1894! Famous artichoke soup (get it "half & half" with green chile). Also great crab cioppino.', zone: 'roadtrip', coords: [37.2553, -122.3836] },
-    { id: 'ano-nuevo', name: 'Año Nuevo Elephant Seals', emoji: '🦭', cat: 'experience', subtype: 'seasonal', tag: 'Seasonal!', duration: 2.5, price: '$10', desc: 'PEAK SEASON! Massive elephant seals breeding on the beach. Guided tours required Dec-Mar. Book ahead - sells out!', zone: 'roadtrip', coords: [37.1197, -122.3375] },
+    { id: 'ano-nuevo', name: 'Año Nuevo Elephant Seals', emoji: '🦭', cat: 'experience', subtype: 'seasonal', tag: 'Seasonal!', duration: 2.5, price: '$10', desc: 'PEAK SEASON! Massive elephant seals breeding on the beach. Guided tours required Dec-Mar. Book ahead - sells out!', zone: 'roadtrip', coords: [37.1197, -122.3375], alltrails: 'https://www.alltrails.com/trail/us/california/ano-nuevo-point-trail' },
     { id: 'santa-cruz-wharf', name: 'Santa Cruz Wharf', emoji: '🎡', cat: 'explore', subtype: 'scenic', tag: 'Road Trip', duration: 1, desc: 'Longest wooden wharf on West Coast! Sea lions, shops, restaurants. Boardwalk amusement park nearby. Fun detour!', zone: 'roadtrip', coords: [36.9575, -122.0172] },
     { id: 'moss-landing-kayak', name: 'Sea Otter Kayaking', emoji: '🦦', cat: 'experience', subtype: 'adventure', tag: 'Sunday Fun', duration: 3, price: '$75', desc: 'Kayak Elkhorn Slough at Moss Landing! Hundreds of sea otters, harbor seals, shore birds. No experience needed. Book ahead!', zone: 'roadtrip', coords: [36.8047, -121.7856] },
     { id: 'phil-fish-market', name: "Phil's Fish Market", emoji: '🦪', cat: 'restaurant', subtype: 'roadstop', tag: 'Road Trip', duration: 1, price: '$$', desc: 'Legendary cioppino at Moss Landing! Cash only, always packed. The fish is ridiculously fresh. Get the crab.', zone: 'roadtrip', coords: [36.8044, -121.7878] },
@@ -347,6 +347,7 @@ function loadState() {
 }
 
 // ============ URL HASH ENCODING ============
+// Uses LZ-String compression for shorter, iMessage-friendly URLs
 function encodeState() {
     const user = state.users[state.currentUser];
     if (!user) return '';
@@ -361,10 +362,22 @@ function encodeState() {
     };
 
     const json = JSON.stringify(data);
-    return btoa(encodeURIComponent(json));
+    // Use LZ-String compression for much shorter URLs
+    return LZString.compressToEncodedURIComponent(json);
 }
 
 function decodeState(hash) {
+    // Try LZ-String decompression first (new format)
+    try {
+        const json = LZString.decompressFromEncodedURIComponent(hash);
+        if (json) {
+            return JSON.parse(json);
+        }
+    } catch (e) {
+        // Not LZ-String format, try legacy
+    }
+
+    // Fall back to legacy base64 format for old shared links
     try {
         const json = decodeURIComponent(atob(hash));
         return JSON.parse(json);
@@ -641,6 +654,7 @@ function renderActivityGrid() {
                 </div>
             </div>
             <div class="card-desc">${act.desc}</div>
+            ${act.alltrails ? `<a href="${act.alltrails}" target="_blank" rel="noopener noreferrer" class="alltrails-link">View on AllTrails →</a>` : ''}
             <div class="card-actions">
                 <button class="pref-btn heart ${pref === 'heart' ? 'active' : ''}" data-pref="heart">❤️ Must-Do</button>
                 <button class="pref-btn star ${pref === 'star' ? 'active' : ''}" data-pref="star">⭐ Interested</button>
@@ -2087,6 +2101,125 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear data button
     document.getElementById('clearDataBtn').addEventListener('click', clearCurrentUserData);
 
+    // ============ GOOFY OFFER POPUP ============
+    const offerPopup = document.getElementById('offerPopup');
+    const offerBtn = document.getElementById('offerBtn');
+
+    // Show the offer popup after 5 seconds
+    setTimeout(() => {
+        // Only show if user hasn't already dismissed it this session
+        if (!sessionStorage.getItem('offerDismissed')) {
+            offerPopup.classList.add('show');
+        }
+    }, 5000);
+
+    // Handle the "For Sure!!" button click
+    offerBtn.addEventListener('click', () => {
+        // Create a burst of love emojis
+        const rect = offerBtn.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+
+        // Multiple bursts of hearts and kisses
+        const loveEmojis = ['💖', '💕', '😘', '🥰', '💋', '✨', '💗', '😍'];
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                const emoji = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+                const particle = document.createElement('div');
+                particle.className = 'emoji-particle';
+                particle.textContent = emoji;
+
+                const angle = (Math.PI * 2 * i) / 20 + Math.random() * 0.5;
+                const distance = 80 + Math.random() * 120;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance - 50;
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+
+                document.getElementById('emojiBurstContainer').appendChild(particle);
+
+                setTimeout(() => particle.remove(), 1000);
+            }, i * 30);
+        }
+
+        // Hide the popup with a fun exit
+        offerPopup.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        offerPopup.style.transform = 'translateY(-20px) scale(1.1) rotate(5deg)';
+        offerPopup.style.opacity = '0';
+
+        setTimeout(() => {
+            offerPopup.classList.remove('show');
+            offerPopup.style.transform = '';
+            offerPopup.style.opacity = '';
+        }, 500);
+
+        // Remember they clicked it
+        sessionStorage.setItem('offerDismissed', 'true');
+
+        // Show a fun toast
+        showToast('Deal accepted! Payment of hugs & smooches now due 💕');
+    });
+
     // Start sea creatures swimming!
     startSeaCreatures();
+
+    // ============ WEATHER EXPAND/COLLAPSE ============
+    const weatherExpandBtn = document.getElementById('weatherExpandBtn');
+    const weatherDetails = document.getElementById('weatherDetails');
+    const hourlyTabs = document.querySelectorAll('.hourly-tab');
+    const hourlyForecasts = document.querySelectorAll('.hourly-forecast');
+    const weatherDays = document.querySelectorAll('.weather-day');
+
+    // Toggle weather details panel
+    if (weatherExpandBtn && weatherDetails) {
+        weatherExpandBtn.addEventListener('click', () => {
+            const isExpanded = weatherExpandBtn.getAttribute('aria-expanded') === 'true';
+            weatherExpandBtn.setAttribute('aria-expanded', !isExpanded);
+            weatherDetails.classList.toggle('open');
+        });
+    }
+
+    // Tab switching for hourly forecast
+    hourlyTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const day = tab.dataset.day;
+
+            // Update active tab
+            hourlyTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Show corresponding forecast
+            hourlyForecasts.forEach(forecast => {
+                forecast.classList.remove('active');
+                if (forecast.id === `hourly-${day}`) {
+                    forecast.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Clicking on weather day cards opens details and switches to that day
+    weatherDays.forEach(dayCard => {
+        dayCard.addEventListener('click', () => {
+            const day = dayCard.dataset.day;
+
+            // Open the details panel if not already open
+            if (!weatherDetails.classList.contains('open')) {
+                weatherExpandBtn.setAttribute('aria-expanded', 'true');
+                weatherDetails.classList.add('open');
+            }
+
+            // Switch to that day's tab
+            hourlyTabs.forEach(t => {
+                t.classList.toggle('active', t.dataset.day === day);
+            });
+            hourlyForecasts.forEach(forecast => {
+                forecast.classList.toggle('active', forecast.id === `hourly-${day}`);
+            });
+        });
+    });
 });

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/lz-string@1.5.0/libs/lz-string.min.js"></script>
 </head>
 <body>
     <!-- Welcome Modal -->
@@ -87,24 +88,356 @@
     </header>
 
     <!-- Weather Strip -->
-    <div class="weather-strip">
-        <div class="weather-day">
-            <span class="label">Fri</span>
-            <span>🌤️</span>
-            <span class="temp">60°/45°</span>
-            <span class="rain">18%</span>
+    <div class="weather-section">
+        <div class="weather-strip" id="weatherStrip">
+            <div class="weather-day" data-day="fri">
+                <span class="label">Fri 30</span>
+                <span class="weather-icon">🌤️</span>
+                <span class="temp">63°/42°</span>
+                <span class="condition">Mostly Clear</span>
+                <span class="rain">💧 5%</span>
+                <span class="wind">🌬️ 5 mph</span>
+            </div>
+            <div class="weather-day" data-day="sat">
+                <span class="label">Sat 31</span>
+                <span class="weather-icon">⛅</span>
+                <span class="temp">65°/43°</span>
+                <span class="condition">Partly Cloudy</span>
+                <span class="rain">💧 5%</span>
+                <span class="wind">🌬️ 5 mph</span>
+            </div>
+            <div class="weather-day" data-day="sun">
+                <span class="label">Sun 1</span>
+                <span class="weather-icon">🌥️</span>
+                <span class="temp">64°/44°</span>
+                <span class="condition">Mostly Cloudy</span>
+                <span class="rain">💧 10%</span>
+                <span class="wind">🌬️ 6 mph</span>
+            </div>
+            <button class="weather-expand-btn" id="weatherExpandBtn" aria-expanded="false">
+                <span class="expand-text">Hourly Forecast</span>
+                <span class="expand-icon">▼</span>
+            </button>
         </div>
-        <div class="weather-day">
-            <span class="label">Sat</span>
-            <span>⛅</span>
-            <span class="temp">60°/46°</span>
-            <span class="rain">26%</span>
-        </div>
-        <div class="weather-day">
-            <span class="label">Sun</span>
-            <span>🌤️</span>
-            <span class="temp">59°/44°</span>
-            <span class="rain">22%</span>
+
+        <!-- Expandable Hourly Forecast -->
+        <div class="weather-details" id="weatherDetails">
+            <div class="hourly-tabs">
+                <button class="hourly-tab active" data-day="fri">Fri 30</button>
+                <button class="hourly-tab" data-day="sat">Sat 31</button>
+                <button class="hourly-tab" data-day="sun">Sun 1</button>
+            </div>
+
+            <!-- Friday Hourly -->
+            <div class="hourly-forecast active" id="hourly-fri">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:10am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">43°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">45°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">49°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">53°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">57°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">60°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">63°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">62°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">59°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">🌤️</span>
+                        <span class="hourly-temp">54°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:32pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">51°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">48°</span>
+                        <span class="hourly-desc">Clear</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">45°</span>
+                        <span class="hourly-desc">Clear</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">43°</span>
+                        <span class="hourly-desc">Clear</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">4 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">58%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">NW 3-6 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">10+ mi</span></div>
+                </div>
+            </div>
+
+            <!-- Saturday Hourly -->
+            <div class="hourly-forecast" id="hourly-sat">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:09am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">44°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">46°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">50°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">54°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">61°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">65°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">60°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">55°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:33pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">52°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">49°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">46°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">44°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">4 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">55%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">NW 3-6 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">10+ mi</span></div>
+                </div>
+            </div>
+
+            <!-- Sunday Hourly -->
+            <div class="hourly-forecast" id="hourly-sun">
+                <div class="hourly-scroll">
+                    <div class="hourly-item sunrise">
+                        <span class="hour">7:08am</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">45°</span>
+                        <span class="hourly-desc">Sunrise</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">8am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">47°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">9am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">50°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">10am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">54°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">11am</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">58°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">12pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">61°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">1pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">63°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">2pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">64°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item peak">
+                        <span class="hour">3pm</span>
+                        <span class="icon">🌥️</span>
+                        <span class="hourly-temp">63°</span>
+                        <span class="hourly-desc">Mostly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">4pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">60°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item">
+                        <span class="hour">5pm</span>
+                        <span class="icon">⛅</span>
+                        <span class="hourly-temp">55°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item sunset">
+                        <span class="hour">5:34pm</span>
+                        <span class="icon">🌅</span>
+                        <span class="hourly-temp">52°</span>
+                        <span class="hourly-desc">Sunset</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">6pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">49°</span>
+                        <span class="hourly-desc">Partly Cloudy</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">8pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">46°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                    <div class="hourly-item night">
+                        <span class="hour">10pm</span>
+                        <span class="icon">🌙</span>
+                        <span class="hourly-temp">44°</span>
+                        <span class="hourly-desc">Mostly Clear</span>
+                    </div>
+                </div>
+                <div class="day-summary">
+                    <div class="summary-item"><span class="summary-label">UV Index</span><span class="summary-value">3 (Moderate)</span></div>
+                    <div class="summary-item"><span class="summary-label">Humidity</span><span class="summary-value">60%</span></div>
+                    <div class="summary-item"><span class="summary-label">Wind</span><span class="summary-value">NW 4-7 mph</span></div>
+                    <div class="summary-item"><span class="summary-label">Visibility</span><span class="summary-value">10+ mi</span></div>
+                </div>
+            </div>
+
+            <div class="weather-credit">
+                <span>Data from National Weather Service</span>
+                <a href="https://forecast.weather.gov/MapClick.php?lat=36.28&lon=-121.8" target="_blank" rel="noopener">View Full Forecast</a>
+            </div>
         </div>
     </div>
 
@@ -440,6 +773,262 @@
                 </div>
             </div>
         </section>
+
+        <!-- ============ PACKING SECTION ============ -->
+        <section class="packing-section">
+            <div class="section-header">
+                <h2>🎒 What to Pack</h2>
+                <p>Everything you'll need for hiking, beach time, stargazing, and cozy cabin vibes.</p>
+            </div>
+
+            <div class="packing-grid">
+                <!-- Hiking & Outdoor Essentials -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">🥾</span>
+                        <h3>Hiking Essentials</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Hiking shoes/boots (trails can be muddy)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Pairs hiking socks</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Daypack/backpack</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Reusable water bottles</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Pair trekking poles (optional, helpful for Ewoldsen)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Trail map/offline map downloaded</label></li>
+                    </ul>
+                </div>
+
+                <!-- Layers & Weather Gear -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">🧥</span>
+                        <h3>Layers & Weather Gear</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Rain jacket (light, packable)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Warm fleece or puffer jacket</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Long sleeve base layers</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Comfy pants/leggings for hiking</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Beanie or warm hat</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Pair gloves (for stargazing nights)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Scarf or neck gaiter</label></li>
+                    </ul>
+                </div>
+
+                <!-- Beach & Picnic -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">🧺</span>
+                        <h3>Beach & Picnic Gear</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Picnic blanket (waterproof backing ideal)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Small cooler bag</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Set reusable utensils</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Corkscrew/wine opener</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Beach towels</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Windbreaker (beaches are breezy)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Pair waterproof shoes (for Calla Lily Valley!)</label></li>
+                    </ul>
+                </div>
+
+                <!-- Stargazing & Evening -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">🌌</span>
+                        <h3>Stargazing & Evening</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Warm blanket (cabin to beach transport)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Thermos for hot cocoa/coffee</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Red-light headlamp (preserves night vision)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Binoculars (doubles for whale watching!)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Star chart app downloaded</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">2</span> Cozy cabin outfits</label></li>
+                    </ul>
+                </div>
+
+                <!-- Camera & Tech -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">📸</span>
+                        <h3>Camera & Tech</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Camera + charger</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Phone tripod or GorillaPod</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Portable battery pack</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Car charger</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Offline maps downloaded (spotty service!)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Good playlist downloaded</label></li>
+                    </ul>
+                </div>
+
+                <!-- Miscellaneous -->
+                <div class="packing-card">
+                    <div class="packing-card-header">
+                        <span class="packing-emoji">✨</span>
+                        <h3>Don't Forget</h3>
+                    </div>
+                    <ul class="packing-list">
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Sunglasses</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Sunscreen (winter sun is real)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Lip balm with SPF</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> First aid kit (small)</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Hand sanitizer</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">1</span> Book or cards for cabin time</label></li>
+                        <li><label><input type="checkbox"><span class="item-count">$</span> Cash (some places don't take cards)</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Picnic Snack Ideas -->
+            <div class="snacks-section">
+                <div class="snacks-header">
+                    <h3>🥗 Picnic Snack Ideas</h3>
+                    <p>Easy-prep ideas for beach picnics and trail fuel. Light on dairy, big on flavor!</p>
+                </div>
+
+                <div class="snacks-grid">
+                    <!-- Make Ahead -->
+                    <div class="snacks-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">🍳</span>
+                            <h4>Make Ahead (Night Before)</h4>
+                        </div>
+                        <ul class="snacks-list">
+                            <li><label><input type="checkbox"> Deviled eggs</label></li>
+                            <li><label><input type="checkbox"> Pasta salad with olive oil dressing</label></li>
+                            <li><label><input type="checkbox"> Marinated artichoke hearts</label></li>
+                            <li><label><input type="checkbox"> Hard boiled eggs (pre-peeled)</label></li>
+                            <li><label><input type="checkbox"> Homemade trail mix</label></li>
+                            <li><label><input type="checkbox"> Bruschetta topping (add to bread on-site)</label></li>
+                            <li><label><input type="checkbox"> Caprese skewers (use dairy-free mozz option)</label></li>
+                            <li><label><input type="checkbox"> Pickled veggies</label></li>
+                            <li><label><input type="checkbox"> Quinoa salad with lemon vinaigrette</label></li>
+                            <li><label><input type="checkbox"> Mediterranean couscous</label></li>
+                            <li><label><input type="checkbox"> Stuffed mini peppers</label></li>
+                            <li><label><input type="checkbox"> Pesto pasta bites</label></li>
+                        </ul>
+                    </div>
+
+                    <!-- Grab & Go -->
+                    <div class="snacks-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">🛒</span>
+                            <h4>Grab & Go (Store-Bought)</h4>
+                        </div>
+                        <ul class="snacks-list">
+                            <li><label><input type="checkbox"> Hummus + pita chips</label></li>
+                            <li><label><input type="checkbox"> Salami or prosciutto</label></li>
+                            <li><label><input type="checkbox"> Crackers & breadsticks</label></li>
+                            <li><label><input type="checkbox"> Stuffed grape leaves (dolmas)</label></li>
+                            <li><label><input type="checkbox"> Roasted nuts (marcona almonds!)</label></li>
+                            <li><label><input type="checkbox"> Dark chocolate</label></li>
+                            <li><label><input type="checkbox"> Dried mango or apricots</label></li>
+                            <li><label><input type="checkbox"> Fancy pickles (cornichons)</label></li>
+                            <li><label><input type="checkbox"> Dairy-free cheese wedges</label></li>
+                            <li><label><input type="checkbox"> Baguette or ciabatta rolls</label></li>
+                            <li><label><input type="checkbox"> Pita bread or naan</label></li>
+                            <li><label><input type="checkbox"> Baba ganoush</label></li>
+                            <li><label><input type="checkbox"> Sun-dried tomatoes</label></li>
+                            <li><label><input type="checkbox"> Sesame snacks or rice crackers</label></li>
+                            <li><label><input type="checkbox"> 💀☠️ <span style="color: red; text-decoration: line-through;">Olives</span> ☠️💀 🤮</label></li>
+                            <li><label><input type="checkbox"> 💀☠️ <span style="color: red; text-decoration: line-through;">Tapenade</span> ☠️💀 🤮</label></li>
+                        </ul>
+                    </div>
+
+                    <!-- Fresh & Simple -->
+                    <div class="snacks-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">🍇</span>
+                            <h4>Fresh & Simple</h4>
+                        </div>
+                        <ul class="snacks-list">
+                            <li><label><input type="checkbox"> Grapes (seedless, easy to share)</label></li>
+                            <li><label><input type="checkbox"> Apple slices + almond butter</label></li>
+                            <li><label><input type="checkbox"> Clementines or mandarins</label></li>
+                            <li><label><input type="checkbox"> Cherry tomatoes</label></li>
+                            <li><label><input type="checkbox"> Snap peas & carrots</label></li>
+                            <li><label><input type="checkbox"> Berries in a container</label></li>
+                            <li><label><input type="checkbox"> Avocado (bring salt & lime!)</label></li>
+                            <li><label><input type="checkbox"> Cucumber slices</label></li>
+                            <li><label><input type="checkbox"> Sliced bell peppers</label></li>
+                            <li><label><input type="checkbox"> 💀☠️ <span style="color: red; text-decoration: line-through;">Celery sticks</span> ☠️💀 🤮</label></li>
+                            <li><label><input type="checkbox"> Watermelon cubes</label></li>
+                            <li><label><input type="checkbox"> Banana (nature's perfect wrapper)</label></li>
+                            <li><label><input type="checkbox"> Pear slices</label></li>
+                        </ul>
+                    </div>
+
+                    <!-- Heartier Options -->
+                    <div class="snacks-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">🥪</span>
+                            <h4>Heartier Trail Fuel</h4>
+                        </div>
+                        <ul class="snacks-list">
+                            <li><label><input type="checkbox"> Wraps (make morning-of, hold up well)</label></li>
+                            <li><label><input type="checkbox"> Peanut butter & banana sandwiches</label></li>
+                            <li><label><input type="checkbox"> Chicken salad cups (dairy-free mayo)</label></li>
+                            <li><label><input type="checkbox"> Rice balls / onigiri</label></li>
+                            <li><label><input type="checkbox"> Energy balls (dates + nuts + coconut)</label></li>
+                            <li><label><input type="checkbox"> Veggie spring rolls</label></li>
+                            <li><label><input type="checkbox"> Pinwheel sandwiches</label></li>
+                            <li><label><input type="checkbox"> Empanadas (buy from bakery)</label></li>
+                            <li><label><input type="checkbox"> Turkey & cheese roll-ups</label></li>
+                            <li><label><input type="checkbox"> Bagel with cream cheese</label></li>
+                            <li><label><input type="checkbox"> Granola bars or protein bars</label></li>
+                            <li><label><input type="checkbox"> Savory muffins or scones</label></li>
+                            <li><label><input type="checkbox"> Croissant sandwiches</label></li>
+                            <li><label><input type="checkbox"> Falafel wraps</label></li>
+                        </ul>
+                    </div>
+
+                    <!-- Drinks -->
+                    <div class="snacks-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">🥤</span>
+                            <h4>Drinks & Treats</h4>
+                        </div>
+                        <ul class="snacks-list">
+                            <li><label><input type="checkbox"> Sparkling water (cans travel well)</label></li>
+                            <li><label><input type="checkbox"> Wine (screw-top for easy beach access)</label></li>
+                            <li><label><input type="checkbox"> Hot cocoa in thermos</label></li>
+                            <li><label><input type="checkbox"> Cold brew coffee</label></li>
+                            <li><label><input type="checkbox"> Ginger beer or kombucha</label></li>
+                            <li><label><input type="checkbox"> Fancy lemonade</label></li>
+                            <li><label><input type="checkbox"> Hot cider for stargazing nights</label></li>
+                            <li><label><input type="checkbox"> Coconut water</label></li>
+                            <li><label><input type="checkbox"> Juice boxes (fun for adults too)</label></li>
+                            <li><label><input type="checkbox"> Iced tea</label></li>
+                            <li><label><input type="checkbox"> Hot herbal tea bags</label></li>
+                            <li><label><input type="checkbox"> Chocolate chip cookies</label></li>
+                            <li><label><input type="checkbox"> Brownies or blondies</label></li>
+                        </ul>
+                    </div>
+
+                    <!-- Pro Tips -->
+                    <div class="snacks-card tips-card">
+                        <div class="snacks-card-header">
+                            <span class="snacks-emoji">💡</span>
+                            <h4>Pro Tips</h4>
+                        </div>
+                        <ul class="snacks-list tips-list">
+                            <li><label><input type="checkbox"> Bruno's in Carmel makes great picnic sandwiches</label></li>
+                            <li><label><input type="checkbox"> Big Sur Deli is perfect for trail-ready grub</label></li>
+                            <li><label><input type="checkbox"> Pack a small cutting board for beach spreads</label></li>
+                            <li><label><input type="checkbox"> Bring napkins - always need more than you think</label></li>
+                            <li><label><input type="checkbox"> Reusable containers > plastic bags</label></li>
+                            <li><label><input type="checkbox"> Freeze water bottles = ice packs that become drinks</label></li>
+                            <li><label><input type="checkbox"> Lactaid pills are lifesavers for cheese moments</label></li>
+                            <li><label><input type="checkbox"> Bring a trash bag for cleanup</label></li>
+                            <li><label><input type="checkbox"> Wet wipes are a lifesaver</label></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Floating Share Button -->
@@ -451,6 +1040,28 @@
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+
+    <!-- Goofy Offer Popup -->
+    <div class="offer-popup" id="offerPopup">
+        <div class="offer-content">
+            <div class="offer-sparkles">✨💖✨</div>
+            <h3 class="offer-title">WOW!! INCREDIBLE DEAL!!</h3>
+            <p class="offer-text">
+                You can have this <em>ENTIRE</em> Big Sur adventure package for the low, low price of...
+            </p>
+            <div class="offer-price">
+                <span class="price-strikethrough">99 hugs</span>
+                <span class="price-no">NO WAIT—</span>
+                <span class="price-strikethrough">55 hugs</span>
+                <span class="price-final">JUST 33 HUGS</span>
+            </div>
+            <p class="offer-bonus">
+                <strong>PLUS</strong> all kinds of smooches!! 😘💋😚
+            </p>
+            <p class="offer-fine-print">* Ocean views, whale sightings, and cozy cabin vibes included at no extra charge</p>
+            <button class="offer-btn" id="offerBtn">For Sure!! 🥰</button>
+        </div>
+    </div>
 
     <!-- Emoji Burst Container -->
     <div class="emoji-burst-container" id="emojiBurstContainer"></div>
