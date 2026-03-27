@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Llama Facts — Second Act Digital Style Demo</title>
+
+<!-- Fonts: Pixel display + Montserrat body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS (Second Act Digital palette)
+   ═══════════════════════════════════════════ */
+:root {
+  /* Core palette */
+  --sad-navy-deep:    #1b1f4b;
+  --sad-blue-royal:   #2a3caa;
+  --sad-chartreuse:   #d4f541;
+  --sad-white:        #ffffff;
+  --sad-charcoal:     #3a3a3a;
+  --sad-gray-light:   #e0e0e0;
+
+  /* Extended */
+  --sad-blue-pixel:   #2233aa;
+  --sad-navy-mid:     #2e3591;
+  --sad-yellow-wash:  #f0f4c3;
+
+  /* Spacing */
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  3rem;
+  --space-xl:  5rem;
+  --space-2xl: 7rem;
+
+  /* Transitions */
+  --t-fast: 0.15s ease;
+  --t-base: 0.3s ease;
+  --t-slow: 0.5s ease;
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--sad-white);
+  background: var(--sad-navy-deep);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY — Pixel headings + Montserrat body
+   ═══════════════════════════════════════════ */
+h1, h2, h3, h4, .pixel-font {
+  font-family: "Press Start 2P", monospace;
+  font-weight: normal;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: clamp(2rem, 5.5vw, 4.5rem);
+  line-height: 1.2;
+  text-transform: lowercase;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 3vw, 2.25rem);
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  line-height: 1.35;
+}
+
+h4 {
+  font-size: clamp(0.75rem, 1.2vw, 1rem);
+  line-height: 1.4;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.container--wide {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  background: transparent;
+  transition: background var(--t-base), box-shadow var(--t-base);
+}
+
+.navbar--scrolled {
+  background: rgba(27, 31, 75, 0.96);
+  box-shadow: 0 2px 24px rgba(0,0,0,0.3);
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar__logo-mark {
+  font-family: "Press Start 2P", monospace;
+  font-size: 1.5rem;
+  color: var(--sad-navy-deep);
+  background: var(--sad-chartreuse);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.navbar__logo-text {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sad-white);
+  line-height: 1.3;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.navbar__link {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sad-white);
+  transition: color var(--t-fast);
+  cursor: pointer;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--sad-chartreuse);
+}
+
+/* Mobile hamburger */
+.navbar__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+.navbar__hamburger span {
+  display: block;
+  width: 28px;
+  height: 2px;
+  background: var(--sad-white);
+  transition: all var(--t-base);
+}
+
+.navbar__hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.navbar__hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.navbar__hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ═══════════════════════════════════════════
+   BUTTONS — Ghost/Outline style (brand signature)
+   ═══════════════════════════════════════════ */
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.75rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sad-chartreuse);
+  background: transparent;
+  border: 2px solid var(--sad-chartreuse);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all var(--t-base);
+  white-space: nowrap;
+}
+
+.btn-cta::after {
+  content: "→";
+  font-size: 1.1em;
+  transition: transform 0.2s ease;
+}
+
+.btn-cta:hover {
+  background: var(--sad-chartreuse);
+  color: var(--sad-navy-deep);
+}
+
+.btn-cta:hover::after {
+  transform: translateX(4px);
+}
+
+/* On light backgrounds */
+.btn-cta--on-light {
+  color: var(--sad-navy-deep);
+  border-color: var(--sad-navy-deep);
+}
+
+.btn-cta--on-light:hover {
+  background: var(--sad-navy-deep);
+  color: var(--sad-white);
+}
+
+/* On yellow wash */
+.btn-cta--on-yellow {
+  color: var(--sad-navy-deep);
+  border-color: var(--sad-navy-deep);
+}
+
+.btn-cta--on-yellow:hover {
+  background: var(--sad-navy-deep);
+  color: var(--sad-chartreuse);
+}
+
+/* ═══════════════════════════════════════════
+   LEARN MORE link
+   ═══════════════════════════════════════════ */
+.link-more {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color var(--t-fast);
+  cursor: pointer;
+}
+
+.link-more::after {
+  content: "  +";
+}
+
+.link-more--chartreuse { color: var(--sad-chartreuse); }
+.link-more--chartreuse:hover { color: var(--sad-white); }
+
+.link-more--navy { color: var(--sad-navy-deep); }
+.link-more--navy:hover { color: var(--sad-blue-royal); }
+
+/* ═══════════════════════════════════════════
+   SECTION 1 — HERO
+   ═══════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(27,31,75,0.92) 0%, rgba(42,60,170,0.82) 100%),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%231b1f4b" width="100" height="100"/></svg>');
+  background-size: cover;
+  z-index: 0;
+}
+
+/* Pixel noise overlay for texture */
+.hero__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: var(--space-2xl) 0;
+}
+
+.hero__title {
+  color: var(--sad-white);
+  margin-bottom: var(--space-md);
+}
+
+.hero__title .accent {
+  color: var(--sad-chartreuse);
+}
+
+.hero__desc {
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.75;
+  color: rgba(255,255,255,0.85);
+  max-width: 620px;
+  margin-bottom: var(--space-lg);
+}
+
+/* Decorative pixel llama in hero */
+.hero__pixel-art {
+  position: absolute;
+  right: 5%;
+  bottom: 10%;
+  z-index: 1;
+  opacity: 0.15;
+  font-size: 12rem;
+  line-height: 1;
+  image-rendering: pixelated;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* White geometric block decorations */
+.geo-block {
+  position: absolute;
+  background: var(--sad-white);
+  z-index: 1;
+}
+
+.hero .geo-block--1 {
+  top: 8%;
+  right: 0;
+  width: 120px;
+  height: 60px;
+}
+
+.hero .geo-block--2 {
+  bottom: 25%;
+  right: 15%;
+  width: 80px;
+  height: 180px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 2 — INTRO BLOCK (white background)
+   ═══════════════════════════════════════════ */
+.intro {
+  background: var(--sad-white);
+  color: var(--sad-charcoal);
+  padding: var(--space-xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.intro__text {
+  max-width: 540px;
+  padding-top: var(--space-md);
+}
+
+.intro__heading {
+  color: var(--sad-blue-pixel);
+  margin-bottom: var(--space-md);
+}
+
+.intro__body {
+  color: var(--sad-charcoal);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: var(--space-md);
+}
+
+.intro__image-area {
+  position: relative;
+  min-height: 400px;
+}
+
+.intro__image-block {
+  width: 100%;
+  height: 380px;
+  background:
+    linear-gradient(135deg, rgba(27,31,75,0.85), rgba(42,60,170,0.7)),
+    linear-gradient(45deg, #1b1f4b 25%, #2a3caa 75%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro__image-block .pixel-llama {
+  font-size: 8rem;
+  opacity: 0.6;
+  filter: grayscale(0.2);
+}
+
+/* White geometric blocks on image */
+.intro__image-area .geo-block--a {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 140px;
+  height: 80px;
+  background: var(--sad-white);
+  z-index: 2;
+}
+
+.intro__image-area .geo-block--b {
+  position: absolute;
+  bottom: 40px;
+  right: -30px;
+  width: 100px;
+  height: 120px;
+  background: var(--sad-white);
+  z-index: 2;
+}
+
+/* Navy geometric block */
+.intro__image-area .geo-block--navy {
+  position: absolute;
+  top: 30px;
+  left: -40px;
+  width: 80px;
+  height: 200px;
+  background: var(--sad-navy-deep);
+  z-index: 2;
+}
+
+/* Transition banner — pixel text with stroke */
+.transition-banner {
+  background: var(--sad-white);
+  padding: var(--space-md) 2rem;
+  overflow: hidden;
+}
+
+.transition-banner__text {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(1.25rem, 3.5vw, 3rem);
+  color: var(--sad-chartreuse);
+  -webkit-text-stroke: 1.5px var(--sad-navy-deep);
+  paint-order: stroke fill;
+  text-align: right;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 3 — FACT CARDS (carousel-style grid)
+   ═══════════════════════════════════════════ */
+.facts {
+  background: var(--sad-white);
+  padding: var(--space-xl) 0 var(--space-lg);
+}
+
+.facts__header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.facts__header h2 {
+  color: var(--sad-blue-pixel);
+  margin-bottom: var(--space-sm);
+}
+
+.facts__header p {
+  color: var(--sad-charcoal);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Carousel wrapper */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  padding: 0 0 var(--space-lg);
+}
+
+.carousel__track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carousel__slide {
+  flex: 0 0 calc(100% / 3);
+  padding: 0 0.75rem;
+  min-width: 0;
+}
+
+/* Card styles with 3-color rotation */
+.fact-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg) var(--space-md);
+  min-height: 400px;
+  position: relative;
+}
+
+.fact-card__icon {
+  font-size: 3.5rem;
+  margin-bottom: var(--space-md);
+  image-rendering: pixelated;
+  line-height: 1;
+}
+
+.fact-card__title {
+  margin-bottom: var(--space-sm);
+}
+
+.fact-card__body {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  margin-bottom: var(--space-md);
+  flex: 1;
+}
+
+.fact-card__link {
+  margin-top: auto;
+}
+
+/* Navy variant */
+.fact-card--navy {
+  background: var(--sad-navy-deep);
+}
+.fact-card--navy .fact-card__title { color: var(--sad-chartreuse); }
+.fact-card--navy .fact-card__body  { color: rgba(255,255,255,0.85); }
+
+/* Royal Blue variant */
+.fact-card--blue {
+  background: var(--sad-blue-royal);
+}
+.fact-card--blue .fact-card__title { color: var(--sad-chartreuse); }
+.fact-card--blue .fact-card__body  { color: rgba(255,255,255,0.85); }
+
+/* Chartreuse variant */
+.fact-card--chartreuse {
+  background: var(--sad-chartreuse);
+}
+.fact-card--chartreuse .fact-card__title { color: var(--sad-navy-deep); }
+.fact-card--chartreuse .fact-card__body  { color: var(--sad-charcoal); }
+
+/* Charcoal variant */
+.fact-card--charcoal {
+  background: var(--sad-charcoal);
+}
+.fact-card--charcoal .fact-card__title { color: var(--sad-chartreuse); }
+.fact-card--charcoal .fact-card__body  { color: rgba(255,255,255,0.85); }
+
+/* Light variant */
+.fact-card--light {
+  background: var(--sad-gray-light);
+}
+.fact-card--light .fact-card__title { color: var(--sad-blue-pixel); }
+.fact-card--light .fact-card__body  { color: var(--sad-charcoal); }
+
+/* Carousel arrows */
+.carousel__nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  margin-top: var(--space-sm);
+}
+
+.carousel__arrow {
+  background: none;
+  border: none;
+  color: var(--sad-navy-mid);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color var(--t-fast);
+  font-family: "Montserrat", sans-serif;
+}
+
+.carousel__arrow:hover {
+  color: var(--sad-blue-royal);
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 4 — STATS / CTA (yellow-green wash)
+   ═══════════════════════════════════════════ */
+.stats-cta {
+  background: var(--sad-yellow-wash);
+  padding: var(--space-xl) 0;
+}
+
+.stats-cta__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+.stats-cta__heading {
+  color: var(--sad-navy-deep);
+  margin-bottom: var(--space-md);
+}
+
+.stats-cta__body {
+  color: var(--sad-charcoal);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: var(--space-md);
+}
+
+.stats-cta__sprites {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* Pixel art llama sprites */
+.pixel-sprite {
+  image-rendering: pixelated;
+  font-size: 0;
+  line-height: 1;
+}
+
+/* Stat cards */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.stat-card {
+  background: var(--sad-white);
+  border-left: 4px solid var(--sad-blue-royal);
+  padding: var(--space-md);
+}
+
+.stat-card__number {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  color: var(--sad-blue-pixel);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-card__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sad-charcoal);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-card__source {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════
+   BOTTOM CTA (white bg)
+   ═══════════════════════════════════════════ */
+.bottom-cta {
+  background: var(--sad-white);
+  padding: var(--space-xl) 0;
+}
+
+.bottom-cta__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.bottom-cta__heading {
+  color: var(--sad-blue-pixel);
+  margin-bottom: var(--space-sm);
+}
+
+.bottom-cta__body {
+  color: var(--sad-charcoal);
+  margin-bottom: var(--space-md);
+  line-height: 1.75;
+}
+
+.bottom-cta__pixel-scene {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-md);
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════
+   LEVEL UP + FOOTER
+   ═══════════════════════════════════════════ */
+.level-up {
+  background: var(--sad-navy-deep);
+  padding: var(--space-sm) var(--space-lg);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 3px solid var(--sad-blue-royal);
+}
+
+.level-up__text {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.65rem, 1.2vw, 1rem);
+  color: var(--sad-chartreuse);
+  -webkit-text-stroke: 1px var(--sad-blue-royal);
+  paint-order: stroke fill;
+  animation: levelPulse 2s ease-in-out infinite;
+}
+
+@keyframes levelPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.03); }
+}
+
+.footer {
+  background: var(--sad-navy-deep);
+  padding: var(--space-md) 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer__logo-mark {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.9rem;
+  color: var(--sad-navy-deep);
+  background: var(--sad-chartreuse);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.footer__logo-text {
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.footer__nav {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.footer__nav a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color var(--t-fast);
+}
+
+.footer__nav a:hover {
+  color: var(--sad-chartreuse);
+}
+
+.footer__copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ═══════════════════════════════════════════
+   PIXEL ART — SVG Llamas (inline)
+   ═══════════════════════════════════════════ */
+.llama-svg {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+   ═══════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger > .reveal {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal-stagger > .reveal:nth-child(1) { transition-delay: 0s; }
+.reveal-stagger > .reveal:nth-child(2) { transition-delay: 0.12s; }
+.reveal-stagger > .reveal:nth-child(3) { transition-delay: 0.24s; }
+
+/* ═══════════════════════════════════════════
+   FOCUS / A11Y
+   ═══════════════════════════════════════════ */
+*:focus-visible {
+  outline: 2px solid var(--sad-chartreuse);
+  outline-offset: 3px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .carousel__slide {
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar__links { display: none; }
+  .navbar__hamburger { display: flex; }
+
+  /* Mobile menu */
+  .navbar__links--open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(27, 31, 75, 0.98);
+    padding: var(--space-md) 2.5rem var(--space-lg);
+    gap: var(--space-md);
+  }
+
+  .intro__grid,
+  .stats-cta__grid,
+  .bottom-cta__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: var(--space-xl) 0 var(--space-lg);
+  }
+
+  .hero__content {
+    padding-top: 6rem;
+  }
+
+  .hero .geo-block { display: none; }
+
+  .carousel__slide {
+    flex: 0 0 100%;
+  }
+
+  .btn-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .intro__image-area {
+    min-height: 280px;
+  }
+
+  .intro__image-area .geo-block--a,
+  .intro__image-area .geo-block--b,
+  .intro__image-area .geo-block--navy {
+    display: none;
+  }
+
+  .stats-cta__sprites {
+    gap: 0.5rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-md);
+  }
+
+  .footer__nav {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 0.9rem; }
+
+  .container, .container--wide {
+    padding: 0 1.25rem;
+  }
+
+  .navbar {
+    padding: 1rem 1.25rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <div class="navbar__logo">
+    <div class="navbar__logo-mark">🦙</div>
+    <div class="navbar__logo-text">Llama<br>Facts</div>
+  </div>
+  <ul class="navbar__links" id="navLinks">
+    <li><a class="navbar__link navbar__link--active" href="#hero">Home</a></li>
+    <li><a class="navbar__link" href="#facts">Facts</a></li>
+    <li><a class="navbar__link" href="#stats">Stats</a></li>
+    <li><a class="navbar__link" href="#contact">Contact</a></li>
+  </ul>
+  <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1 — HERO
+     ═══════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero__bg"></div>
+
+  <!-- White geometric blocks -->
+  <div class="geo-block geo-block--1"></div>
+  <div class="geo-block geo-block--2"></div>
+
+  <!-- Pixel art background decoration -->
+  <div class="hero__pixel-art" aria-hidden="true">
+    <svg width="220" height="260" viewBox="0 0 22 26" class="llama-svg" style="image-rendering:pixelated">
+      <rect x="8" y="0" width="2" height="2" fill="#d4f541"/>
+      <rect x="10" y="0" width="2" height="2" fill="#d4f541"/>
+      <rect x="6" y="2" width="2" height="2" fill="#d4f541"/>
+      <rect x="8" y="2" width="2" height="2" fill="#fff"/>
+      <rect x="10" y="2" width="2" height="2" fill="#fff"/>
+      <rect x="12" y="2" width="2" height="2" fill="#d4f541"/>
+      <rect x="6" y="4" width="2" height="2" fill="#d4f541"/>
+      <rect x="8" y="4" width="2" height="2" fill="#1b1f4b"/>
+      <rect x="10" y="4" width="2" height="2" fill="#1b1f4b"/>
+      <rect x="12" y="4" width="2" height="2" fill="#d4f541"/>
+      <rect x="8" y="6" width="2" height="2" fill="#d4f541"/>
+      <rect x="10" y="6" width="6" height="2" fill="#d4f541"/>
+      <rect x="8" y="8" width="2" height="2" fill="#d4f541"/>
+      <rect x="10" y="8" width="2" height="2" fill="#d4f541"/>
+      <rect x="12" y="8" width="2" height="2" fill="#d4f541"/>
+      <rect x="6" y="10" width="2" height="2" fill="#d4f541"/>
+      <rect x="8" y="10" width="2" height="8" fill="#d4f541"/>
+      <rect x="10" y="10" width="2" height="8" fill="#fff"/>
+      <rect x="12" y="10" width="2" height="2" fill="#d4f541"/>
+      <rect x="14" y="10" width="2" height="2" fill="#d4f541"/>
+      <rect x="4" y="12" width="2" height="2" fill="#d4f541"/>
+      <rect x="6" y="12" width="2" height="6" fill="#d4f541"/>
+      <rect x="12" y="12" width="2" height="6" fill="#d4f541"/>
+      <rect x="14" y="12" width="2" height="6" fill="#d4f541"/>
+      <rect x="4" y="18" width="2" height="4" fill="#d4f541"/>
+      <rect x="6" y="18" width="2" height="2" fill="#d4f541"/>
+      <rect x="12" y="18" width="2" height="2" fill="#d4f541"/>
+      <rect x="14" y="18" width="2" height="4" fill="#d4f541"/>
+      <rect x="2" y="22" width="4" height="2" fill="#2a3caa"/>
+      <rect x="14" y="22" width="4" height="2" fill="#2a3caa"/>
+    </svg>
+  </div>
+
+  <div class="container">
+    <div class="hero__content">
+      <h1 class="hero__title">
+        llama <span class="accent">facts</span>
+      </h1>
+      <p class="hero__desc">
+        Consider these the ultimate cheat codes to llama knowledge: we've compiled the most absurd, fascinating, and downright unbelievable facts about Earth's most charismatic camelids. We don't just share trivia, we drop knowledge.
+      </p>
+      <a href="#facts" class="btn-cta">Start Learning</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 — INTRO BLOCK (white bg)
+     ═══════════════════════════════════════════ -->
+<section class="intro" id="about">
+  <div class="container">
+    <div class="intro__grid">
+
+      <div class="intro__text reveal">
+        <h2 class="intro__heading">These fuzzy weirdos are the real MVPs.</h2>
+        <p class="intro__body">
+          Llamas have been the backbone of Andean civilizations for over 6,000 years. They're pack animals, guard animals, therapy animals, and now internet royalty. Our approach to llama facts is disruptive, yet personal and purposeful—<strong>every fact is curated to blow your mind, designed to impress at parties, and built to make you a llama evangelist.</strong>
+        </p>
+        <a href="#facts" class="btn-cta btn-cta--on-light">Explore Facts</a>
+      </div>
+
+      <div class="intro__image-area reveal">
+        <div class="intro__image-block">
+          <!-- Pixel llama illustration -->
+          <svg width="180" height="220" viewBox="0 0 18 22" class="llama-svg pixel-llama" style="image-rendering:pixelated">
+            <rect x="6" y="0" width="2" height="2" fill="#fff"/>
+            <rect x="8" y="0" width="2" height="2" fill="#fff"/>
+            <rect x="4" y="2" width="2" height="2" fill="#fff"/>
+            <rect x="6" y="2" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="8" y="2" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="10" y="2" width="2" height="2" fill="#fff"/>
+            <rect x="4" y="4" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="6" y="4" width="2" height="2" fill="#333"/>
+            <rect x="8" y="4" width="2" height="2" fill="#333"/>
+            <rect x="10" y="4" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="6" y="6" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="8" y="6" width="4" height="2" fill="#f5e6d0"/>
+            <rect x="6" y="8" width="6" height="2" fill="#f5e6d0"/>
+            <rect x="4" y="10" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="6" y="10" width="2" height="6" fill="#f5e6d0"/>
+            <rect x="8" y="10" width="2" height="6" fill="#d4c4a8"/>
+            <rect x="10" y="10" width="4" height="2" fill="#f5e6d0"/>
+            <rect x="2" y="12" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="4" y="12" width="2" height="4" fill="#f5e6d0"/>
+            <rect x="10" y="12" width="2" height="4" fill="#f5e6d0"/>
+            <rect x="12" y="12" width="2" height="4" fill="#f5e6d0"/>
+            <rect x="2" y="16" width="2" height="4" fill="#f5e6d0"/>
+            <rect x="4" y="16" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="10" y="16" width="2" height="2" fill="#f5e6d0"/>
+            <rect x="12" y="16" width="2" height="4" fill="#f5e6d0"/>
+            <rect x="0" y="20" width="4" height="2" fill="#8B7355"/>
+            <rect x="12" y="20" width="4" height="2" fill="#8B7355"/>
+          </svg>
+        </div>
+        <div class="geo-block--a"></div>
+        <div class="geo-block--b"></div>
+        <div class="geo-block--navy"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Transition Banner -->
+<div class="transition-banner">
+  <div class="container">
+    <p class="transition-banner__text reveal">spit happens. deal with it.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 — FACT CARDS CAROUSEL
+     ═══════════════════════════════════════════ -->
+<section class="facts" id="facts">
+  <div class="container--wide">
+
+    <div class="facts__header reveal">
+      <h2>press start for llama knowledge.</h2>
+      <p>Six wild facts that prove llamas are nature's most underrated power-up.</p>
+    </div>
+
+    <div class="carousel" id="carousel">
+      <div class="carousel__track" id="carouselTrack">
+
+        <!-- Card 1 — Navy -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--navy">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="2" y="2" width="2" height="2" fill="#d4f541"/>
+                <rect x="4" y="4" width="2" height="2" fill="#d4f541"/>
+                <rect x="6" y="6" width="4" height="4" fill="#d4f541"/>
+                <rect x="10" y="4" width="2" height="2" fill="#d4f541"/>
+                <rect x="12" y="2" width="2" height="2" fill="#d4f541"/>
+                <rect x="2" y="12" width="2" height="2" fill="#d4f541"/>
+                <rect x="12" y="12" width="2" height="2" fill="#d4f541"/>
+                <rect x="4" y="10" width="2" height="2" fill="#2a3caa"/>
+                <rect x="10" y="10" width="2" height="2" fill="#2a3caa"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">Spit Snipers</h3>
+            <p class="fact-card__body">Llamas can spit up to 15 feet with terrifying accuracy. They primarily do this to settle disputes with other llamas — but will absolutely draft you into the conflict if you're standing too close.</p>
+            <span class="link-more link-more--chartreuse">Learn More</span>
+          </div>
+        </div>
+
+        <!-- Card 2 — Royal Blue -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--blue">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="4" y="2" width="8" height="2" fill="#d4f541"/>
+                <rect x="2" y="4" width="4" height="2" fill="#d4f541"/>
+                <rect x="6" y="4" width="2" height="2" fill="#1b1f4b"/>
+                <rect x="8" y="4" width="2" height="2" fill="#d4f541"/>
+                <rect x="10" y="4" width="4" height="2" fill="#d4f541"/>
+                <rect x="2" y="6" width="12" height="2" fill="#d4f541"/>
+                <rect x="4" y="8" width="8" height="2" fill="#d4f541"/>
+                <rect x="6" y="10" width="4" height="2" fill="#d4f541"/>
+                <rect x="6" y="12" width="2" height="2" fill="#d4f541"/>
+                <rect x="8" y="12" width="2" height="2" fill="#d4f541"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">Guard Llamas</h3>
+            <p class="fact-card__body">Ranchers deploy single llamas to guard sheep and goats against coyotes and foxes. The llama bonds with the flock, then absolutely bodies any predator stupid enough to approach. One llama. Whole flock. Protected.</p>
+            <span class="link-more link-more--chartreuse">Learn More</span>
+          </div>
+        </div>
+
+        <!-- Card 3 — Chartreuse -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--chartreuse">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="6" y="0" width="4" height="2" fill="#1b1f4b"/>
+                <rect x="4" y="2" width="2" height="2" fill="#1b1f4b"/>
+                <rect x="10" y="2" width="2" height="2" fill="#1b1f4b"/>
+                <rect x="2" y="4" width="4" height="2" fill="#1b1f4b"/>
+                <rect x="10" y="4" width="4" height="2" fill="#1b1f4b"/>
+                <rect x="2" y="6" width="12" height="4" fill="#2a3caa"/>
+                <rect x="4" y="10" width="8" height="2" fill="#2a3caa"/>
+                <rect x="6" y="12" width="4" height="2" fill="#1b1f4b"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">Altitude Kings</h3>
+            <p class="fact-card__body">Llamas thrive at elevations above 13,000 feet in the Andes, where most animals would collapse. Their blood has uniquely shaped red cells that capture oxygen more efficiently than any other mammal.</p>
+            <span class="link-more link-more--navy">Learn More</span>
+          </div>
+        </div>
+
+        <!-- Card 4 — Charcoal -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--charcoal">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="4" y="2" width="2" height="4" fill="#d4f541"/>
+                <rect x="6" y="0" width="4" height="2" fill="#d4f541"/>
+                <rect x="10" y="2" width="2" height="4" fill="#d4f541"/>
+                <rect x="6" y="6" width="4" height="2" fill="#d4f541"/>
+                <rect x="4" y="8" width="2" height="4" fill="#d4f541"/>
+                <rect x="6" y="8" width="4" height="2" fill="#2a3caa"/>
+                <rect x="10" y="8" width="2" height="4" fill="#d4f541"/>
+                <rect x="6" y="12" width="4" height="2" fill="#d4f541"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">Therapy Mode</h3>
+            <p class="fact-card__body">Llamas are certified therapy animals across North America. Their calm demeanor and soft fleece make them naturals at reducing anxiety in hospitals and nursing homes. The vibe? Impeccable.</p>
+            <span class="link-more link-more--chartreuse">Learn More</span>
+          </div>
+        </div>
+
+        <!-- Card 5 — Navy -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--navy">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="2" y="4" width="12" height="2" fill="#d4f541"/>
+                <rect x="2" y="6" width="2" height="6" fill="#d4f541"/>
+                <rect x="12" y="6" width="2" height="6" fill="#d4f541"/>
+                <rect x="2" y="12" width="12" height="2" fill="#d4f541"/>
+                <rect x="5" y="7" width="2" height="2" fill="#2a3caa"/>
+                <rect x="9" y="7" width="2" height="2" fill="#2a3caa"/>
+                <rect x="6" y="9" width="4" height="2" fill="#2a3caa"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">Eco Warriors</h3>
+            <p class="fact-card__body">Unlike hooved animals, llamas have soft padded feet that don't tear up terrain. They're the only pack animals certified for use in U.S. wilderness areas because they leave virtually zero environmental footprint.</p>
+            <span class="link-more link-more--chartreuse">Learn More</span>
+          </div>
+        </div>
+
+        <!-- Card 6 — Light -->
+        <div class="carousel__slide">
+          <div class="fact-card fact-card--light">
+            <div class="fact-card__icon">
+              <svg width="64" height="64" viewBox="0 0 16 16" style="image-rendering:pixelated">
+                <rect x="6" y="0" width="4" height="2" fill="#2a3caa"/>
+                <rect x="4" y="2" width="8" height="2" fill="#2a3caa"/>
+                <rect x="2" y="4" width="12" height="6" fill="#2a3caa"/>
+                <rect x="4" y="5" width="2" height="2" fill="#d4f541"/>
+                <rect x="10" y="5" width="2" height="2" fill="#d4f541"/>
+                <rect x="6" y="8" width="4" height="2" fill="#d4f541"/>
+                <rect x="4" y="10" width="2" height="4" fill="#1b1f4b"/>
+                <rect x="10" y="10" width="2" height="4" fill="#1b1f4b"/>
+              </svg>
+            </div>
+            <h3 class="fact-card__title">200+ Flavors</h3>
+            <p class="fact-card__body">Llama fleece comes in over 200 natural color variations — more than any other fiber-producing animal on the planet. No dye required. Nature really said "here's the full Pantone library."</p>
+            <span class="link-more link-more--navy">Learn More</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="carousel__nav">
+        <button class="carousel__arrow carousel__arrow--prev" id="prevBtn" aria-label="Previous facts">←</button>
+        <button class="carousel__arrow carousel__arrow--next" id="nextBtn" aria-label="Next facts">→</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 — STATS + CTA (yellow wash)
+     ═══════════════════════════════════════════ -->
+<section class="stats-cta" id="stats">
+  <div class="container">
+
+    <div class="stats-cta__grid">
+      <div class="reveal">
+        <h2 class="stats-cta__heading">Who the f*ck knew? Llamas by the numbers.</h2>
+        <p class="stats-cta__body">
+          These aren't just cute faces. Llamas are a global economic force, an environmental solution, and arguably the most versatile domesticated animal alive. Here's your cheat code to llama stats.
+        </p>
+        <a href="#contact" class="btn-cta btn-cta--on-yellow">Get More Facts</a>
+      </div>
+
+      <div class="stats-cta__sprites reveal">
+        <!-- Pixel llama sprites -->
+        <svg width="100" height="130" viewBox="0 0 20 26" class="llama-svg" style="image-rendering:pixelated">
+          <rect x="8" y="0" width="2" height="2" fill="#d4a574"/>
+          <rect x="10" y="0" width="2" height="2" fill="#d4a574"/>
+          <rect x="6" y="2" width="2" height="2" fill="#d4a574"/>
+          <rect x="8" y="2" width="2" height="2" fill="#f5e6d0"/>
+          <rect x="10" y="2" width="2" height="2" fill="#f5e6d0"/>
+          <rect x="12" y="2" width="2" height="2" fill="#d4a574"/>
+          <rect x="6" y="4" width="2" height="2" fill="#d4a574"/>
+          <rect x="8" y="4" width="2" height="2" fill="#333"/>
+          <rect x="10" y="4" width="2" height="2" fill="#333"/>
+          <rect x="12" y="4" width="2" height="2" fill="#d4a574"/>
+          <rect x="8" y="6" width="6" height="2" fill="#d4a574"/>
+          <rect x="6" y="8" width="2" height="2" fill="#d4a574"/>
+          <rect x="8" y="8" width="2" height="8" fill="#c49565"/>
+          <rect x="10" y="8" width="2" height="8" fill="#d4a574"/>
+          <rect x="12" y="8" width="2" height="2" fill="#d4a574"/>
+          <rect x="4" y="10" width="2" height="2" fill="#c49565"/>
+          <rect x="6" y="10" width="2" height="6" fill="#c49565"/>
+          <rect x="12" y="10" width="2" height="6" fill="#c49565"/>
+          <rect x="14" y="10" width="2" height="6" fill="#c49565"/>
+          <rect x="4" y="16" width="2" height="4" fill="#c49565"/>
+          <rect x="14" y="16" width="2" height="4" fill="#c49565"/>
+          <rect x="2" y="20" width="4" height="2" fill="#8B7355"/>
+          <rect x="14" y="20" width="4" height="2" fill="#8B7355"/>
+          <rect x="2" y="22" width="2" height="2" fill="#666"/>
+          <rect x="16" y="22" width="2" height="2" fill="#666"/>
+        </svg>
+
+        <svg width="90" height="120" viewBox="0 0 20 26" class="llama-svg" style="image-rendering:pixelated">
+          <rect x="8" y="0" width="2" height="2" fill="#8B4513"/>
+          <rect x="10" y="0" width="2" height="2" fill="#8B4513"/>
+          <rect x="6" y="2" width="2" height="2" fill="#8B4513"/>
+          <rect x="8" y="2" width="2" height="2" fill="#D2691E"/>
+          <rect x="10" y="2" width="2" height="2" fill="#D2691E"/>
+          <rect x="12" y="2" width="2" height="2" fill="#8B4513"/>
+          <rect x="6" y="4" width="2" height="2" fill="#8B4513"/>
+          <rect x="8" y="4" width="2" height="2" fill="#333"/>
+          <rect x="10" y="4" width="2" height="2" fill="#333"/>
+          <rect x="12" y="4" width="2" height="2" fill="#8B4513"/>
+          <rect x="8" y="6" width="6" height="2" fill="#8B4513"/>
+          <rect x="6" y="8" width="2" height="2" fill="#8B4513"/>
+          <rect x="8" y="8" width="2" height="8" fill="#A0522D"/>
+          <rect x="10" y="8" width="2" height="8" fill="#8B4513"/>
+          <rect x="12" y="8" width="2" height="2" fill="#8B4513"/>
+          <rect x="4" y="10" width="2" height="2" fill="#A0522D"/>
+          <rect x="6" y="10" width="2" height="6" fill="#A0522D"/>
+          <rect x="12" y="10" width="2" height="6" fill="#A0522D"/>
+          <rect x="14" y="10" width="2" height="6" fill="#A0522D"/>
+          <rect x="4" y="16" width="2" height="4" fill="#A0522D"/>
+          <rect x="14" y="16" width="2" height="4" fill="#A0522D"/>
+          <rect x="2" y="20" width="4" height="2" fill="#654321"/>
+          <rect x="14" y="20" width="4" height="2" fill="#654321"/>
+        </svg>
+
+        <svg width="100" height="130" viewBox="0 0 20 26" class="llama-svg" style="image-rendering:pixelated">
+          <rect x="8" y="0" width="2" height="2" fill="#eee"/>
+          <rect x="10" y="0" width="2" height="2" fill="#eee"/>
+          <rect x="6" y="2" width="2" height="2" fill="#eee"/>
+          <rect x="8" y="2" width="2" height="2" fill="#fff"/>
+          <rect x="10" y="2" width="2" height="2" fill="#fff"/>
+          <rect x="12" y="2" width="2" height="2" fill="#eee"/>
+          <rect x="6" y="4" width="2" height="2" fill="#ddd"/>
+          <rect x="8" y="4" width="2" height="2" fill="#333"/>
+          <rect x="10" y="4" width="2" height="2" fill="#333"/>
+          <rect x="12" y="4" width="2" height="2" fill="#ddd"/>
+          <rect x="8" y="6" width="6" height="2" fill="#eee"/>
+          <rect x="6" y="8" width="2" height="2" fill="#eee"/>
+          <rect x="8" y="8" width="2" height="8" fill="#ddd"/>
+          <rect x="10" y="8" width="2" height="8" fill="#eee"/>
+          <rect x="12" y="8" width="2" height="2" fill="#eee"/>
+          <rect x="4" y="10" width="2" height="2" fill="#ddd"/>
+          <rect x="6" y="10" width="2" height="6" fill="#ddd"/>
+          <rect x="12" y="10" width="2" height="6" fill="#ddd"/>
+          <rect x="14" y="10" width="2" height="6" fill="#ddd"/>
+          <rect x="4" y="16" width="2" height="4" fill="#ddd"/>
+          <rect x="14" y="16" width="2" height="4" fill="#ddd"/>
+          <rect x="2" y="20" width="4" height="2" fill="#aaa"/>
+          <rect x="14" y="20" width="4" height="2" fill="#aaa"/>
+        </svg>
+
+        <svg width="85" height="115" viewBox="0 0 20 26" class="llama-svg" style="image-rendering:pixelated">
+          <rect x="8" y="0" width="2" height="2" fill="#2a3caa"/>
+          <rect x="10" y="0" width="2" height="2" fill="#2a3caa"/>
+          <rect x="6" y="2" width="2" height="2" fill="#2a3caa"/>
+          <rect x="8" y="2" width="2" height="2" fill="#4466cc"/>
+          <rect x="10" y="2" width="2" height="2" fill="#4466cc"/>
+          <rect x="12" y="2" width="2" height="2" fill="#2a3caa"/>
+          <rect x="6" y="4" width="2" height="2" fill="#2a3caa"/>
+          <rect x="8" y="4" width="2" height="2" fill="#d4f541"/>
+          <rect x="10" y="4" width="2" height="2" fill="#d4f541"/>
+          <rect x="12" y="4" width="2" height="2" fill="#2a3caa"/>
+          <rect x="8" y="6" width="6" height="2" fill="#2a3caa"/>
+          <rect x="6" y="8" width="2" height="2" fill="#2a3caa"/>
+          <rect x="8" y="8" width="2" height="8" fill="#3355bb"/>
+          <rect x="10" y="8" width="2" height="8" fill="#2a3caa"/>
+          <rect x="12" y="8" width="2" height="2" fill="#2a3caa"/>
+          <rect x="4" y="10" width="2" height="2" fill="#3355bb"/>
+          <rect x="6" y="10" width="2" height="6" fill="#3355bb"/>
+          <rect x="12" y="10" width="2" height="6" fill="#3355bb"/>
+          <rect x="14" y="10" width="2" height="6" fill="#3355bb"/>
+          <rect x="4" y="16" width="2" height="4" fill="#3355bb"/>
+          <rect x="14" y="16" width="2" height="4" fill="#3355bb"/>
+          <rect x="2" y="20" width="4" height="2" fill="#1b1f4b"/>
+          <rect x="14" y="20" width="4" height="2" fill="#1b1f4b"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-cards reveal-stagger">
+      <div class="stat-card reveal">
+        <div class="stat-card__number">7M+</div>
+        <div class="stat-card__label">Llamas worldwide, primarily in South America</div>
+        <div class="stat-card__source">(FAO Global Livestock Data)</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-card__number">6,000</div>
+        <div class="stat-card__label">Years of domestication — older than horses</div>
+        <div class="stat-card__source">(Smithsonian Research)</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-card__number">$4B</div>
+        <div class="stat-card__label">Global camelid fiber market value by 2030</div>
+        <div class="stat-card__source">(Grand View Research)</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     BOTTOM CTA (white bg)
+     ═══════════════════════════════════════════ -->
+<section class="bottom-cta" id="contact">
+  <div class="container">
+    <div class="bottom-cta__grid">
+      <div class="reveal">
+        <h2 class="bottom-cta__heading">let's build something that spits.</h2>
+        <p class="bottom-cta__body">
+          We're not here to play it safe, and neither are you. Want more llama intelligence? Drop us a line and we'll send you the kind of facts your competitors wish they knew.
+        </p>
+        <a href="#hero" class="btn-cta btn-cta--on-light">Start Over</a>
+      </div>
+      <div class="bottom-cta__pixel-scene reveal">
+        <svg width="200" height="240" viewBox="0 0 20 24" class="llama-svg" style="image-rendering:pixelated">
+          <rect x="8" y="0" width="2" height="2" fill="#d4f541"/>
+          <rect x="10" y="0" width="2" height="2" fill="#d4f541"/>
+          <rect x="6" y="2" width="2" height="2" fill="#d4f541"/>
+          <rect x="8" y="2" width="2" height="2" fill="#f0f4c3"/>
+          <rect x="10" y="2" width="2" height="2" fill="#f0f4c3"/>
+          <rect x="12" y="2" width="2" height="2" fill="#d4f541"/>
+          <rect x="6" y="4" width="2" height="2" fill="#d4f541"/>
+          <rect x="8" y="4" width="2" height="2" fill="#1b1f4b"/>
+          <rect x="10" y="4" width="2" height="2" fill="#1b1f4b"/>
+          <rect x="12" y="4" width="2" height="2" fill="#d4f541"/>
+          <rect x="4" y="4" width="2" height="2" fill="#d4f541"/>
+          <rect x="3" y="5" width="1" height="1" fill="#d4f541"/>
+          <rect x="2" y="5" width="1" height="1" fill="#d4f541"/>
+          <rect x="1" y="5" width="1" height="1" fill="#d4f541"/>
+          <rect x="8" y="6" width="6" height="2" fill="#d4f541"/>
+          <rect x="6" y="8" width="2" height="2" fill="#d4f541"/>
+          <rect x="8" y="8" width="2" height="8" fill="#d4f541"/>
+          <rect x="10" y="8" width="2" height="8" fill="#f0f4c3"/>
+          <rect x="12" y="8" width="2" height="2" fill="#d4f541"/>
+          <rect x="14" y="8" width="2" height="2" fill="#d4f541"/>
+          <rect x="4" y="10" width="2" height="2" fill="#d4f541"/>
+          <rect x="6" y="10" width="2" height="6" fill="#d4f541"/>
+          <rect x="12" y="10" width="2" height="6" fill="#d4f541"/>
+          <rect x="14" y="10" width="2" height="6" fill="#d4f541"/>
+          <rect x="4" y="16" width="2" height="4" fill="#d4f541"/>
+          <rect x="14" y="16" width="2" height="4" fill="#d4f541"/>
+          <rect x="2" y="20" width="4" height="2" fill="#2a3caa"/>
+          <rect x="14" y="20" width="4" height="2" fill="#2a3caa"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     LEVEL UP + FOOTER
+     ═══════════════════════════════════════════ -->
+<div class="level-up">
+  <div class="level-up__text">LEVEL UP!</div>
+</div>
+
+<footer class="footer">
+  <div class="footer__logo">
+    <div class="footer__logo-mark">🦙</div>
+    <div class="footer__logo-text">Llama Facts</div>
+  </div>
+  <ul class="footer__nav">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#facts">Facts</a></li>
+    <li><a href="#stats">Stats</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <span class="footer__copy">© Llama Facts. All rights reserved. A Second Act Digital style demo.</span>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+// ── Navbar scroll behavior ──
+const navbar = document.getElementById('navbar');
+let lastScroll = 0;
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.scrollY;
+  if (currentScroll > 60) {
+    navbar.classList.add('navbar--scrolled');
+  } else {
+    navbar.classList.remove('navbar--scrolled');
+  }
+  lastScroll = currentScroll;
+}, { passive: true });
+
+// ── Mobile hamburger ──
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  navLinks.classList.toggle('navbar__links--open');
+});
+
+// Close mobile menu on link click
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    navLinks.classList.remove('navbar__links--open');
+  });
+});
+
+// ── Carousel ──
+const track = document.getElementById('carouselTrack');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+let carouselIndex = 0;
+
+function getVisibleSlides() {
+  const w = window.innerWidth;
+  if (w <= 768) return 1;
+  if (w <= 1024) return 2;
+  return 3;
+}
+
+function getMaxIndex() {
+  const totalSlides = track.children.length;
+  return Math.max(0, totalSlides - getVisibleSlides());
+}
+
+function updateCarousel() {
+  const slideWidth = 100 / getVisibleSlides();
+  track.style.transform = `translateX(-${carouselIndex * slideWidth}%)`;
+}
+
+prevBtn.addEventListener('click', () => {
+  carouselIndex = Math.max(0, carouselIndex - 1);
+  updateCarousel();
+});
+
+nextBtn.addEventListener('click', () => {
+  carouselIndex = Math.min(getMaxIndex(), carouselIndex + 1);
+  updateCarousel();
+});
+
+window.addEventListener('resize', () => {
+  carouselIndex = Math.min(carouselIndex, getMaxIndex());
+  updateCarousel();
+});
+
+// ── Touch swipe for carousel ──
+let touchStartX = 0;
+let touchEndX = 0;
+
+track.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+track.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      carouselIndex = Math.min(getMaxIndex(), carouselIndex + 1);
+    } else {
+      carouselIndex = Math.max(0, carouselIndex - 1);
+    }
+    updateCarousel();
+  }
+}, { passive: true });
+
+// ── Scroll reveal (Intersection Observer) ──
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        if (entry.target.classList.contains('reveal-stagger')) {
+          // Trigger children
+          entry.target.querySelectorAll('.reveal').forEach((child, i) => {
+            setTimeout(() => {
+              child.classList.add('reveal--visible');
+            }, i * 120);
+          });
+        } else {
+          entry.target.classList.add('reveal--visible');
+        }
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
+);
+
+document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => {
+  revealObserver.observe(el);
+});
+
+// ── Active nav link highlighting ──
+const sections = document.querySelectorAll('section[id], .hero[id]');
+const navItems = document.querySelectorAll('.navbar__link');
+
+const sectionObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach((item) => {
+          item.classList.remove('navbar__link--active');
+          if (item.getAttribute('href') === '#' + id) {
+            item.classList.add('navbar__link--active');
+          }
+        });
+      }
+    });
+  },
+  { threshold: 0.3 }
+);
+
+sections.forEach((section) => {
+  sectionObserver.observe(section);
+});
+</script>
+
+</body>
+</html>
