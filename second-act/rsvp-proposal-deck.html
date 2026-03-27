@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP Advertising — Website Redesign & Offer Platform | Second Act Digital</title>
+
+  <!-- Reveal.js 5.x -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== BRAND TOKENS ===== */
+    :root {
+      --navy:       #1b1f4b;
+      --royal:      #2a3caa;
+      --chartreuse: #d4f541;
+      --white:      #ffffff;
+      --charcoal:   #3a3a3a;
+      --grid-color: rgba(212, 245, 65, 0.06);
+    }
+
+    /* ===== GLOBAL REVEAL OVERRIDES ===== */
+    .reveal-viewport {
+      background: var(--navy);
+    }
+
+    .reveal {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      color: var(--white);
+    }
+
+    /* Dot-grid background overlay */
+    .reveal .slides {
+      background-image:
+        radial-gradient(circle, rgba(212,245,65,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .reveal .slides section {
+      text-align: left;
+      padding: 40px 50px;
+      box-sizing: border-box;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .reveal h1,
+    .reveal h2,
+    .reveal h3 {
+      font-family: 'Press Start 2P', monospace;
+      text-transform: lowercase;
+      letter-spacing: 1px;
+      line-height: 1.4;
+      margin-bottom: 0.6em;
+    }
+
+    .reveal h1 {
+      font-size: 1.6em;
+      color: var(--chartreuse);
+    }
+
+    .reveal h2 {
+      font-size: 1.1em;
+      color: var(--chartreuse);
+    }
+
+    .reveal h3 {
+      font-size: 0.75em;
+      color: var(--white);
+    }
+
+    .reveal p,
+    .reveal li {
+      font-size: 0.55em;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .reveal .subtitle {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7em;
+      font-weight: 300;
+      color: rgba(255,255,255,0.8);
+      text-transform: none;
+      letter-spacing: 0.5px;
+    }
+
+    .reveal .label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45em;
+      color: var(--chartreuse);
+      text-transform: lowercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.3em;
+    }
+
+    /* ===== LISTS ===== */
+    .reveal ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .reveal ul li {
+      position: relative;
+      padding-left: 1.4em;
+      margin-bottom: 0.45em;
+    }
+
+    .reveal ul li::before {
+      content: '\25B8';
+      color: var(--chartreuse);
+      position: absolute;
+      left: 0;
+      font-size: 1em;
+    }
+
+    .reveal ol {
+      padding-left: 1.2em;
+    }
+
+    .reveal ol li {
+      margin-bottom: 0.35em;
+    }
+
+    .reveal ol li::marker {
+      color: var(--chartreuse);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7em;
+    }
+
+    /* ===== CARDS & BOXES ===== */
+    .card {
+      background: var(--royal);
+      border: 1px solid rgba(212,245,65,0.15);
+      border-radius: 0;
+      padding: 22px 26px;
+      margin-bottom: 14px;
+    }
+
+    .card--dark {
+      background: rgba(27,31,75,0.7);
+      border: 1px solid rgba(212,245,65,0.12);
+    }
+
+    .highlight-box {
+      background: var(--chartreuse);
+      color: var(--navy);
+      padding: 12px 18px;
+      border-radius: 0;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .accent-border {
+      border-left: 4px solid var(--chartreuse);
+      padding-left: 18px;
+    }
+
+    /* ===== GHOST BUTTONS ===== */
+    .btn-ghost {
+      display: inline-block;
+      border: 2px solid var(--chartreuse);
+      color: var(--chartreuse);
+      padding: 10px 24px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4em;
+      text-transform: lowercase;
+      letter-spacing: 1px;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-ghost:hover {
+      background: var(--chartreuse);
+      color: var(--navy);
+    }
+
+    /* ===== TWO-COLUMN GRID ===== */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ===== FIXED CORNER LOGO ===== */
+    .corner-logo {
+      position: fixed;
+      bottom: 18px;
+      left: 22px;
+      z-index: 100;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .corner-logo img {
+      height: 28px;
+      width: auto;
+    }
+
+    /* ===== TITLE SLIDE SPECIFICS ===== */
+    .title-slide {
+      text-align: center !important;
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title-slide h1 {
+      font-size: 1.8em;
+      margin-bottom: 0.2em;
+    }
+
+    .title-slide .subtitle {
+      font-size: 0.85em;
+      margin-bottom: 0.15em;
+    }
+
+    .title-slide .proposal-label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.5em;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-top: 1.2em;
+      margin-bottom: 2em;
+    }
+
+    .title-slide .logo-bottom img {
+      height: 42px;
+      width: auto;
+      opacity: 0.9;
+    }
+
+    /* Line-grid overlay for title slide */
+    .title-slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212,245,65,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,245,65,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ===== AGENDA SLIDE ===== */
+    .agenda-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 40px;
+    }
+
+    .agenda-grid li {
+      font-size: 0.48em;
+      padding-left: 1.6em;
+    }
+
+    .agenda-grid li::before {
+      content: none;
+    }
+
+    .agenda-grid li span.num {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.75em;
+      color: var(--chartreuse);
+      margin-right: 6px;
+    }
+
+    /* ===== CHALLENGE SLIDE ===== */
+    .challenge-block {
+      background: rgba(42,60,170,0.35);
+      border-left: 4px solid var(--chartreuse);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      border-radius: 0;
+    }
+
+    .challenge-block p {
+      margin: 0;
+      font-size: 0.5em;
+    }
+
+    /* ===== AUDIENCE CARDS ===== */
+    .audience-card {
+      background: rgba(42,60,170,0.3);
+      border: 1px solid rgba(212,245,65,0.12);
+      border-radius: 0;
+      padding: 18px 22px;
+    }
+
+    .audience-card h3 {
+      color: var(--chartreuse);
+      font-size: 0.55em;
+      margin-bottom: 0.5em;
+    }
+
+    .audience-card li {
+      font-size: 0.48em;
+      margin-bottom: 0.3em;
+    }
+
+    /* ===== TAG / PILL ===== */
+    .tag {
+      display: inline-block;
+      background: transparent;
+      border: 1px solid var(--chartreuse);
+      color: var(--chartreuse);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.3em;
+      padding: 4px 10px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      border-radius: 0;
+    }
+
+    /* ===== URL STRATEGY TABLE ===== */
+    .url-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.45em;
+      margin-top: 10px;
+    }
+
+    .url-table th {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8em;
+      color: var(--chartreuse);
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--chartreuse);
+      text-transform: lowercase;
+    }
+
+    .url-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+    }
+
+    .url-table code {
+      font-family: 'Montserrat', monospace;
+      background: rgba(42,60,170,0.4);
+      padding: 2px 6px;
+      font-size: 0.9em;
+      color: var(--chartreuse);
+    }
+
+    /* ===== CONSOLIDATION VISUAL ===== */
+    .consolidation-arrow {
+      text-align: center;
+      font-size: 2em;
+      color: var(--chartreuse);
+      margin: 10px 0;
+    }
+
+    /* ===== SLIDE NUMBER OVERRIDE ===== */
+    .reveal .slide-number {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--chartreuse);
+      background: transparent;
+      right: 22px;
+      bottom: 18px;
+    }
+
+    /* ===== RESPONSIVE TWEAKS ===== */
+    @media (max-width: 900px) {
+      .two-col, .three-col, .agenda-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed corner logo on every slide -->
+  <div class="corner-logo">
+    <img src="https://secondactdigital.com/wp-content/uploads/2025/10/second-act-logo.png" alt="Second Act Digital">
+  </div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==============================
+           SLIDE 1 — TITLE
+           ============================== -->
+      <section class="title-slide">
+        <h1>rsvp advertising</h1>
+        <p class="subtitle">website redesign &amp; offer platform</p>
+        <p class="proposal-label">proposal presentation</p>
+        <div class="logo-bottom">
+          <img src="https://secondactdigital.com/wp-content/uploads/2025/10/second-act-logo.png" alt="Second Act Digital">
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 2 — AGENDA
+           ============================== -->
+      <section>
+        <h2>agenda</h2>
+        <p class="label">the roadmap</p>
+        <ol class="agenda-grid">
+          <li><span class="num">01</span> The Challenge &amp; Opportunity</li>
+          <li><span class="num">02</span> Three Audiences, Three Experiences</li>
+          <li><span class="num">03</span> SEO &amp; Information Architecture</li>
+          <li><span class="num">04</span> Microsite Consolidation</li>
+          <li><span class="num">05</span> Offer Discovery &amp; Business Profiles</li>
+          <li><span class="num">06</span> Offer Archive &amp; PDF Processing</li>
+          <li><span class="num">07</span> Analytics &amp; Attribution</li>
+          <li><span class="num">08</span> CRM &amp; Marketing Automation</li>
+          <li><span class="num">09</span> CMS &amp; Content Management</li>
+          <li><span class="num">10</span> Technical Architecture &amp; Security</li>
+          <li><span class="num">11</span> Migration Strategy</li>
+          <li><span class="num">12</span> Design Direction</li>
+          <li><span class="num">13</span> Delivery Plan &amp; Investment</li>
+          <li><span class="num">14</span> Why Second Act Digital</li>
+          <li><span class="num">15</span> Next Steps &amp; Q&amp;A</li>
+        </ol>
+      </section>
+
+      <!-- ==============================
+           SLIDE 3 — THE CHALLENGE
+           ============================== -->
+      <section>
+        <h2>the challenge</h2>
+        <p class="label">where things stand</p>
+
+        <div class="challenge-block" style="margin-bottom: 18px;">
+          <p>RSVP serves <strong>three distinct audiences</strong> &mdash; consumers, advertisers, and franchisees &mdash; through a platform that needs to evolve from a website into an <strong>attribution-driven offer platform</strong>.</p>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <h3>current limitations</h3>
+            <ul>
+              <li>Aging .NET / SQL Server stack</li>
+              <li>Fragmented franchisee microsites</li>
+              <li>Page-based lead routing</li>
+              <li>Limited SEO taxonomy</li>
+              <li>No unified reporting</li>
+            </ul>
+          </div>
+          <div>
+            <h3>the opportunity</h3>
+            <ul>
+              <li>Modern offer discovery engine</li>
+              <li>Measurable advertiser ROI</li>
+              <li>Franchisee enablement tools</li>
+              <li>Unified analytics &amp; attribution</li>
+              <li>One domain, one platform</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 4 — CONSUMERS
+           ============================== -->
+      <section>
+        <h2>consumers</h2>
+        <p class="label">audience 1 of 3</p>
+
+        <div class="two-col">
+          <div class="audience-card">
+            <h3>offer discovery</h3>
+            <ul>
+              <li>Search by category + geography</li>
+              <li>RSVP-to-reveal mechanic &mdash; gated offers create engagement signals</li>
+              <li>Save, share, and redeem flows</li>
+            </ul>
+          </div>
+          <div class="audience-card">
+            <h3>engagement &amp; opt-in</h3>
+            <ul>
+              <li>Preference-based opt-ins: categories, geography, frequency</li>
+              <li>"Request a Deal" prospecting signal</li>
+              <li>City savings guides as content hubs</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px;">
+          <span class="tag">search</span>
+          <span class="tag">rsvp-to-reveal</span>
+          <span class="tag">save &amp; share</span>
+          <span class="tag">opt-in preferences</span>
+          <span class="tag">request a deal</span>
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 5 — ADVERTISERS
+           ============================== -->
+      <section>
+        <h2>advertisers</h2>
+        <p class="label">audience 2 of 3</p>
+
+        <div class="two-col">
+          <div class="audience-card">
+            <h3>lead capture &amp; routing</h3>
+            <ul>
+              <li>Market-based lead routing</li>
+              <li>Inquiry flows tied to products &amp; services</li>
+              <li>Advertiser portal or franchisee-generated emailed reports</li>
+            </ul>
+          </div>
+          <div class="audience-card">
+            <h3>measurable roi</h3>
+            <ul>
+              <li>Profile views &amp; RSVPs</li>
+              <li>Website clicks &amp; tracked calls</li>
+              <li>Form submissions &amp; shares</li>
+              <li>Retention and renewal-driving metrics</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 20px;">
+          Reporting that proves value &mdash; driving retention and renewals.
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 6 — FRANCHISEES
+           ============================== -->
+      <section>
+        <h2>franchisees</h2>
+        <p class="label">audience 3 of 3</p>
+
+        <div class="two-col">
+          <div class="audience-card">
+            <h3>local seo &amp; pages</h3>
+            <ul>
+              <li>City/metro SEO optimization (not tri-county footprints)</li>
+              <li>Microsite consolidation into one unified domain</li>
+              <li>CRM integration with geographic lead routing</li>
+            </ul>
+          </div>
+          <div class="audience-card">
+            <h3>backend tools</h3>
+            <ul>
+              <li>Offer archive &amp; sales assets</li>
+              <li>Performance reports &amp; lead management</li>
+              <li>Advertiser prospecting tools</li>
+              <li>Franchisee-level reporting portal</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px;">
+          <span class="tag">local pages</span>
+          <span class="tag">portal</span>
+          <span class="tag">crm</span>
+          <span class="tag">prospecting</span>
+          <span class="tag">reporting</span>
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 7 — SEO & INFORMATION ARCHITECTURE
+           ============================== -->
+      <section>
+        <h2>seo &amp; information architecture</h2>
+        <p class="label">findability at scale</p>
+
+        <div class="two-col">
+          <div>
+            <h3>taxonomy engine</h3>
+            <ul>
+              <li>Category &rarr; State &rarr; City &rarr; ZIP</li>
+              <li>Duplication controls &amp; canonical strategy</li>
+              <li>Sitemap segmentation for crawl efficiency</li>
+            </ul>
+
+            <h3 style="margin-top: 16px;">structured data</h3>
+            <ul>
+              <li>LocalBusiness &amp; Offer schema</li>
+              <li>FAQ, Breadcrumb, Organization</li>
+            </ul>
+          </div>
+          <div>
+            <h3>url strategy</h3>
+            <table class="url-table">
+              <tr><th>type</th><th>pattern</th></tr>
+              <tr><td>Category</td><td><code>/category-name/</code></td></tr>
+              <tr><td>Market</td><td><code>/city-state/</code></td></tr>
+              <tr><td>Cat + Geo</td><td><code>/category/city-state/</code></td></tr>
+              <tr><td>Offer</td><td><code>/offers/business-slug/</code></td></tr>
+              <tr><td>Profile</td><td><code>/business/business-slug/</code></td></tr>
+              <tr><td>Franchisee</td><td><code>/markets/market-slug/</code></td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <h3>content plan</h3>
+          <ul style="column-count: 2; column-gap: 30px;">
+            <li>City savings guides</li>
+            <li>Advertiser educational content</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ==============================
+           SLIDE 8 — MICROSITE CONSOLIDATION
+           ============================== -->
+      <section>
+        <h2>microsite consolidation</h2>
+        <p class="label">one domain to rule them all</p>
+
+        <div style="text-align: center; margin: 20px 0;">
+          <div class="card" style="display: inline-block; background: rgba(42,60,170,0.25); padding: 14px 30px;">
+            <span style="font-family: 'Press Start 2P', monospace; font-size: 0.6em; color: rgba(255,255,255,0.5);">25+ franchisee microsites</span>
+          </div>
+          <div class="consolidation-arrow">&darr;</div>
+          <div class="highlight-box" style="font-family: 'Press Start 2P', monospace; font-size: 0.5em;">
+            one unified domain
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 24px;">
+          <div class="audience-card">
+            <h3>migration approach</h3>
+            <ul>
+              <li>301 redirect mapping with equity preservation</li>
+              <li>Shift from tri-county footprints to city/metro SEO intent</li>
+            </ul>
+          </div>
+          <div class="audience-card">
+            <h3>governance</h3>
+            <ul>
+              <li>Corporate control of global content</li>
+              <li>Franchisee local editing permissions</li>
+              <li>Improved domain authority through consolidation</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 9: Offer Discovery & Business Profiles ===================== -->
+      <section>
+        <p class="label">slide 9</p>
+        <h2>offer discovery &<br>business profiles</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>consumer journey</h3>
+            <ul>
+              <li>Search or browse by category + geography</li>
+              <li>Category + geo landing pages surface relevant offers</li>
+              <li>Offers gated behind RSVP — creates engagement signal</li>
+              <li>Business profiles with gallery, CTAs, optional IG embed</li>
+              <li>Actions: website click, call, directions, share, save, contact</li>
+            </ul>
+          </div>
+          <div class="card--dark card">
+            <h3>"request a deal" signal</h3>
+            <p>Consumers flag businesses they <em>want</em> offers from — even non-advertisers. Businesses can claim profiles and suggest edits.</p>
+            <br>
+            <div class="highlight-box">Every request becomes a franchisee sales tool — real consumer demand data delivered straight to the sales pipeline.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 10: Offer Archive & PDF Processing ===================== -->
+      <section>
+        <p class="label">slide 10</p>
+        <h2>offer archive &<br>pdf batch processing</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>ingestion pipeline</h3>
+            <ul>
+              <li>PDFs received from print vendor</li>
+              <li>Automated categorization: market, category, advertiser, date</li>
+              <li>Admin correction and mapping tools</li>
+              <li>Franchisee access scoped by territory</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>historical migration</h3>
+            <ul>
+              <li>Migrate existing offer database from current platform</li>
+              <li>Archive browsable by market / date / category / advertiser</li>
+              <li>Download and export for sales presentations</li>
+              <li>Full data continuity — nothing gets left behind</li>
+            </ul>
+          </div>
+        </div>
+        <div class="accent-border" style="margin-top: 18px;">
+          <p><strong>Result:</strong> Franchisees get instant access to their full offer history — a sales asset, not a filing cabinet.</p>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 11: Analytics, Tracking & Attribution ===================== -->
+      <section>
+        <p class="label">slide 11</p>
+        <h2>analytics, tracking<br>& attribution</h2>
+        <div class="card" style="margin-bottom: 18px;">
+          <h3>full event funnel</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Search</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Filter</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Offer View</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Profile View</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Click / Call / Form</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Share / Save</span>
+            <span style="color: var(--chartreuse); font-size: 0.5em; align-self: center;">→</span>
+            <span class="highlight-box" style="font-size: 0.42em; padding: 6px 12px;">Redemption</span>
+          </div>
+        </div>
+        <div class="three-col">
+          <div class="card--dark card">
+            <h3>corporate</h3>
+            <p>Cross-market rollup dashboards. Total funnel visibility.</p>
+          </div>
+          <div class="card--dark card">
+            <h3>franchisee</h3>
+            <p>Market-level reporting. Advertiser performance by territory.</p>
+          </div>
+          <div class="card--dark card">
+            <h3>advertiser</h3>
+            <p>Portal or emailed reports: views, clicks, calls, forms, shares.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 12: Call Tracking ===================== -->
+      <section>
+        <p class="label">slide 12</p>
+        <h2>call tracking</h2>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>integration</h3>
+              <ul>
+                <li>CallRail or Marchex API integration</li>
+                <li>Dynamic number insertion on offer pages and business profiles</li>
+                <li>Whisper message: <em>"This call is from RSVP"</em></li>
+                <li>Call recording and duration tracking</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <h3>attribution</h3>
+              <ul>
+                <li>Every call tied back to the originating advertiser profile</li>
+                <li>Included in advertiser performance reports</li>
+                <li>Aggregated in franchisee and corporate dashboards</li>
+                <li>Proof of ROI advertisers can see and trust</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 13: CRM & Marketing Automation ===================== -->
+      <section>
+        <p class="label">slide 13</p>
+        <h2>crm & marketing<br>automation</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>recommended stack</h3>
+            <p>HubSpot, Zoho, or equivalent — selected based on RSVP's existing tools and budget.</p>
+            <ul>
+              <li>Corporate visibility across all markets</li>
+              <li>Role-based franchisee access</li>
+              <li>Lead capture, routing, and lifecycle tracking</li>
+              <li>Sales booking and forecasting</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>automation workflows</h3>
+            <ul>
+              <li>Automated thank-you emails on inquiry</li>
+              <li>Retention sequences for current advertisers</li>
+              <li>Win-back and renewal campaigns</li>
+              <li>Opt-in preference integration (categories + geography)</li>
+              <li>Website form and event sync</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 14: Lead Routing ===================== -->
+      <section>
+        <p class="label">slide 14</p>
+        <h2>lead routing</h2>
+        <div class="accent-border" style="margin-bottom: 20px;">
+          <p><strong>Current limitation:</strong> Leads route based on the page they originated from — not where the prospect is actually located.</p>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <h3>current state</h3>
+            <ul>
+              <li>Page-based routing via microsites</li>
+              <li>No geographic intelligence</li>
+              <li>Leads fall through the cracks when geography doesn't match page ownership</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--chartreuse);">
+            <h3>proposed solution</h3>
+            <ul>
+              <li>True geographic routing: city, ZIP, territory rules</li>
+              <li>Override capability for edge cases</li>
+              <li>Full audit trail on every routing decision</li>
+              <li>CRM sync ensures no lead is lost or misrouted</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 15: CMS & Content Management ===================== -->
+      <section>
+        <p class="label">slide 15</p>
+        <h2>cms & content<br>management</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>editing model</h3>
+            <ul>
+              <li>Corporate editing for products, services, about, FAQs, guides</li>
+              <li>Franchisee editing for local pages and approved modules</li>
+              <li>Approval workflows — corporate sign-off on sensitive updates</li>
+              <li>Reusable modules: FAQ blocks, testimonials, CTAs, hero modules</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>role-based permissions</h3>
+            <ul>
+              <li><strong>Admin:</strong> Full access, all markets</li>
+              <li><strong>Publisher:</strong> Content creation within assigned scope</li>
+              <li><strong>Guest:</strong> View-only access</li>
+              <li>Franchisee boundaries enforced by market assignment</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 16: Consumer Opt-Ins & Compliance ===================== -->
+      <section>
+        <p class="label">slide 16</p>
+        <h2>consumer opt-ins<br>& compliance</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>sign-up & preferences</h3>
+            <ul>
+              <li>Email + SMS opt-in for new offers and luxury card packs</li>
+              <li>Preference center: categories, geography, frequency</li>
+              <li>Segmentation for targeted campaigns</li>
+              <li>Consent logging — full compliance database</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>privacy & compliance</h3>
+            <ul>
+              <li>Email and SMS compliance (CAN-SPAM, TCPA)</li>
+              <li>Granular unsubscribe and preference management</li>
+              <li>Audience creation based on defined preferences</li>
+              <li>Audit-ready consent records</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 17: Technical Architecture ===================== -->
+      <section>
+        <p class="label">slide 17</p>
+        <h2>technical<br>architecture</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>recommended stack</h3>
+            <ul>
+              <li>Modern CMS with headless or hybrid architecture</li>
+              <li>Cloud-hosted, scalable infrastructure</li>
+              <li>API-first design for integrations</li>
+              <li>CDN and caching layer for performance</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>data model</h3>
+            <ul>
+              <li><strong>Offers:</strong> category, market, advertiser, dates, terms</li>
+              <li><strong>Businesses:</strong> profiles, galleries, contact info, offers</li>
+              <li><strong>Markets:</strong> state, city, ZIP, territory, franchisee mapping</li>
+              <li><strong>Users:</strong> roles, permissions, market boundaries</li>
+            </ul>
+          </div>
+        </div>
+        <div class="accent-border" style="margin-top: 16px;">
+          <p><strong>Migration path:</strong> Full parity plan from .NET/SQL Server — no functionality left behind, no data lost.</p>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 18: Security, Compliance & Performance ===================== -->
+      <section>
+        <p class="label">slide 18</p>
+        <h2>security, compliance<br>& performance</h2>
+        <div class="three-col">
+          <div class="card">
+            <h3>security</h3>
+            <ul>
+              <li>PCI compliance where payments exist</li>
+              <li>Secure authentication</li>
+              <li>Role-based access controls</li>
+              <li>Audit logging for all admin actions</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>accessibility</h3>
+            <ul>
+              <li>ADA/WCAG compliance testing</li>
+              <li>Full documentation</li>
+              <li>Keyboard navigation</li>
+              <li>Screen reader support</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>performance</h3>
+            <ul>
+              <li>Core Web Vitals targets</li>
+              <li>CDN + caching strategy</li>
+              <li>Monitoring and alerting</li>
+              <li>Mobile-first optimization</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 19: Migration & Redirect Strategy ===================== -->
+      <section>
+        <p class="label">slide 19</p>
+        <h2>migration &<br>redirect strategy</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>data migration</h3>
+            <ul>
+              <li>Full export from .NET/SQL Server</li>
+              <li>Offer database, business profiles, user accounts</li>
+              <li>Historical content and permissions</li>
+              <li>Parity validation — side-by-side testing</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>redirect mapping</h3>
+            <ul>
+              <li>Comprehensive 301 redirect map</li>
+              <li>SEO equity preservation</li>
+              <li>Franchisee microsite URLs → new unified paths</li>
+              <li>Monitoring for 404s post-launch</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box" style="margin-top: 18px; font-size: 0.5em;">
+          Zero data loss. Zero broken links. Zero disruption to existing traffic.
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 20: Design Direction ===================== -->
+      <section>
+        <p class="label">slide 20</p>
+        <h2>design direction</h2>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>brand refresh</h3>
+              <p>Contemporary, clean, and premium. The consumer experience should communicate <strong>"luxury perks"</strong> — not traditional couponing.</p>
+              <ul>
+                <li>Exclusivity positioning throughout the UX</li>
+                <li>Modern typography and layout</li>
+                <li>Rich imagery and editorial feel</li>
+                <li>Mobile-first responsive design</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="card--dark card">
+              <h3>design system</h3>
+              <ul>
+                <li>Reusable component library</li>
+                <li>Consistent patterns across all audience experiences</li>
+                <li>Scalable for future market expansion</li>
+                <li>Accessible color palette and type scale</li>
+              </ul>
+            </div>
+            <div class="highlight-box" style="margin-top: 14px; font-size: 0.48em;">
+              "RSVP" isn't just a name — it's the experience. Exclusive offers you unlock by showing up.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 21: Delivery Plan & Timeline ===================== -->
+      <section>
+        <p class="label">slide 21</p>
+        <h2>delivery plan<br>& timeline</h2>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3>phased approach</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px;">
+            <div style="border-left: 3px solid var(--chartreuse); padding-left: 10px;">
+              <p style="color: var(--chartreuse); font-weight: 700; font-size: 0.5em;">Phase 1</p>
+              <p style="font-size: 0.42em;">Discovery, IA, wireframes. Requirements confirmation.</p>
+            </div>
+            <div style="border-left: 3px solid var(--chartreuse); padding-left: 10px;">
+              <p style="color: var(--chartreuse); font-weight: 700; font-size: 0.5em;">Phase 2</p>
+              <p style="font-size: 0.42em;">UI design, design system, CMS setup, core development.</p>
+            </div>
+            <div style="border-left: 3px solid var(--chartreuse); padding-left: 10px;">
+              <p style="color: var(--chartreuse); font-weight: 700; font-size: 0.5em;">Phase 3</p>
+              <p style="font-size: 0.42em;">Integrations, analytics, CRM, offer pipeline, migration.</p>
+            </div>
+            <div style="border-left: 3px solid var(--chartreuse); padding-left: 10px;">
+              <p style="color: var(--chartreuse); font-weight: 700; font-size: 0.5em;">Phase 4</p>
+              <p style="font-size: 0.42em;">QA, launch, training, 30/60/90-day support.</p>
+            </div>
+          </div>
+        </div>
+        <div class="accent-border">
+          <p><strong>Target kickoff: April 20, 2026</strong> — aligned to the RFP schedule. All 11 deliverables mapped to milestones.</p>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 22: Investment Overview ===================== -->
+      <section>
+        <p class="label">slide 22</p>
+        <h2>investment overview</h2>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3>core scope</h3>
+          <p>Pricing structured around the RFP's 11 deliverables:</p>
+          <div class="two-col" style="margin-top: 12px;">
+            <div>
+              <ol>
+                <li>Discovery + requirements confirmation</li>
+                <li>Sitemap, IA, URL strategy, redirects</li>
+                <li>Wireframes for core journeys</li>
+                <li>UI design + design system</li>
+                <li>Platform development + CMS + permissions</li>
+                <li>Offer ingestion and archive tools</li>
+              </ol>
+            </div>
+            <div>
+              <ol start="7">
+                <li>Analytics, event tracking, reporting</li>
+                <li>CRM/marketing automation + workflows</li>
+                <li>QA (functional, accessibility, performance)</li>
+                <li>Training + documentation</li>
+                <li>Launch plan + post-launch support</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="highlight-box" style="font-size: 0.48em; text-align: center; width: 100%;">
+            Detailed line-item pricing provided in written proposal
+          </div>
+          <div class="card--dark card">
+            <h3>ongoing support</h3>
+            <p>Maintenance and support options with defined SLAs, response times, and monthly costs.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 23: Relevant Experience ===================== -->
+      <section>
+        <p class="label">slide 23</p>
+        <h2>why second act<br>digital</h2>
+        <div class="two-col">
+          <div class="card">
+            <h3>platform experience</h3>
+            <ul>
+              <li>Offer and deal discovery platforms</li>
+              <li>Search and directory ecosystems</li>
+              <li>Multi-market and franchise systems</li>
+              <li>SEO-driven taxonomy architecture</li>
+              <li>Lead attribution and reporting systems</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>what we bring</h3>
+            <ul>
+              <li>Performance-obsessed — every decision ties to measurable outcomes</li>
+              <li>Full-stack capability: strategy, design, dev, analytics</li>
+              <li>We build platforms, not just websites</li>
+              <li>Franchise-model expertise with multi-tenant architecture</li>
+            </ul>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <img src="https://secondactdigital.com/wp-content/uploads/the-team.png" alt="Second Act Digital Team" style="max-width: 340px; opacity: 0.85;">
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 24: Next Steps ===================== -->
+      <section>
+        <p class="label">slide 24</p>
+        <h2>next steps</h2>
+        <div class="card" style="max-width: 700px;">
+          <h3>after vendor selection — april 17</h3>
+          <ul>
+            <li><strong>Week 1:</strong> Kickoff meeting, stakeholder interviews, access provisioning</li>
+            <li><strong>Weeks 2–3:</strong> Discovery deep-dive, current platform audit, requirements finalization</li>
+            <li><strong>Week 4:</strong> IA and sitemap delivery, redirect mapping begins</li>
+            <li><strong>Week 5+:</strong> Wireframes, design concepts, development sprint planning</li>
+          </ul>
+        </div>
+        <div class="accent-border" style="margin-top: 20px;">
+          <p>We're ready to hit the ground running on <strong>April 20</strong>. The discovery process starts day one.</p>
+        </div>
+      </section>
+
+      <!-- ===================== SLIDE 25: Q&A ===================== -->
+      <section class="title-slide">
+        <h1>q&a</h1>
+        <p class="subtitle" style="margin-top: 20px;">Let's talk about building the platform RSVP deserves.</p>
+        <br>
+        <p style="font-size: 0.55em; color: rgba(255,255,255,0.7);">
+          <strong>Second Act Digital</strong><br>
+          <a href="https://secondactdigital.com" style="color: var(--chartreuse); text-decoration: none;">secondactdigital.com</a>
+        </p>
+        <br>
+        <img src="https://secondactdigital.com/wp-content/uploads/level-up-1.gif" alt="Level Up" style="max-width: 160px; image-rendering: pixelated;">
+      </section>
+
+    </div><!-- .slides -->
+  </div><!-- .reveal -->
+
+  <!-- Reveal.js core -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+
+  <!-- Reveal.js init -->
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      transition: 'slide',
+      transitionSpeed: 'default',
+      backgroundTransition: 'slide',
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      center: true,
+      controls: true,
+      progress: true,
+      history: true,
+      keyboard: true,
+      overview: true,
+      touch: true,
+    });
+  </script>
+
+</body>
+</html>
