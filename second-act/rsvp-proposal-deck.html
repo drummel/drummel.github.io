@@ -381,7 +381,7 @@
       max-width: 300px;
       max-height: 300px;
       width: 300px;
-      animation: colorCycle 6s ease-in-out infinite, softBounce 4s ease-in-out infinite;
+      animation: colorCycle 6s ease-in-out infinite, softBounce 5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
     }
 
     @keyframes colorCycle {
@@ -393,10 +393,24 @@
     }
 
     @keyframes softBounce {
-      0%, 70%, 100% { transform: translateY(0); }
-      80% { transform: translateY(-12px); }
-      90% { transform: translateY(0); }
-      95% { transform: translateY(-4px); }
+      0%, 60%        { transform: translateY(0); }
+      /* crouch — anticipation squat before launch */
+      66%            { transform: translateY(8px) scaleY(0.92) scaleX(1.04); }
+      /* launch — quick upward with squash-stretch */
+      72%            { transform: translateY(-35px) scaleY(1.08) scaleX(0.95); }
+      /* peak — ease into apex */
+      76%            { transform: translateY(-38px) scaleY(1.02) scaleX(0.99); }
+      /* fall — gravity: d = ½gt², accelerating down */
+      80%            { transform: translateY(-28px); }
+      83%            { transform: translateY(-12px); }
+      85%            { transform: translateY(0) scaleY(0.93) scaleX(1.05); }
+      /* first rebound — 40% of original height */
+      89%            { transform: translateY(-14px) scaleY(1.03); }
+      92%            { transform: translateY(0) scaleY(0.96) scaleX(1.02); }
+      /* second rebound — 25% of original */
+      95%            { transform: translateY(-5px); }
+      97%            { transform: translateY(0) scaleY(0.98); }
+      100%           { transform: translateY(0); }
     }
 
     /* ===== SLIDE NUMBER OVERRIDE ===== */
