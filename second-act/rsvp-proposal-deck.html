@@ -1197,16 +1197,18 @@
       touch: true,
     });
 
-    // Zero-based slide numbering
+    // Zero-based slide numbering — override after Reveal renders
     function updateSlideNumber() {
-      var el = document.querySelector('.reveal .slide-number');
+      var el = document.querySelector('.reveal .slide-number-a');
       if (el) {
         var indices = Reveal.getIndices();
         el.textContent = indices.h;
       }
     }
     Reveal.on('slidechanged', updateSlideNumber);
-    Reveal.on('ready', updateSlideNumber);
+    Reveal.on('ready', function() {
+      setTimeout(updateSlideNumber, 50);
+    });
   </script>
 
 </body>
