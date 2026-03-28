@@ -372,6 +372,21 @@
       margin: 10px 0;
     }
 
+    /* ===== LEVEL UP IMAGE ===== */
+    .level-up-img {
+      max-width: 180px;
+      mix-blend-mode: screen;
+      animation: colorCycle 6s ease-in-out infinite;
+    }
+
+    @keyframes colorCycle {
+      0%   { filter: hue-rotate(0deg) brightness(1.1); }
+      25%  { filter: hue-rotate(60deg) brightness(1.2); }
+      50%  { filter: hue-rotate(120deg) brightness(1.1); }
+      75%  { filter: hue-rotate(200deg) brightness(1.2); }
+      100% { filter: hue-rotate(360deg) brightness(1.1); }
+    }
+
     /* ===== SLIDE NUMBER OVERRIDE ===== */
     .reveal .slide-number {
       font-family: 'Press Start 2P', monospace;
@@ -1145,7 +1160,7 @@
           <a href="https://secondactdigital.com" style="color: var(--chartreuse); text-decoration: none;">secondactdigital.com</a>
         </p>
         <br>
-        <img src="https://secondactdigital.com/wp-content/uploads/level-up-1.gif" alt="Level Up" style="max-width: 160px; image-rendering: pixelated;">
+        <img src="https://secondactdigital.com/wp-content/uploads/level-up-1.gif" alt="Level Up" class="level-up-img">
       </section>
 
     </div><!-- .slides -->
