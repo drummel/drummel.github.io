@@ -389,7 +389,16 @@
       width: 300px;
       will-change: filter;
       transform: translate3d(0,0,0);
-      animation: colorCycle 6s ease-in-out infinite;
+      animation: colorCycle 8s ease-in-out infinite;
+    }
+
+    @keyframes colorCycle {
+      0%   { filter: hue-rotate(0deg) brightness(1.1); }        /* original blue */
+      20%  { filter: hue-rotate(40deg) brightness(1.15); }      /* cyan-blue */
+      40%  { filter: hue-rotate(80deg) brightness(1.2); }       /* cyan-green */
+      60%  { filter: hue-rotate(120deg) brightness(1.15); }     /* green */
+      80%  { filter: hue-rotate(160deg) brightness(1.1); }      /* chartreuse-yellow */
+      100% { filter: hue-rotate(0deg) brightness(1.1); }        /* back to blue */
     }
 
     /* ===== SLIDE NUMBER OVERRIDE ===== */
