@@ -1158,9 +1158,7 @@
   <script>
     Reveal.initialize({
       hash: true,
-      slideNumber: function(slide) {
-        return [ slide.h ];
-      },
+      slideNumber: true,
       transition: 'slide',
       transitionSpeed: 'default',
       backgroundTransition: 'slide',
@@ -1175,6 +1173,17 @@
       overview: true,
       touch: true,
     });
+
+    // Zero-based slide numbering
+    function updateSlideNumber() {
+      var el = document.querySelector('.reveal .slide-number');
+      if (el) {
+        var indices = Reveal.getIndices();
+        el.textContent = indices.h;
+      }
+    }
+    Reveal.on('slidechanged', updateSlideNumber);
+    Reveal.on('ready', updateSlideNumber);
   </script>
 
 </body>
