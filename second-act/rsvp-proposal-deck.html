@@ -381,6 +381,18 @@
       display: inline-block;
       will-change: transform;
       transform: translate3d(0,0,0);
+      animation: smoothBounce 3s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+    }
+
+    @keyframes smoothBounce {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      15%      { transform: translate3d(0, 6px, 0); }
+      30%      { transform: translate3d(0, -30px, 0); }
+      50%      { transform: translate3d(0, 0, 0); }
+      62%      { transform: translate3d(0, -12px, 0); }
+      74%      { transform: translate3d(0, 0, 0); }
+      82%      { transform: translate3d(0, -4px, 0); }
+      90%      { transform: translate3d(0, 0, 0); }
     }
 
     .reveal img.level-up-img {
@@ -1212,75 +1224,6 @@
       setTimeout(updateSlideNumber, 50);
     });
 
-    // Physics-based bounce using requestAnimationFrame
-    (function() {
-      var wrap = document.getElementById('levelUpWrap');
-      if (!wrap) return;
-
-      // Pre-calculate one full bounce cycle as a lookup table
-      var GRAVITY = 2800;        // px/s² — controls fall speed
-      var LAUNCH_V = -520;       // px/s — initial upward velocity
-      var CROUCH_PX = 8;
-      var RESTITUTION = 0.45;    // energy retained per bounce
-      var MIN_V = 30;            // stop bouncing threshold
-      var PAUSE = 3000;          // ms idle between bounces
-      var CROUCH_DUR = 120;      // ms
-
-      // Simulate and store positions at 60fps
-      var DT = 1 / 60;
-      var frames = [];
-
-      // Phase 1: crouch
-      var crouchFrames = Math.round((CROUCH_DUR / 1000) * 60);
-      for (var i = 0; i <= crouchFrames; i++) {
-        var t = i / crouchFrames;
-        // ease-out crouch
-        var ct = t * (2 - t);
-        frames.push({ y: ct * CROUCH_PX, sy: 1 - 0.06 * ct, sx: 1 + 0.03 * ct });
-      }
-
-      // Phase 2: bounce simulation
-      var vy = LAUNCH_V;
-      var y = 0;
-      var bouncing = true;
-      var maxIter = 600; // safety cap ~10s at 60fps
-      while (bouncing && maxIter-- > 0) {
-        vy += GRAVITY * DT;
-        y += vy * DT;
-        if (y >= 0 && vy > 0) {
-          y = 0;
-          vy = -vy * RESTITUTION;
-          if (Math.abs(vy) < MIN_V) {
-            frames.push({ y: 0, sy: 1, sx: 1 });
-            bouncing = false;
-            break;
-          }
-          // squash on impact
-          var impact = Math.min(Math.abs(vy) / 400, 0.08);
-          frames.push({ y: 0, sy: 1 - impact, sx: 1 + impact * 0.6 });
-          continue;
-        }
-        // stretch while moving fast
-        var stretch = Math.min(Math.abs(vy) / 800, 0.06);
-        var sDir = vy < 0 ? 1 : -1; // stretch upward on rise
-        frames.push({ y: y, sy: 1 + stretch * (sDir < 0 ? 0.5 : 1), sx: 1 - stretch * 0.3 });
-      }
-
-      var totalFrames = frames.length;
-      var pauseFrames = Math.round((PAUSE / 1000) * 60);
-      var cycleLen = totalFrames + pauseFrames;
-
-      var frameIdx = cycleLen - 1; // start paused
-      function tick() {
-        frameIdx = (frameIdx + 1) % cycleLen;
-        if (frameIdx < totalFrames) {
-          var f = frames[frameIdx];
-          wrap.style.transform = 'translate3d(0,' + f.y.toFixed(1) + 'px,0) scaleX(' + f.sx.toFixed(3) + ') scaleY(' + f.sy.toFixed(3) + ')';
-        }
-        requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    })();
   </script>
 
 </body>
