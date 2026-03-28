@@ -381,30 +381,17 @@
       display: inline-block;
       will-change: transform;
       transform-origin: center bottom;
-      animation: naturalBounce 4s cubic-bezier(0.35, 0.1, 0.25, 1) infinite;
+      animation: bounce7 2s cubic-bezier(0.280, 0.840, 0.420, 1) infinite;
     }
 
-    @keyframes naturalBounce {
-      /* resting — pause between bounces */
-      0%, 8%   { transform: translate3d(0, 0, 0) scaleX(1) scaleY(1); }
-      /* wind-up: crouch + squash (anticipation) */
-      14%      { transform: translate3d(0, 5px, 0) scaleX(1.08) scaleY(0.88); }
-      /* launch: stretch upward */
-      22%      { transform: translate3d(0, -35px, 0) scaleX(0.92) scaleY(1.12); }
-      /* apex: ease into peak, relax distortion */
-      30%      { transform: translate3d(0, -42px, 0) scaleX(1) scaleY(1); }
-      /* fall + land: squash on impact */
-      42%      { transform: translate3d(0, 0, 0) scaleX(1.06) scaleY(0.9); }
-      /* recover from landing squash */
-      48%      { transform: translate3d(0, 0, 0) scaleX(1) scaleY(1); }
-      /* secondary rebound: smaller jump */
-      55%      { transform: translate3d(0, -14px, 0) scaleX(0.97) scaleY(1.04); }
-      /* secondary land: lighter squash */
-      65%      { transform: translate3d(0, 0, 0) scaleX(1.03) scaleY(0.95); }
-      /* settle back to rest */
-      72%      { transform: translate3d(0, 0, 0) scaleX(1) scaleY(1); }
-      /* hold still until next cycle */
-      100%     { transform: translate3d(0, 0, 0) scaleX(1) scaleY(1); }
+    @keyframes bounce7 {
+      0%   { transform: scale(1, 1)      translateY(0); }
+      10%  { transform: scale(1.1, .9)   translateY(0); }
+      30%  { transform: scale(.9, 1.1)   translateY(-100px); }
+      50%  { transform: scale(1.05, .95) translateY(0); }
+      57%  { transform: scale(1, 1)      translateY(-7px); }
+      64%  { transform: scale(1, 1)      translateY(0); }
+      100% { transform: scale(1, 1)      translateY(0); }
     }
 
     .reveal img.level-up-img {
