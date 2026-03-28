@@ -377,40 +377,19 @@
     }
 
     /* ===== LEVEL UP IMAGE ===== */
+    .level-up-wrap {
+      display: inline-block;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+    }
+
     .reveal img.level-up-img {
       max-width: 300px;
       max-height: 300px;
       width: 300px;
-      animation: colorCycle 6s ease-in-out infinite, softBounce 5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-    }
-
-    @keyframes colorCycle {
-      0%   { filter: hue-rotate(0deg) brightness(1.1); }
-      25%  { filter: hue-rotate(60deg) brightness(1.2); }
-      50%  { filter: hue-rotate(120deg) brightness(1.1); }
-      75%  { filter: hue-rotate(200deg) brightness(1.2); }
-      100% { filter: hue-rotate(360deg) brightness(1.1); }
-    }
-
-    @keyframes softBounce {
-      0%, 60%        { transform: translateY(0); }
-      /* crouch — anticipation squat before launch */
-      66%            { transform: translateY(8px) scaleY(0.92) scaleX(1.04); }
-      /* launch — quick upward with squash-stretch */
-      72%            { transform: translateY(-35px) scaleY(1.08) scaleX(0.95); }
-      /* peak — ease into apex */
-      76%            { transform: translateY(-38px) scaleY(1.02) scaleX(0.99); }
-      /* fall — gravity: d = ½gt², accelerating down */
-      80%            { transform: translateY(-28px); }
-      83%            { transform: translateY(-12px); }
-      85%            { transform: translateY(0) scaleY(0.93) scaleX(1.05); }
-      /* first rebound — 40% of original height */
-      89%            { transform: translateY(-14px) scaleY(1.03); }
-      92%            { transform: translateY(0) scaleY(0.96) scaleX(1.02); }
-      /* second rebound — 25% of original */
-      95%            { transform: translateY(-5px); }
-      97%            { transform: translateY(0) scaleY(0.98); }
-      100%           { transform: translateY(0); }
+      will-change: filter;
+      transform: translate3d(0,0,0);
+      animation: colorCycle 6s ease-in-out infinite;
     }
 
     /* ===== SLIDE NUMBER OVERRIDE ===== */
@@ -957,18 +936,17 @@
 
       <!-- ===================== SLIDE 18: Security, Compliance & Performance ===================== -->
       <section>
-        
         <h2>security, compliance<br>& performance</h2>
-        <div class="three-col">
-          <div class="card">
-            <h3>security</h3>
-            <ul>
-              <li>PCI compliance where payments exist</li>
-              <li>Secure authentication</li>
-              <li>Role-based access controls</li>
-              <li>Audit logging for all admin actions</li>
-            </ul>
-          </div>
+        <div class="card" style="width: 100%; margin-bottom: 18px;">
+          <h3>security</h3>
+          <ul style="columns: 2; column-gap: 40px;">
+            <li>PCI compliance where payments exist</li>
+            <li>Secure authentication</li>
+            <li>Role-based access controls</li>
+            <li>Audit logging for all admin actions</li>
+          </ul>
+        </div>
+        <div class="two-col">
           <div class="card">
             <h3>accessibility</h3>
             <ul>
@@ -1181,7 +1159,9 @@
           <a href="https://secondactdigital.com" style="color: var(--chartreuse); text-decoration: none;">secondactdigital.com</a>
         </p>
         <br>
-        <img src="level-up.png" alt="Level Up" class="level-up-img">
+        <div class="level-up-wrap" id="levelUpWrap">
+          <img src="level-up.png" alt="Level Up" class="level-up-img">
+        </div>
       </section>
 
     </div><!-- .slides -->
@@ -1222,6 +1202,76 @@
     Reveal.on('ready', function() {
       setTimeout(updateSlideNumber, 50);
     });
+
+    // Physics-based bounce using requestAnimationFrame
+    (function() {
+      var wrap = document.getElementById('levelUpWrap');
+      if (!wrap) return;
+
+      // Pre-calculate one full bounce cycle as a lookup table
+      var GRAVITY = 2800;        // px/s² — controls fall speed
+      var LAUNCH_V = -520;       // px/s — initial upward velocity
+      var CROUCH_PX = 8;
+      var RESTITUTION = 0.45;    // energy retained per bounce
+      var MIN_V = 30;            // stop bouncing threshold
+      var PAUSE = 3000;          // ms idle between bounces
+      var CROUCH_DUR = 120;      // ms
+
+      // Simulate and store positions at 60fps
+      var DT = 1 / 60;
+      var frames = [];
+
+      // Phase 1: crouch
+      var crouchFrames = Math.round((CROUCH_DUR / 1000) * 60);
+      for (var i = 0; i <= crouchFrames; i++) {
+        var t = i / crouchFrames;
+        // ease-out crouch
+        var ct = t * (2 - t);
+        frames.push({ y: ct * CROUCH_PX, sy: 1 - 0.06 * ct, sx: 1 + 0.03 * ct });
+      }
+
+      // Phase 2: bounce simulation
+      var vy = LAUNCH_V;
+      var y = 0;
+      var bouncing = true;
+      var maxIter = 600; // safety cap ~10s at 60fps
+      while (bouncing && maxIter-- > 0) {
+        vy += GRAVITY * DT;
+        y += vy * DT;
+        if (y >= 0 && vy > 0) {
+          y = 0;
+          vy = -vy * RESTITUTION;
+          if (Math.abs(vy) < MIN_V) {
+            frames.push({ y: 0, sy: 1, sx: 1 });
+            bouncing = false;
+            break;
+          }
+          // squash on impact
+          var impact = Math.min(Math.abs(vy) / 400, 0.08);
+          frames.push({ y: 0, sy: 1 - impact, sx: 1 + impact * 0.6 });
+          continue;
+        }
+        // stretch while moving fast
+        var stretch = Math.min(Math.abs(vy) / 800, 0.06);
+        var sDir = vy < 0 ? 1 : -1; // stretch upward on rise
+        frames.push({ y: y, sy: 1 + stretch * (sDir < 0 ? 0.5 : 1), sx: 1 - stretch * 0.3 });
+      }
+
+      var totalFrames = frames.length;
+      var pauseFrames = Math.round((PAUSE / 1000) * 60);
+      var cycleLen = totalFrames + pauseFrames;
+
+      var frameIdx = cycleLen - 1; // start paused
+      function tick() {
+        frameIdx = (frameIdx + 1) % cycleLen;
+        if (frameIdx < totalFrames) {
+          var f = frames[frameIdx];
+          wrap.style.transform = 'translate3d(0,' + f.y.toFixed(1) + 'px,0) scaleX(' + f.sx.toFixed(3) + ') scaleY(' + f.sy.toFixed(3) + ')';
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
   </script>
 
 </body>
