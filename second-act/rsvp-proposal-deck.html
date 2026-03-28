@@ -377,7 +377,7 @@
       max-width: 300px;
       max-height: 300px;
       width: 300px;
-      animation: colorCycle 6s ease-in-out infinite;
+      animation: colorCycle 6s ease-in-out infinite, softBounce 4s ease-in-out infinite;
     }
 
     @keyframes colorCycle {
@@ -386,6 +386,13 @@
       50%  { filter: hue-rotate(120deg) brightness(1.1); }
       75%  { filter: hue-rotate(200deg) brightness(1.2); }
       100% { filter: hue-rotate(360deg) brightness(1.1); }
+    }
+
+    @keyframes softBounce {
+      0%, 70%, 100% { transform: translateY(0); }
+      80% { transform: translateY(-12px); }
+      90% { transform: translateY(0); }
+      95% { transform: translateY(-4px); }
     }
 
     /* ===== SLIDE NUMBER OVERRIDE ===== */
