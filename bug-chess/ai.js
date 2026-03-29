@@ -159,17 +159,18 @@ const AI = (() => {
   // - After queen, deploy ants for offense and beetles to threaten queen
   // - Place pieces to create a compact shape, not a long chain
 
-  // Opening priorities based on tournament-level play:
-  // Ant-first or Spider-first are both strong competitive openers.
+  // Opening priorities:
+  // The FIRST piece placed is almost always permanently pinned (articulation point
+  // at the root of the hive). So spend an expendable piece, not your best one.
   // Queen on turn 2 is near-universal at tournament level.
+  // After queen, deploy ants and beetles for offense.
   const OPENING_PRIORITY = {
-    // Turn 1: ant is the strongest competitive opener, spider/grasshopper also good
-    0: ['ant', 'spider', 'grasshopper', 'beetle', 'ladybug', 'mosquito', 'pillbug'],
+    // Turn 1: expendable piece as foundation (will likely be pinned forever)
+    0: ['spider', 'grasshopper', 'ladybug', 'pillbug', 'mosquito', 'beetle'],
     // Turn 2: queen MUST go down to unlock movement
     1: ['queen'],
-    // Turn 3: deploy offense (ant if not placed yet, beetle for queen pressure)
+    // Turn 3+: deploy the heavy hitters now that they can actually move
     2: ['ant', 'beetle', 'mosquito', 'grasshopper', 'spider', 'ladybug'],
-    // Turn 4+: ants and beetles are the primary offensive weapons
     3: ['ant', 'beetle', 'mosquito', 'ladybug', 'grasshopper', 'spider', 'pillbug'],
   };
 
@@ -194,6 +195,11 @@ const AI = (() => {
       // Higher priority types get higher scores (index 0 = best)
       if (priorityIdx >= 0) score += (10 - priorityIdx) * 3;
       else score -= 5;
+
+      // First piece is almost always permanently pinned as the hive root.
+      // Never waste ants or beetles on it - they're too valuable mobile.
+      if (turnNum === 0 && action.type === 'ant') score -= 30;
+      if (turnNum === 0 && action.type === 'beetle') score -= 15;
 
       // Place queen on turn 2 to unlock movement (tournament standard)
       if (action.type === 'queen' && turnNum === 1) score += 30;
