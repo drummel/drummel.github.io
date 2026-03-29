@@ -7,6 +7,32 @@ const App = (() => {
 
   const PASSWORD = 'Sasquatch';
 
+  // Konami code: up up down down left right left right B A
+  const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let konamiPos = 0;
+
+  function setupKonami() {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === KONAMI[konamiPos]) {
+        konamiPos++;
+        if (konamiPos === KONAMI.length) {
+          konamiPos = 0;
+          triggerKonamiWin();
+        }
+      } else {
+        konamiPos = (e.key === KONAMI[0]) ? 1 : 0;
+      }
+    });
+  }
+
+  function triggerKonamiWin() {
+    const state = GameState.getState();
+    if (state.gameOver) return;
+    state.winner = state.currentPlayer;
+    state.gameOver = true;
+    refresh();
+  }
+
   function init() {
     // Check if already authenticated this session
     if (sessionStorage.getItem('bugchess_auth') === 'true') {
@@ -99,6 +125,7 @@ const App = (() => {
   }
 
   function startGame() {
+    setupKonami();
     const canvas = document.getElementById('board-canvas');
     Renderer.init(canvas);
     Celebration.init();
