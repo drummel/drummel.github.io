@@ -65,65 +65,199 @@ moves with existing pieces.
 
 ---
 
-## Known AI Flaws (Current Implementation)
+## How the AI System Works
 
-### Flaw 1: Ant Shuffling (Critical)
+The AI operates as a three-stage pipeline: **action generation**, **scoring**,
+and **selection**. Each difficulty level uses the same first two stages but
+differs in how it combines scores and selects the final action.
 
-**Problem**: The AI moves an ant from one hex adjacent to the opponent's queen
-to another hex adjacent to the queen. This scores highly because "adjacent to
-queen = +20" but accomplishes nothing — the surround count doesn't change.
+### Stage 1: Action Generation (`getAllActions`)
 
-**Root cause**: The scoring function evaluates the **absolute position** of the
-destination, not the **net change** in board state. Moving from adjacent→adjacent
-scores the same as moving from far→adjacent.
+On each turn, the AI enumerates every legal action available to it:
 
-**Fix**: Score moves based on the **delta** in opponent queen surround count
-and board evaluation, not absolute destination quality. An ant moving between
-two queen-adjacent hexes should score ~0, not +20.
+1. **Placement actions**: For every piece type remaining in hand, and every
+   valid placement hex (adjacent to friendly, not adjacent to enemy), generate
+   a `{kind: 'place', type, q, r}` action. If the queen must be placed this
+   turn (turn 4 forced placement), only queen placements are generated.
 
-### Flaw 2: Helping the Opponent (Critical)
+2. **Movement actions**: For every piece the AI owns on the board (top of
+   stack only), compute all legal destination hexes using `Pieces.getValidMoves`.
+   This respects one-hive rule, freedom of movement / gate checks, and
+   piece-specific movement rules. Each becomes a `{kind: 'move', fromQ, fromR,
+   toQ, toR, pieceType}` action.
 
-**Problem**: The AI sometimes moves a piece away from the opponent's queen,
-reducing their surround count. This happens because the scoring doesn't check
-whether the origin hex was contributing to a surround.
+3. **Pillbug special actions**: If the AI has a pillbug (or mosquito copying
+   pillbug), the special grab-and-relocate targets are also enumerated.
 
-**Root cause**: The scoring only looks at where the piece is GOING, not what
-it's LEAVING. If a piece was adjacent to the opponent's queen and moves away,
-the opponent's surround count drops by 1 — a huge gift.
+This typically produces 20-200+ candidate actions in the mid-game.
 
-**Fix**: Before scoring a move, check if the origin hex is adjacent to the
-opponent's queen. If so, apply a heavy penalty for leaving unless the
-destination hex is ALSO adjacent (maintaining surround) or the move is winning.
+### Stage 2: Scoring (`scoreAction`)
 
-### Flaw 3: Under-valuing Placement (Moderate)
+Each candidate action is scored by a heuristic function that considers:
 
-**Problem**: The AI prefers moving existing pieces over placing new ones from
-hand, even when placement would be objectively stronger.
+#### For Placement Actions:
+- **Opening book priority**: A lookup table maps turn number to preferred piece
+  types. Turn 1 prefers expendable pieces (spider, grasshopper), turn 2 demands
+  queen, turns 3+ prefer offensive pieces (ant, beetle). The piece's position
+  in the priority list maps to a score (higher priority = higher score).
+- **First-piece penalty**: Ant on turn 1 gets -30 (will be permanently pinned).
+  Beetle on turn 1 gets -15.
+- **Queen timing bonus**: Queen on turn 2 gets +30. Queen on turn 1 gets -25.
+- **Deployment urgency**: When 4+ pieces remain in hand, all placements get +15.
+  Ants get an additional +12 after queen is placed, beetles +10.
+- **Position quality**: Distance to opponent queen (closer = better), +20 for
+  adjacent placement. Compact placement bonus (+2 per adjacent friendly piece).
+- **Queen safety**: When placing the queen specifically, scores open neighbors
+  (+3 each) and penalizes adjacent enemy pieces (-8 each).
 
-**Root cause**: Movement actions toward the opponent's queen score +20-30,
-which often exceeds placement scores. The AI doesn't account for the
-opportunity cost of not deploying pieces.
+#### For Movement Actions:
+- **Move-away penalty** (critical fix): If the piece is currently adjacent to
+  the opponent's queen and would move to a non-adjacent hex, score -35. This
+  prevents the AI from accidentally reducing the opponent's surround count.
+- **Shuffle penalty**: Moving between two queen-adjacent hexes scores -5.
+  This prevents the aimless ant-shuffling behavior.
+- **New adjacency bonus**: Moving FROM a non-adjacent hex TO adjacent scores
+  +25 plus surround_count * 10. Only genuinely new threats are rewarded.
+- **Beetle on queen**: Moving a beetle onto the queen's hex (distance 0) scores
+  +50. This is the single highest-value move in the game.
+- **Approach bonus**: For pieces not already adjacent, each hex closer to the
+  opponent queen scores +4.
+- **Defense**: If own queen has 3+ sides surrounded and the piece is adjacent
+  to it, moving away gets -20.
+- **Queen movement**: Moving the queen itself gets -8 (usually bad) unless it
+  reduces the queen's surround count (escaping = +20).
+- **Deployment preference**: If 4+ pieces in hand, movements get -10 (prefer
+  placing). If 2+ in hand and the move doesn't threaten the opponent queen
+  (distance > 2), gets -8.
+- **Oscillation penalty**: If this move reverses a recent move (same piece
+  going back), -50.
 
-**Fix**: Add a bonus for placement actions when pieces remain in hand.
-Especially ants and beetles after the queen is placed — these should get a
-strong "deploy now" bonus.
+#### For Pillbug Special Actions:
+- +25 for pulling an enemy piece away from own queen (distance 1)
+- +20 for placing any piece adjacent to opponent queen
 
-### Flaw 4: No Oscillation Detection (Moderate)
+### Stage 3: Selection (Difficulty-Dependent)
 
-**Problem**: The AI can get stuck moving the same piece back and forth between
-two hexes indefinitely.
+#### Easy (`pickEasy`)
+1. Score all actions with `scoreAction` + random noise (0 to 40)
+2. Sort by score descending
+3. Pick randomly from the **top 50%**
 
-**Fix**: Track the last N moves and penalize any move that returns a piece to
-a position it was at 1-2 turns ago.
+The large random noise means easy frequently picks bad moves, but the base
+scoring prevents completely nonsensical play.
 
-### Flaw 5: Simulation Doesn't Compare Before/After (Minor)
+#### Medium (`pickMedium`)
+1. Score all actions with `scoreAction` + small noise (0 to 10)
+2. Sort by score descending
+3. Pick randomly from the **top 3**
 
-**Problem**: The `simulateAction` function evaluates the board AFTER the move
-but doesn't compare it to the board BEFORE. This means moves that don't change
-the evaluation score the same as transformative moves.
+Follows the heuristics fairly well but has some unpredictability.
 
-**Fix**: Compute `evaluateBoard(after) - evaluateBoard(before)` to get the
-true delta.
+#### Hard (`pickHard`)
+1. Score all actions with `scoreAction` (weight x2) + `simulateDelta` (weight x3)
+   + tiny noise (0 to 5)
+2. Sort by score descending
+3. Pick randomly from the **top 2**
+
+`simulateDelta` clones the board, applies the action, and computes:
+`evaluateBoard(after) - evaluateBoard(before)`. This catches moves that look
+good heuristically but don't actually improve the board state, and finds
+moves that the heuristics might undervalue.
+
+#### Impossible (`pickImpossible`)
+1. For each action, compute:
+   - `scoreAction` (weight x2)
+   - `simulateDelta` (weight x3)
+   - **2-ply counter**: Clone the board after the move, evaluate from the
+     opponent's perspective using `evaluateBoard`, negate it (opponent's gain
+     is our loss), weight x0.5
+2. Sum all three components
+3. Pick the **single highest-scoring action** (no randomness)
+
+The 2-ply analysis means the AI avoids moves that look good for it but leave
+the opponent in an even better position. It's not a full minimax (doesn't
+enumerate opponent responses), but the static evaluation from the opponent's
+perspective catches many blunders.
+
+### Board Evaluation (`evaluateBoard`)
+
+This function takes a board position and returns a numeric score from the
+perspective of a given player. It's used by the simulation stages (hard and
+impossible) to evaluate hypothetical board states.
+
+Components:
+1. **Queen liberty count**: +30 per side of opponent queen surrounded, -35 per
+   side of own queen surrounded. +10000 for win, -10000 for loss.
+2. **Critical thresholds**: +120 when opponent queen has 5/6 sides (one move
+   from winning), -140 when own queen has 5/6 (one move from losing).
+3. **Queen mobility**: +6 per legal slide the own queen could make.
+4. **Self-surround exploitation**: +8 per opponent piece surrounding their own
+   queen (they're helping us win).
+5. **Pin differential**: +5 per opponent pinned piece minus own pinned pieces.
+6. **Mobile ant count**: +10 per own mobile ant, -8 per opponent mobile ant.
+   If 2+ own mobile ants and opponent queen has 2+ sides, extra +30.
+7. **Piece proximity**: For each own piece within distance 3 of opponent queen,
+   +(4 - distance) * 4. Beetle bonuses: +40 if on queen, +18 if adjacent.
+   Ant bonus: +10 if within 2.
+
+### Oscillation Detection
+
+The AI maintains a `moveHistory` buffer of the last 10 actions. Before scoring
+a move action, it checks if the move reverses any recent move (same piece,
+swapped from/to coordinates). If so, -50 penalty. The history is cleared on
+new game via `AI.reset()`.
+
+---
+
+## Known AI Flaws (Fixed)
+
+### Flaw 1: Ant Shuffling (Critical) — FIXED
+
+**Problem**: The AI moved an ant from one hex adjacent to the opponent's queen
+to another adjacent hex. This scored +20 but accomplished nothing (surround
+count unchanged).
+
+**Root cause**: Scoring evaluated absolute destination quality, not net change.
+
+**Fix applied**: Shuffling between two queen-adjacent hexes now scores -5.
+Only moving FROM non-adjacent TO adjacent gets the +25 bonus.
+
+### Flaw 2: Helping the Opponent (Critical) — FIXED
+
+**Problem**: The AI moved pieces AWAY from the opponent's queen, reducing their
+surround count.
+
+**Root cause**: Scoring only looked at destination, never checked what was
+being left behind.
+
+**Fix applied**: -35 penalty for leaving a queen-adjacent hex to go non-adjacent.
+The `isAdjacentTo` helper checks origin and destination independently.
+
+### Flaw 3: Under-valuing Placement (Moderate) — FIXED
+
+**Problem**: AI shuffled existing pieces instead of deploying from hand.
+
+**Root cause**: Movement scores exceeded placement scores.
+
+**Fix applied**: +15 bonus for any placement when 4+ pieces in hand. +12 for
+ant placement, +10 for beetle after queen is placed. Movements get -10 when
+4+ pieces unplayed, -8 for non-threatening moves when 2+ in hand.
+
+### Flaw 4: No Oscillation Detection (Moderate) — FIXED
+
+**Problem**: AI moved the same piece back and forth indefinitely.
+
+**Fix applied**: `moveHistory` tracks last 10 moves. Any move that reverses a
+recent move (same piece, swapped from/to) gets -50. History cleared on new game.
+
+### Flaw 5: Simulation Doesn't Compare Before/After (Minor) — FIXED
+
+**Problem**: `simulateAction` evaluated board AFTER move but didn't compare to
+BEFORE. Do-nothing moves scored the same as transformative ones.
+
+**Fix applied**: Replaced with `simulateDelta()` which computes
+`evaluateBoard(after) - evaluateBoard(before)`. Used by Hard (weight x3)
+and Impossible (weight x3) difficulty levels.
 
 ---
 
