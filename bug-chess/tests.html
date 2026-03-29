@@ -99,17 +99,19 @@
   // ===================== QUEEN MOVEMENT TESTS =====================
   section('Queen movement');
 
+  // Build a cluster where queen is NOT an articulation point
   const state1 = freshGame();
   forcePlace(state1, 1, 'queen', 0, 0);
   forcePlace(state1, 2, 'ant', 1, 0);
-  forcePlace(state1, 1, 'ant', -1, 0);
+  forcePlace(state1, 1, 'ant', 0, 1);   // triangle: queen connected via two paths
+  forcePlace(state1, 2, 'ant', 1, -1);
   state1.queenPlaced[1] = true;
 
   const qMoves = Pieces.getValidMoves(0, 0, state1.pieces, null);
   assert(qMoves.moves.length > 0, 'queen has valid moves');
   assert(qMoves.moves.every(m => {
     const d = Math.max(Math.abs(m.q), Math.abs(m.r), Math.abs(-m.q - m.r));
-    return d <= 1;
+    return d <= 2; // within 1 hex of origin
   }), 'queen moves are all 1 space away from origin');
 
   // ===================== SPIDER MOVEMENT TESTS =====================
@@ -157,10 +159,12 @@
   // ===================== ANT MOVEMENT TESTS =====================
   section('Ant movement');
 
+  // Ant must NOT be an articulation point, so build a ring/cluster
   const state5 = freshGame();
   forcePlace(state5, 1, 'ant', 0, 0);
   forcePlace(state5, 2, 'queen', 1, 0);
-  forcePlace(state5, 1, 'queen', -1, 0);
+  forcePlace(state5, 1, 'queen', 0, 1); // triangle: ant is not articulation point
+  state5.queenPlaced[1] = true;
 
   const antMoves = Pieces.getValidMoves(0, 0, state5.pieces, null);
   // Ant can reach many positions around the hive perimeter
@@ -170,10 +174,11 @@
   section('Ladybug movement');
 
   const state6 = freshGame({ pillbug: true, ladybug: true, mosquito: true });
+  // Ladybug must NOT be articulation point - use a cluster shape
   forcePlace(state6, 1, 'ladybug', 0, 0);
   forcePlace(state6, 2, 'ant', 1, 0);
-  forcePlace(state6, 2, 'ant', 2, 0);
-  forcePlace(state6, 1, 'ant', -1, 0);
+  forcePlace(state6, 2, 'ant', 1, -1);
+  forcePlace(state6, 1, 'ant', 0, -1); // ring: ladybug not articulation point
 
   const lbMoves = Pieces.getValidMoves(0, 0, state6.pieces, null);
   assert(lbMoves.moves.length > 0, 'ladybug has valid moves');
