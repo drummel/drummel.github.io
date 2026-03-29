@@ -5,7 +5,44 @@ const App = (() => {
   let dragStart = { x: 0, y: 0 };
   let dragOffset = { x: 0, y: 0 };
 
+  const PASSWORD = 'Sasquatch';
+
   function init() {
+    // Check if already authenticated this session
+    if (sessionStorage.getItem('bugchess_auth') === 'true') {
+      showSetup();
+    } else {
+      setupPasswordGate();
+    }
+  }
+
+  function setupPasswordGate() {
+    const overlay = document.getElementById('password-overlay');
+    const input = document.getElementById('pw-input');
+    const btn = document.getElementById('pw-submit');
+
+    function tryPassword() {
+      if (input.value === PASSWORD) {
+        sessionStorage.setItem('bugchess_auth', 'true');
+        overlay.classList.add('hidden');
+        showSetup();
+      } else {
+        input.classList.add('error');
+        input.value = '';
+        setTimeout(() => input.classList.remove('error'), 400);
+      }
+    }
+
+    btn.addEventListener('click', tryPassword);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') tryPassword();
+    });
+    input.focus();
+  }
+
+  function showSetup() {
+    document.getElementById('password-overlay').classList.add('hidden');
+    document.getElementById('setup-overlay').classList.remove('hidden');
     setupSetupScreen();
   }
 
