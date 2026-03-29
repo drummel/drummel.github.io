@@ -95,7 +95,9 @@ const UI = (() => {
 
     const pInfo = Pieces.PLAYERS[gameState.currentPlayer];
     const tilePreview = gameState.currentPlayer === 1 ? '&#11036;' : '&#11035;';
-    turnEl.innerHTML = `<span style="color:${pInfo.color}">${tilePreview} ${pInfo.name}'s Turn (${pInfo.label})</span>`;
+    const isAITurn = AI.isEnabled() && gameState.currentPlayer === AI.getAIPlayer();
+    const nameLabel = isAITurn ? `Computer (${pInfo.label})` : `${pInfo.name}'s Turn (${pInfo.label})`;
+    turnEl.innerHTML = `<span style="color:${pInfo.color}">${tilePreview} ${isAITurn ? 'Computer is thinking...' : nameLabel}</span>`;
 
     const msgs = [];
     if (GameState.mustPlaceQueen(gameState.currentPlayer)) {

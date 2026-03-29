@@ -219,6 +219,19 @@
     transition: background 0.15s;
   }
   #btn-start-game:hover { background: #444; }
+  .mode-btn, .diff-btn {
+    padding: 6px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .mode-btn:hover, .diff-btn:hover { border-color: #aaa; }
+  .mode-btn.active { background: #222; color: #fff; border-color: #222; }
+  .diff-btn.active { background: #28a745; color: #fff; border-color: #28a745; }
 
   /* Celebration overlay canvas */
   #celebration-canvas {
@@ -297,6 +310,24 @@
       <h2>Bug Chess</h2>
       <div class="subtitle">A Hive-inspired strategy game</div>
 
+      <!-- Game mode -->
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;font-size:0.9em;margin-bottom:8px;">Game Mode</div>
+        <div style="display:flex;gap:6px;justify-content:center;" id="mode-selector">
+          <button class="mode-btn active" data-mode="2p">2 Players</button>
+          <button class="mode-btn" data-mode="ai">vs Computer</button>
+        </div>
+        <div id="ai-difficulty" style="display:none;margin-top:10px;">
+          <div style="font-size:0.8em;color:#888;margin-bottom:6px;">Difficulty</div>
+          <div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;" id="diff-selector">
+            <button class="diff-btn" data-diff="easy">Easy</button>
+            <button class="diff-btn active" data-diff="medium">Medium</button>
+            <button class="diff-btn" data-diff="hard">Hard</button>
+            <button class="diff-btn" data-diff="impossible">Impossible</button>
+          </div>
+        </div>
+      </div>
+
       <div class="expansion-toggle active" data-expansion="pillbug">
         <span class="toggle-emoji">💊</span>
         <div class="toggle-info">
@@ -358,6 +389,7 @@
   <script src="game-state.js"></script>
   <script src="renderer.js"></script>
   <script src="celebration.js"></script>
+  <script src="ai.js"></script>
   <script src="ui.js"></script>
   <script src="app.js"></script>
 </body>

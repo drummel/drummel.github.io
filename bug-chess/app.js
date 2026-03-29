@@ -56,6 +56,26 @@ const App = (() => {
       });
     });
 
+    // Mode selector (2P vs AI)
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const diffPanel = document.getElementById('ai-difficulty');
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        diffPanel.style.display = btn.dataset.mode === 'ai' ? 'block' : 'none';
+      });
+    });
+
+    // Difficulty selector
+    const diffBtns = document.querySelectorAll('.diff-btn');
+    diffBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        diffBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
     document.getElementById('btn-start-game').addEventListener('click', () => {
       const config = {};
       toggles.forEach(toggle => {
@@ -63,6 +83,16 @@ const App = (() => {
         config[key] = toggle.classList.contains('active');
       });
       GameState.setExpansions(config);
+
+      // AI setup
+      const activeMode = document.querySelector('.mode-btn.active');
+      const isAI = activeMode && activeMode.dataset.mode === 'ai';
+      AI.setEnabled(isAI);
+      if (isAI) {
+        const activeDiff = document.querySelector('.diff-btn.active');
+        AI.setDifficulty(activeDiff ? activeDiff.dataset.diff : 'medium');
+      }
+
       overlay.classList.add('hidden');
       startGame();
     });
@@ -89,6 +119,16 @@ const App = (() => {
     const state = GameState.getState();
     Renderer.render(state);
     UI.update(state);
+
+    // If it's the AI's turn, schedule its move with a short delay
+    if (AI.isEnabled() && state.currentPlayer === AI.getAIPlayer() && !state.gameOver) {
+      setTimeout(() => {
+        AI.takeTurn(GameState.getState());
+        const newState = GameState.getState();
+        Renderer.render(newState);
+        UI.update(newState);
+      }, 400 + Math.random() * 300);
+    }
   }
 
   function setupBoardEvents(canvas) {
