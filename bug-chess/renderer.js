@@ -131,18 +131,21 @@ const Renderer = (() => {
 
       // Draw emoji with visibility treatment
       const tInfo = Pieces.getTypes()[topPiece.type] || Pieces.ALL_TYPES[topPiece.type];
+
+      // For dark tiles, draw a solid white circle behind the emoji
+      if (topPiece.player === 2) {
+        ctx.beginPath();
+        ctx.arc(x, y + 1, hexSize * 0.45, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
       ctx.font = `${hexSize * 0.72}px serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-
-      // For dark tiles, add a subtle light circle behind the emoji for visibility
-      if (topPiece.player === 2) {
-        ctx.beginPath();
-        ctx.arc(x, y + 1, hexSize * 0.35, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.18)';
-        ctx.fill();
-      }
-
       ctx.fillText(tInfo.emoji, x, y + 2);
 
       // Stack count badge

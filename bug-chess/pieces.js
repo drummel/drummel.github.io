@@ -10,6 +10,7 @@ const Pieces = (() => {
     ant:         { emoji: '🐜', name: 'Soldier Ant', count: 3 },
     pillbug:     { emoji: '💊', name: 'Pill Bug', count: 1, expansion: 'pillbug' },
     ladybug:     { emoji: '🐞', name: 'Ladybug', count: 1, expansion: 'ladybug' },
+    mosquito:    { emoji: '🦟', name: 'Mosquito', count: 1, expansion: 'mosquito' },
   };
 
   // Active types (filtered by expansion config) - set by setExpansions()
@@ -228,6 +229,63 @@ const Pieces = (() => {
     return [...results].map(k => HexGrid.parse(k));
   }
 
+  // Mosquito: copies the movement ability of any adjacent piece type
+  // If on top of the hive (on a beetle stack), it moves as a beetle
+  function mosquitoMoves(q, r, pieces, lastMoved) {
+    const k = HexGrid.key(q, r);
+    const stack = pieces.get(k);
+
+    // If mosquito is on top of a stack (placed there by beetle-like movement),
+    // it can only move as a beetle
+    if (stack && stack.length > 1) {
+      return { moves: beetleMoves(q, r, pieces), specials: [] };
+    }
+
+    // Collect unique types of adjacent pieces
+    const adjacentTypes = new Set();
+    for (const n of HexGrid.neighbors(q, r)) {
+      const nk = HexGrid.key(n.q, n.r);
+      const nStack = pieces.get(nk);
+      if (nStack && nStack.length > 0) {
+        const topType = nStack[nStack.length - 1].type;
+        // Mosquito adjacent to mosquito doesn't copy mosquito
+        if (topType !== 'mosquito') {
+          adjacentTypes.add(topType);
+        }
+      }
+    }
+
+    // Combine all possible moves from all adjacent types
+    const allMoveKeys = new Set();
+    const allMoves = [];
+    let allSpecials = [];
+
+    for (const type of adjacentTypes) {
+      let moves = [];
+      switch (type) {
+        case 'queen':       moves = oneSpaceSlideMoves(q, r, pieces); break;
+        case 'spider':      moves = spiderMoves(q, r, pieces); break;
+        case 'beetle':      moves = beetleMoves(q, r, pieces); break;
+        case 'grasshopper': moves = grasshopperMoves(q, r, pieces); break;
+        case 'ant':         moves = antMoves(q, r, pieces); break;
+        case 'pillbug':
+          moves = oneSpaceSlideMoves(q, r, pieces);
+          allSpecials = pillbugSpecialMoves(q, r, pieces, lastMoved);
+          break;
+        case 'ladybug':     moves = ladybugMoves(q, r, pieces); break;
+      }
+      for (const m of moves) {
+        const mk = HexGrid.key(m.q, m.r);
+        if (!allMoveKeys.has(mk)) {
+          allMoveKeys.add(mk);
+          allMoves.push(m);
+        }
+      }
+    }
+
+    return { moves: allMoves, specials: allSpecials };
+  }
+
   // Pill Bug special: grab an adjacent piece and relocate it
   function pillbugSpecialMoves(q, r, pieces, lastMoved) {
     const specials = [];
@@ -269,6 +327,23 @@ const Pieces = (() => {
     if (!stack || stack.length === 0) return { moves: [], specials: [] };
 
     const topPiece = stack[stack.length - 1];
+
+    // Mosquito handles its own logic (it copies adjacent types)
+    if (topPiece.type === 'mosquito') {
+      // One-hive check still applies for ground-level mosquito
+      if (stack.length === 1 && HexGrid.isArticulationPoint(q, r, pieces)) {
+        // Pinned mosquito adjacent to pillbug can still use pillbug special
+        const adjacentTypes = new Set();
+        for (const n of HexGrid.neighbors(q, r)) {
+          const nk = HexGrid.key(n.q, n.r);
+          const nStack = pieces.get(nk);
+          if (nStack && nStack.length > 0) adjacentTypes.add(nStack[nStack.length - 1].type);
+        }
+        const specials = adjacentTypes.has('pillbug') ? pillbugSpecialMoves(q, r, pieces, lastMoved) : [];
+        return { moves: [], specials };
+      }
+      return mosquitoMoves(q, r, pieces, lastMoved);
+    }
 
     // Check one-hive rule (only for ground-level single pieces, not beetles on top)
     if (stack.length === 1 && HexGrid.isArticulationPoint(q, r, pieces)) {
