@@ -2,34 +2,42 @@
 
 const GameState = (() => {
   let state;
+  let expansionConfig = { pillbug: true, ladybug: true };
+
+  function setExpansions(config) {
+    expansionConfig = { ...config };
+    Pieces.setExpansions(config);
+  }
+
+  function getExpansions() { return expansionConfig; }
 
   function createInitialHand() {
     const hand = {};
-    for (const [type, info] of Object.entries(Pieces.TYPES)) {
+    for (const [type, info] of Object.entries(Pieces.getTypes())) {
       hand[type] = info.count;
     }
     return hand;
   }
 
   function init() {
+    Pieces.setExpansions(expansionConfig);
     state = {
-      // Map of "q,r" -> [{player, type}, ...] (stack, top piece is last)
       pieces: new Map(),
       hands: {
         1: createInitialHand(),
         2: createInitialHand(),
       },
       currentPlayer: 1,
-      turnNumber: 1, // increments each time a player takes a turn
-      playerTurns: { 1: 0, 2: 0 }, // how many turns each player has taken
+      turnNumber: 1,
+      playerTurns: { 1: 0, 2: 0 },
       queenPlaced: { 1: false, 2: false },
-      lastMoved: null, // {q, r} of the piece that moved last (for pillbug restriction)
+      lastMoved: null, // {q, r} of the piece that was last physically moved (for pillbug stun)
       winner: null,
-      selectedPiece: null,    // {q, r} for board piece or null
-      selectedHandPiece: null, // {type} for hand piece or null
+      selectedPiece: null,
+      selectedHandPiece: null,
       validMoves: [],
-      validSpecials: [],      // pillbug special moves
-      pillbugGrab: null,      // {q,r} piece being grabbed by pillbug
+      validSpecials: [],
+      pillbugGrab: null,
       gameOver: false,
     };
     return state;
@@ -37,35 +45,27 @@ const GameState = (() => {
 
   function getState() { return state; }
 
-  // Count how many total pieces a player has placed
-  function piecesPlacedCount(player) {
-    return state.playerTurns[player];
-  }
-
-  // Check if player must place queen this turn (by their 4th turn, queen must be placed)
   function mustPlaceQueen(player) {
     return state.playerTurns[player] === 3 && !state.queenPlaced[player];
   }
 
   // Get valid placement positions for a new piece for the given player
   function getPlacementPositions(player) {
-    const positions = [];
-
     // First piece: place at origin
     if (state.pieces.size === 0) {
       return [{ q: 0, r: 0 }];
     }
 
-    // Second piece (first move of player 2): must be adjacent to the first piece
+    // Second piece (first move of player 2): adjacent to the first piece
     if (state.pieces.size === 1) {
       const [k] = state.pieces.keys();
       const { q, r } = HexGrid.parse(k);
       return HexGrid.neighbors(q, r);
     }
 
-    // Normal placement: must be adjacent to at least one friendly piece
-    // and NOT adjacent to any enemy piece
+    // Normal: adjacent to friendly, NOT adjacent to enemy (check top of stacks)
     const emptyAdj = HexGrid.getAdjacentEmpty(state.pieces);
+    const positions = [];
     for (const ek of emptyAdj) {
       const { q, r } = HexGrid.parse(ek);
       let touchesFriendly = false;
@@ -98,13 +98,14 @@ const GameState = (() => {
 
     if (type === 'queen') state.queenPlaced[player] = true;
 
-    state.lastMoved = null; // placement doesn't count for pillbug restriction
+    // Placement counts as the last moved piece for pillbug stun rule
+    state.lastMoved = { q, r };
     state.playerTurns[player]++;
     advanceTurn();
     return true;
   }
 
-  // Move a piece on the board from one position to another
+  // Move a piece on the board
   function movePiece(fromQ, fromR, toQ, toR) {
     const fromK = HexGrid.key(fromQ, fromR);
     const toK = HexGrid.key(toQ, toR);
@@ -136,6 +137,7 @@ const GameState = (() => {
     if (!state.pieces.has(toK)) state.pieces.set(toK, []);
     state.pieces.get(toK).push(piece);
 
+    // The moved piece is stunned (last moved), not the pillbug
     state.lastMoved = { q: toQ, r: toR };
     state.playerTurns[state.currentPlayer]++;
     advanceTurn();
@@ -148,9 +150,8 @@ const GameState = (() => {
     if (!state.gameOver) {
       state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
       state.turnNumber++;
-      // Check if current player has any valid actions; if not, they must pass
+      // If current player has no valid actions, auto-pass
       if (!hasAnyValidAction(state.currentPlayer)) {
-        // Auto-pass
         state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
         state.turnNumber++;
       }
@@ -158,13 +159,11 @@ const GameState = (() => {
   }
 
   function hasAnyValidAction(player) {
-    // Check if player can place any piece
     const hand = state.hands[player];
     const hasHandPieces = Object.values(hand).some(c => c > 0);
     if (hasHandPieces) {
       const positions = getPlacementPositions(player);
       if (positions.length > 0) {
-        // If must place queen, check queen is available
         if (mustPlaceQueen(player)) {
           return hand.queen > 0;
         }
@@ -172,7 +171,6 @@ const GameState = (() => {
       }
     }
 
-    // Check if player can move any piece (queen must be placed first)
     if (!state.queenPlaced[player]) return hasHandPieces;
 
     for (const [k, stack] of state.pieces) {
@@ -187,7 +185,7 @@ const GameState = (() => {
   }
 
   function checkWin() {
-    // Check if any queen is surrounded on all 6 sides
+    let winnersFound = [];
     for (const [k, stack] of state.pieces) {
       for (const piece of stack) {
         if (piece.type === 'queen') {
@@ -199,23 +197,21 @@ const GameState = (() => {
             return ns && ns.length > 0;
           });
           if (surrounded) {
-            // This queen is surrounded - the OTHER player wins
-            const loser = piece.player;
-            const winner = loser === 1 ? 2 : 1;
-            // Check both queens simultaneously for draw
-            if (state.winner === null) {
-              state.winner = winner;
-            } else {
-              state.winner = 'draw';
-            }
-            state.gameOver = true;
+            // This queen is surrounded; the OTHER player wins
+            winnersFound.push(piece.player === 1 ? 2 : 1);
           }
         }
       }
     }
+    if (winnersFound.length === 2) {
+      state.winner = 'draw';
+      state.gameOver = true;
+    } else if (winnersFound.length === 1) {
+      state.winner = winnersFound[0];
+      state.gameOver = true;
+    }
   }
 
-  // Can the current player move pieces? (queen must be placed first)
   function canMovePieces(player) {
     return state.queenPlaced[player || state.currentPlayer];
   }
@@ -255,7 +251,6 @@ const GameState = (() => {
     state.validSpecials = specials;
   }
 
-  // Start pillbug grab mode
   function selectPillbugGrab(pillQ, pillR, grabQ, grabR) {
     const specials = state.validSpecials;
     const match = specials.find(s => s.from.q === grabQ && s.from.r === grabR);
@@ -269,6 +264,8 @@ const GameState = (() => {
   return {
     init,
     getState,
+    setExpansions,
+    getExpansions,
     getPlacementPositions,
     placePiece,
     movePiece,
@@ -279,6 +276,5 @@ const GameState = (() => {
     selectHandPiece,
     selectBoardPiece,
     selectPillbugGrab,
-    piecesPlacedCount,
   };
 })();

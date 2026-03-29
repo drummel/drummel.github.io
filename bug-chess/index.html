@@ -8,8 +8,8 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #1a1a2e;
-    color: #eee;
+    background: #f0ece2;
+    color: #222;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -19,19 +19,25 @@
 
   header {
     text-align: center;
-    padding: 8px;
-    background: #16213e;
-    border-bottom: 2px solid #0f3460;
+    padding: 8px 8px 6px;
+    background: #fff;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
-  header h1 { font-size: 1.4em; letter-spacing: 2px; }
+  header h1 {
+    font-size: 1.3em;
+    letter-spacing: 2px;
+    color: #333;
+    font-weight: 700;
+  }
   #turn-indicator {
     font-size: 0.95em;
-    margin-top: 4px;
+    margin-top: 2px;
     font-weight: bold;
   }
   #game-status {
-    font-size: 0.85em;
-    color: #e94560;
+    font-size: 0.8em;
+    color: #888;
     margin-top: 2px;
     min-height: 1.2em;
   }
@@ -43,47 +49,56 @@
   }
 
   .player-hand {
-    width: 160px;
-    min-width: 160px;
+    width: 170px;
+    min-width: 170px;
     padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     overflow-y: auto;
-    background: #16213e;
+    background: #fff;
+    border-right: 1px solid #ddd;
+  }
+  .player-hand:last-of-type {
+    border-right: none;
+    border-left: 1px solid #ddd;
   }
   .player-hand h3 {
     text-align: center;
     font-size: 0.85em;
-    margin-bottom: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #0f3460;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #eee;
+    font-weight: 700;
+    letter-spacing: 1px;
   }
   .hand-piece {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 8px;
+    padding: 5px 8px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.15s;
-    font-size: 0.9em;
+    transition: all 0.15s;
+    font-size: 0.85em;
+    border: 2px solid transparent;
   }
-  .hand-piece:hover { background: #0f3460; }
-  .hand-piece.selected { background: #e94560; }
-  .hand-piece.disabled { opacity: 0.35; cursor: default; }
-  .hand-piece .emoji { font-size: 1.6em; }
+  .hand-piece:hover { background: #f5f5f5; border-color: #ccc; }
+  .hand-piece.selected { background: #d4edda; border-color: #28a745; }
+  .hand-piece.disabled { opacity: 0.3; cursor: default; }
+  .hand-piece.disabled:hover { background: transparent; border-color: transparent; }
+  .hand-piece .emoji { font-size: 1.5em; }
+  .hand-piece .piece-name { flex: 1; font-weight: 500; }
   .hand-piece .count {
-    margin-left: auto;
-    background: #0f3460;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75em;
     font-weight: bold;
+    color: #fff;
   }
 
   #board-container {
@@ -91,6 +106,7 @@
     position: relative;
     overflow: hidden;
     cursor: grab;
+    background: #f0ece2;
   }
   #board-container.dragging { cursor: grabbing; }
 
@@ -102,31 +118,138 @@
 
   #controls {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 12px;
+    right: 12px;
     display: flex;
     gap: 6px;
   }
   #controls button {
-    background: #0f3460;
-    color: #eee;
-    border: none;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 6px 12px;
+    padding: 6px 14px;
     cursor: pointer;
     font-size: 0.8em;
+    font-weight: 500;
+    transition: all 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
-  #controls button:hover { background: #e94560; }
+  #controls button:hover { background: #333; color: #fff; border-color: #333; }
 
-  .player1-color { color: #5dade2; }
-  .player2-color { color: #e74c3c; }
+  .player1-label { color: #555; }
+  .player2-label { color: #111; }
 
   .player-hand.active-hand {
-    box-shadow: inset 0 0 20px rgba(233, 69, 96, 0.3);
+    background: #fafff8;
+    box-shadow: inset 0 0 0 3px rgba(40, 167, 69, 0.2);
   }
+
+  /* Setup overlay */
+  #setup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  #setup-overlay.hidden { display: none; }
+  #setup-panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 40px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 400px;
+  }
+  #setup-panel h2 {
+    font-size: 1.6em;
+    margin-bottom: 4px;
+    color: #222;
+  }
+  #setup-panel .subtitle {
+    color: #888;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+  }
+  .expansion-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .expansion-toggle:hover { border-color: #ccc; }
+  .expansion-toggle.active { border-color: #28a745; background: #f0fff4; }
+  .expansion-toggle .toggle-emoji { font-size: 1.8em; }
+  .expansion-toggle .toggle-info { text-align: left; flex: 1; }
+  .expansion-toggle .toggle-name { font-weight: 700; font-size: 0.95em; }
+  .expansion-toggle .toggle-desc { font-size: 0.75em; color: #888; }
+  .expansion-toggle .toggle-check {
+    width: 24px; height: 24px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    color: #fff;
+    transition: all 0.15s;
+  }
+  .expansion-toggle.active .toggle-check {
+    background: #28a745;
+    border-color: #28a745;
+  }
+  #btn-start-game {
+    margin-top: 20px;
+    padding: 12px 40px;
+    font-size: 1.1em;
+    font-weight: 700;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #btn-start-game:hover { background: #444; }
 </style>
 </head>
 <body>
+  <!-- Setup screen -->
+  <div id="setup-overlay">
+    <div id="setup-panel">
+      <h2>Bug Chess</h2>
+      <div class="subtitle">A Hive-inspired strategy game</div>
+
+      <div class="expansion-toggle active" data-expansion="pillbug">
+        <span class="toggle-emoji">💊</span>
+        <div class="toggle-info">
+          <div class="toggle-name">Pill Bug</div>
+          <div class="toggle-desc">Moves 1 space; can grab and relocate adjacent pieces</div>
+        </div>
+        <div class="toggle-check">&#10003;</div>
+      </div>
+
+      <div class="expansion-toggle active" data-expansion="ladybug">
+        <span class="toggle-emoji">🐞</span>
+        <div class="toggle-info">
+          <div class="toggle-name">Ladybug</div>
+          <div class="toggle-desc">Moves 3 spaces: 2 on top of hive, then 1 down</div>
+        </div>
+        <div class="toggle-check">&#10003;</div>
+      </div>
+
+      <button id="btn-start-game">Start Game</button>
+    </div>
+  </div>
+
   <header>
     <h1>Bug Chess</h1>
     <div id="turn-indicator">Player 1's Turn</div>
@@ -134,19 +257,19 @@
   </header>
   <div id="main">
     <div class="player-hand" id="hand-p1">
-      <h3 class="player1-color">Player 1</h3>
+      <h3 class="player1-label">Player 1 (White)</h3>
     </div>
     <div id="board-container">
       <canvas id="board-canvas"></canvas>
       <div id="controls">
         <button id="btn-zoom-in">+</button>
-        <button id="btn-zoom-out">-</button>
-        <button id="btn-reset-view">Reset</button>
+        <button id="btn-zoom-out">&minus;</button>
+        <button id="btn-reset-view">Reset View</button>
         <button id="btn-new-game">New Game</button>
       </div>
     </div>
     <div class="player-hand" id="hand-p2">
-      <h3 class="player2-color">Player 2</h3>
+      <h3 class="player2-label">Player 2 (Black)</h3>
     </div>
   </div>
 

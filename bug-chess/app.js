@@ -6,6 +6,32 @@ const App = (() => {
   let dragOffset = { x: 0, y: 0 };
 
   function init() {
+    setupSetupScreen();
+  }
+
+  function setupSetupScreen() {
+    const overlay = document.getElementById('setup-overlay');
+    const toggles = overlay.querySelectorAll('.expansion-toggle');
+
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('active');
+      });
+    });
+
+    document.getElementById('btn-start-game').addEventListener('click', () => {
+      const config = {};
+      toggles.forEach(toggle => {
+        const key = toggle.dataset.expansion;
+        config[key] = toggle.classList.contains('active');
+      });
+      GameState.setExpansions(config);
+      overlay.classList.add('hidden');
+      startGame();
+    });
+  }
+
+  function startGame() {
     const canvas = document.getElementById('board-canvas');
     Renderer.init(canvas);
     UI.init();
@@ -30,7 +56,6 @@ const App = (() => {
   function setupBoardEvents(canvas) {
     const container = document.getElementById('board-container');
 
-    // Pan
     container.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
       isDragging = false;
@@ -82,7 +107,6 @@ const App = (() => {
 
     container.addEventListener('touchend', (e) => {
       if (!touchMoved && touchStart) {
-        // Simulate click at touch position
         const rect = canvas.getBoundingClientRect();
         const x = touchStart.x - rect.left;
         const y = touchStart.y - rect.top;
@@ -91,7 +115,6 @@ const App = (() => {
       touchStart = null;
     });
 
-    // Zoom
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -3 : 3;
@@ -115,7 +138,7 @@ const App = (() => {
     const hex = Renderer.screenToHex(x, y);
     const k = HexGrid.key(hex.q, hex.r);
 
-    // If we have a pillbug grab in progress, check if clicking a valid drop target
+    // Pillbug grab in progress
     if (state.pillbugGrab) {
       const isValidDrop = state.validMoves.some(m => m.q === hex.q && m.r === hex.r);
       if (isValidDrop) {
@@ -124,15 +147,14 @@ const App = (() => {
           state.pillbugGrab.q, state.pillbugGrab.r,
           hex.q, hex.r
         );
-        refresh();
-        return;
+      } else {
+        GameState.clearSelection();
       }
-      GameState.clearSelection();
       refresh();
       return;
     }
 
-    // If a hand piece is selected, try to place it
+    // Hand piece selected - try to place
     if (state.selectedHandPiece) {
       const isValid = state.validMoves.some(m => m.q === hex.q && m.r === hex.r);
       if (isValid) {
@@ -144,9 +166,8 @@ const App = (() => {
       return;
     }
 
-    // If a board piece is selected, try to move it or do pillbug grab
+    // Board piece selected - try to move or pillbug grab
     if (state.selectedPiece) {
-      // Check if clicking a valid move target
       const isValidMove = state.validMoves.some(m => m.q === hex.q && m.r === hex.r);
       if (isValidMove) {
         GameState.movePiece(state.selectedPiece.q, state.selectedPiece.r, hex.q, hex.r);
@@ -154,7 +175,6 @@ const App = (() => {
         return;
       }
 
-      // Check if clicking a pillbug special grab target
       const isSpecialTarget = state.validSpecials.some(s => s.from.q === hex.q && s.from.r === hex.r);
       if (isSpecialTarget) {
         GameState.selectPillbugGrab(
@@ -165,7 +185,6 @@ const App = (() => {
         return;
       }
 
-      // Clicking same piece deselects
       if (state.selectedPiece.q === hex.q && state.selectedPiece.r === hex.r) {
         GameState.clearSelection();
         refresh();
@@ -203,9 +222,15 @@ const App = (() => {
       refresh();
     });
     document.getElementById('btn-new-game').addEventListener('click', () => {
-      GameState.init();
-      Renderer.setOffset(0, 0);
-      refresh();
+      // Show setup screen again
+      document.getElementById('setup-overlay').classList.remove('hidden');
+      // Re-sync toggle states with current config
+      const config = GameState.getExpansions();
+      document.querySelectorAll('.expansion-toggle').forEach(toggle => {
+        const key = toggle.dataset.expansion;
+        if (config[key]) toggle.classList.add('active');
+        else toggle.classList.remove('active');
+      });
     });
   }
 

@@ -25,6 +25,23 @@ const HexGrid = (() => {
     return DIRECTIONS.map(d => ({ q: q + d.q, r: r + d.r }));
   }
 
+  // Get the two hexes that are neighbors of both (q1,r1) and (q2,r2)
+  function sharedNeighbors(q1, r1, q2, r2) {
+    const n1 = neighbors(q1, r1);
+    const n2 = neighbors(q2, r2);
+    const shared = [];
+    for (const a of n1) {
+      for (const b of n2) {
+        if (a.q === b.q && a.r === b.r &&
+            !(a.q === q1 && a.r === r1) &&
+            !(a.q === q2 && a.r === r2)) {
+          shared.push(a);
+        }
+      }
+    }
+    return shared;
+  }
+
   // Convert axial hex to pixel (flat-top)
   function hexToPixel(q, r, size) {
     const x = size * (3 / 2 * q);
@@ -69,17 +86,14 @@ const HexGrid = (() => {
   }
 
   // Check if removing a piece at (q,r) would disconnect the hive
-  // pieces is a Map of key -> array of {player, type}
   function isArticulationPoint(q, r, pieces) {
     const k = key(q, r);
-    // Get all occupied keys except the one we're testing
     const occupied = new Set();
     for (const [pk] of pieces) {
       if (pk !== k) occupied.add(pk);
     }
     if (occupied.size === 0) return false;
 
-    // BFS from any remaining piece
     const start = occupied.values().next().value;
     const visited = new Set([start]);
     const queue = [start];
@@ -97,20 +111,9 @@ const HexGrid = (() => {
     return visited.size !== occupied.size;
   }
 
-  // Freedom of movement check: can a piece slide from (q1,r1) to adjacent (q2,r2)?
-  // Both shared neighbors of (q1,r1) and (q2,r2) must not BOTH be occupied
+  // Freedom of movement: can a piece slide from (q1,r1) to adjacent (q2,r2)?
   function canSlide(q1, r1, q2, r2, occupied) {
-    const n1 = neighbors(q1, r1);
-    const n2 = neighbors(q2, r2);
-    const shared = [];
-    for (const a of n1) {
-      for (const b of n2) {
-        if (a.q === b.q && a.r === b.r && !(a.q === q1 && a.r === r1) && !(a.q === q2 && a.r === r2)) {
-          shared.push(a);
-        }
-      }
-    }
-    // For sliding, the two common neighbors must not both be occupied
+    const shared = sharedNeighbors(q1, r1, q2, r2);
     if (shared.length === 2) {
       const s0 = occupied.has(key(shared[0].q, shared[0].r));
       const s1 = occupied.has(key(shared[1].q, shared[1].r));
@@ -139,6 +142,7 @@ const HexGrid = (() => {
     key,
     parse,
     neighbors,
+    sharedNeighbors,
     hexToPixel,
     pixelToHex,
     hexCorners,

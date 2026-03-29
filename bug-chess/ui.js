@@ -12,15 +12,15 @@ const UI = (() => {
   }
 
   function renderHands(gameState) {
+    const types = Pieces.getTypes();
+
     for (const player of [1, 2]) {
       const el = handEls[player];
       const hand = gameState.hands[player];
       const isActive = gameState.currentPlayer === player && !gameState.gameOver;
       const playerInfo = Pieces.PLAYERS[player];
 
-      // Keep the header
       const header = el.querySelector('h3');
-
       el.innerHTML = '';
       el.appendChild(header);
 
@@ -30,8 +30,10 @@ const UI = (() => {
         el.classList.remove('active-hand');
       }
 
-      for (const [type, info] of Object.entries(Pieces.TYPES)) {
+      for (const [type, info] of Object.entries(types)) {
         const count = hand[type];
+        if (count === undefined) continue; // expansion not active
+
         const div = document.createElement('div');
         div.className = 'hand-piece';
 
@@ -45,10 +47,13 @@ const UI = (() => {
         const isSelected = gameState.selectedHandPiece === type && isActive;
         if (isSelected) div.classList.add('selected');
 
+        // Count badge color based on player
+        const badgeBg = player === 1 ? '#888' : '#222';
+
         div.innerHTML = `
           <span class="emoji">${info.emoji}</span>
-          <span>${info.name}</span>
-          <span class="count" style="background:${playerInfo.bg};border:1px solid ${playerInfo.border}">${count}</span>
+          <span class="piece-name">${info.name}</span>
+          <span class="count" style="background:${badgeBg}">${count}</span>
         `;
 
         if (canSelect && !(mustQueen && type !== 'queen')) {
@@ -72,35 +77,36 @@ const UI = (() => {
     if (gameState.gameOver) {
       if (gameState.winner === 'draw') {
         turnEl.textContent = 'Draw!';
-        turnEl.style.color = '#f39c12';
+        turnEl.style.color = '#e67e22';
       } else {
         const pInfo = Pieces.PLAYERS[gameState.winner];
-        turnEl.innerHTML = `<span style="color:${pInfo.color}">${pInfo.name} Wins! 🎉</span>`;
+        turnEl.innerHTML = `<span style="color:${pInfo.color}"><b>${pInfo.name} (${pInfo.label}) Wins!</b></span>`;
       }
       statusEl.textContent = 'Click "New Game" to play again.';
       return;
     }
 
     const pInfo = Pieces.PLAYERS[gameState.currentPlayer];
-    turnEl.innerHTML = `<span style="color:${pInfo.color}">${pInfo.emoji} ${pInfo.name}'s Turn</span>`;
+    const tilePreview = gameState.currentPlayer === 1 ? '&#11036;' : '&#11035;';
+    turnEl.innerHTML = `<span style="color:${pInfo.color}">${tilePreview} ${pInfo.name}'s Turn (${pInfo.label})</span>`;
 
-    // Status messages
     const msgs = [];
     if (GameState.mustPlaceQueen(gameState.currentPlayer)) {
-      msgs.push('⚠️ Must place Queen Bee this turn!');
+      msgs.push('Must place Queen Bee this turn!');
     }
     if (gameState.selectedHandPiece) {
-      msgs.push(`Click a highlighted hex to place your ${Pieces.TYPES[gameState.selectedHandPiece].emoji} ${Pieces.TYPES[gameState.selectedHandPiece].name}`);
+      const t = Pieces.getTypes()[gameState.selectedHandPiece];
+      msgs.push(`Click a green hex to place ${t.emoji} ${t.name}`);
     } else if (gameState.selectedPiece) {
       if (gameState.pillbugGrab) {
-        msgs.push('Click a highlighted hex to drop the grabbed piece');
+        msgs.push('Click a green hex to drop the grabbed piece');
       } else if (gameState.validSpecials.length > 0) {
-        msgs.push('Click a purple hex for Pill Bug grab, or green to move');
+        msgs.push('Purple = Pill Bug grab, Green = move');
+      } else if (gameState.validMoves.length > 0) {
+        msgs.push('Click a green hex to move');
       } else {
-        msgs.push('Click a highlighted hex to move');
+        msgs.push('This piece cannot move (pinned)');
       }
-    } else if (gameState.pieces.size === 0) {
-      msgs.push('Select a piece from your hand to begin');
     } else {
       msgs.push('Select a piece from your hand or on the board');
     }
