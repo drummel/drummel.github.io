@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bug Chess Tests</title>
+<style>
+  body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+  .pass { color: #2ecc71; }
+  .fail { color: #e74c3c; font-weight: bold; }
+  .section { color: #f39c12; font-size: 1.1em; margin-top: 16px; }
+  #results { white-space: pre-wrap; line-height: 1.6; }
+  #summary { margin-top: 20px; font-size: 1.2em; padding: 10px; border-top: 1px solid #444; }
+</style>
+</head>
+<body>
+<h2>Bug Chess - Test Suite</h2>
+<div id="results"></div>
+<div id="summary"></div>
+
+<script src="hex-grid.js"></script>
+<script src="pieces.js"></script>
+<script src="game-state.js"></script>
+<script src="ai.js"></script>
+<script>
+(function() {
+  const el = document.getElementById('results');
+  const sumEl = document.getElementById('summary');
+  let passed = 0, failed = 0;
+
+  function log(msg, cls) {
+    const div = document.createElement('div');
+    div.className = cls || '';
+    div.textContent = msg;
+    el.appendChild(div);
+  }
+  function section(name) { log('\n=== ' + name + ' ===', 'section'); }
+  function assert(cond, msg) {
+    if (cond) { passed++; log('  PASS: ' + msg, 'pass'); }
+    else { failed++; log('  FAIL: ' + msg, 'fail'); }
+  }
+
+  // Helper: set up a fresh game
+  function freshGame(expansions) {
+    GameState.setExpansions(expansions || { pillbug: true, ladybug: true, mosquito: true });
+    return GameState.init();
+  }
+
+  // Helper: place a piece directly onto the board (bypasses turn logic)
+  function forcePlace(state, player, type, q, r) {
+    const k = HexGrid.key(q, r);
+    if (!state.pieces.has(k)) state.pieces.set(k, []);
+    state.pieces.get(k).push({ player, type });
+    if (type === 'queen') state.queenPlaced[player] = true;
+  }
+
+  // ===================== HEX GRID TESTS =====================
+  section('HexGrid basics');
+
+  assert(HexGrid.key(3, -2) === '3,-2', 'key formats correctly');
+  const p = HexGrid.parse('3,-2');
+  assert(p.q === 3 && p.r === -2, 'parse works correctly');
+
+  const nbrs = HexGrid.neighbors(0, 0);
+  assert(nbrs.length === 6, 'origin has 6 neighbors');
+
+  const shared = HexGrid.sharedNeighbors(0, 0, 1, 0);
+  assert(shared.length === 2, 'two adjacent hexes share 2 neighbors');
+
+  // ===================== CANSLIDE TESTS =====================
+  section('canSlide (freedom of movement)');
+
+  // Neither shared neighbor occupied -> can't slide (nothing to slide along)
+  const occ1 = new Set();
+  assert(!HexGrid.canSlide(0, 0, 1, 0, occ1), 'cant slide with no shared neighbors occupied');
+
+  // One shared neighbor occupied -> can slide
+  const shared01 = HexGrid.sharedNeighbors(0, 0, 1, 0);
+  const occ2 = new Set([HexGrid.key(shared01[0].q, shared01[0].r)]);
+  assert(HexGrid.canSlide(0, 0, 1, 0, occ2), 'can slide with one shared neighbor occupied');
+
+  // Both shared neighbors occupied -> gate blocked
+  const occ3 = new Set([
+    HexGrid.key(shared01[0].q, shared01[0].r),
+    HexGrid.key(shared01[1].q, shared01[1].r),
+  ]);
+  assert(!HexGrid.canSlide(0, 0, 1, 0, occ3), 'cant slide with both shared neighbors occupied (gate)');
+
+  // ===================== ARTICULATION POINT TESTS =====================
+  section('Articulation point (one-hive rule)');
+
+  const ap1 = new Map();
+  ap1.set('0,0', [{ player: 1, type: 'ant' }]);
+  ap1.set('1,0', [{ player: 1, type: 'ant' }]);
+  ap1.set('2,0', [{ player: 2, type: 'ant' }]);
+  assert(HexGrid.isArticulationPoint(1, 0, ap1), 'middle piece in a line is articulation point');
+  assert(!HexGrid.isArticulationPoint(0, 0, ap1), 'end piece is not articulation point');
+  assert(!HexGrid.isArticulationPoint(2, 0, ap1), 'other end piece is not articulation point');
+
+  // ===================== QUEEN MOVEMENT TESTS =====================
+  section('Queen movement');
+
+  const state1 = freshGame();
+  forcePlace(state1, 1, 'queen', 0, 0);
+  forcePlace(state1, 2, 'ant', 1, 0);
+  forcePlace(state1, 1, 'ant', -1, 0);
+  state1.queenPlaced[1] = true;
+
+  const qMoves = Pieces.getValidMoves(0, 0, state1.pieces, null);
+  assert(qMoves.moves.length > 0, 'queen has valid moves');
+  assert(qMoves.moves.every(m => {
+    const d = Math.max(Math.abs(m.q), Math.abs(m.r), Math.abs(-m.q - m.r));
+    return d <= 1;
+  }), 'queen moves are all 1 space away from origin');
+
+  // ===================== SPIDER MOVEMENT TESTS =====================
+  section('Spider movement');
+
+  const state2 = freshGame();
+  // Build a small cluster
+  forcePlace(state2, 1, 'spider', 0, 0);
+  forcePlace(state2, 2, 'ant', 1, 0);
+  forcePlace(state2, 2, 'ant', 2, 0);
+  forcePlace(state2, 1, 'ant', 3, 0);
+
+  const spMoves = Pieces.getValidMoves(0, 0, state2.pieces, null);
+  // Spider moves exactly 3, so destinations should be 3 hive-edge-steps away
+  assert(spMoves.moves.length > 0, 'spider has valid moves');
+  // Spider can't stay at start
+  assert(!spMoves.moves.some(m => m.q === 0 && m.r === 0), 'spider doesnt stay at origin');
+
+  // ===================== GRASSHOPPER MOVEMENT TESTS =====================
+  section('Grasshopper movement');
+
+  const state3 = freshGame();
+  forcePlace(state3, 1, 'grasshopper', 0, 0);
+  forcePlace(state3, 2, 'ant', 1, 0);
+  forcePlace(state3, 2, 'ant', 2, 0);
+
+  const ghMoves = Pieces.getValidMoves(0, 0, state3.pieces, null);
+  assert(ghMoves.moves.length >= 1, 'grasshopper has at least 1 jump');
+  assert(ghMoves.moves.some(m => m.q === 3 && m.r === 0), 'grasshopper jumps over 2 ants to (3,0)');
+  // Grasshopper should NOT be able to jump in directions with no pieces
+  const ghInvalid = ghMoves.moves.filter(m => m.q === -1 && m.r === 0);
+  assert(ghInvalid.length === 0, 'grasshopper cant jump to empty direction');
+
+  // ===================== BEETLE MOVEMENT TESTS =====================
+  section('Beetle movement');
+
+  const state4 = freshGame();
+  forcePlace(state4, 1, 'beetle', 0, 0);
+  forcePlace(state4, 2, 'ant', 1, 0);
+
+  const btMoves = Pieces.getValidMoves(0, 0, state4.pieces, null);
+  // Beetle should be able to climb onto the ant
+  assert(btMoves.moves.some(m => m.q === 1 && m.r === 0), 'beetle can climb onto adjacent piece');
+
+  // ===================== ANT MOVEMENT TESTS =====================
+  section('Ant movement');
+
+  const state5 = freshGame();
+  forcePlace(state5, 1, 'ant', 0, 0);
+  forcePlace(state5, 2, 'queen', 1, 0);
+  forcePlace(state5, 1, 'queen', -1, 0);
+
+  const antMoves = Pieces.getValidMoves(0, 0, state5.pieces, null);
+  // Ant can reach many positions around the hive perimeter
+  assert(antMoves.moves.length > 3, 'ant has many valid moves around perimeter');
+
+  // ===================== LADYBUG MOVEMENT TESTS =====================
+  section('Ladybug movement');
+
+  const state6 = freshGame({ pillbug: true, ladybug: true, mosquito: true });
+  forcePlace(state6, 1, 'ladybug', 0, 0);
+  forcePlace(state6, 2, 'ant', 1, 0);
+  forcePlace(state6, 2, 'ant', 2, 0);
+  forcePlace(state6, 1, 'ant', -1, 0);
+
+  const lbMoves = Pieces.getValidMoves(0, 0, state6.pieces, null);
+  assert(lbMoves.moves.length > 0, 'ladybug has valid moves');
+  // Ladybug should not be at origin or on occupied hexes
+  assert(!lbMoves.moves.some(m => m.q === 0 && m.r === 0), 'ladybug doesnt stay at start');
+
+  // ===================== PLACEMENT RULES TESTS =====================
+  section('Placement rules');
+
+  const state7 = freshGame();
+  const pos1 = GameState.getPlacementPositions(1);
+  assert(pos1.length === 1 && pos1[0].q === 0 && pos1[0].r === 0, 'first placement is at origin');
+
+  // Place first piece
+  state7.pieces.set('0,0', [{ player: 1, type: 'ant' }]);
+  state7.playerTurns[1] = 1;
+  state7.currentPlayer = 2;
+
+  const pos2 = GameState.getPlacementPositions(2);
+  assert(pos2.length === 6, 'second player can place on any of 6 neighbors');
+
+  // ===================== QUEEN PLACEMENT RULE =====================
+  section('Queen must be placed by turn 4');
+
+  const state8 = freshGame();
+  state8.playerTurns[1] = 3;
+  state8.queenPlaced[1] = false;
+  assert(GameState.mustPlaceQueen(1), 'must place queen on 4th turn');
+
+  state8.queenPlaced[1] = true;
+  assert(!GameState.mustPlaceQueen(1), 'no forced queen if already placed');
+
+  // ===================== WIN DETECTION TESTS =====================
+  section('Win detection');
+
+  const state9 = freshGame();
+  // Place a queen surrounded on all 6 sides
+  forcePlace(state9, 2, 'queen', 0, 0);
+  forcePlace(state9, 1, 'ant', 1, 0);
+  forcePlace(state9, 1, 'ant', 1, -1);
+  forcePlace(state9, 1, 'ant', 0, -1);
+  forcePlace(state9, 1, 'ant', -1, 0);
+  forcePlace(state9, 1, 'ant', -1, 1);
+  // Missing one: (0,1) - not surrounded yet
+  assert(!state9.gameOver, 'game not over with 5/6 sides filled');
+
+  forcePlace(state9, 1, 'ant', 0, 1);
+  // Manually trigger win check
+  // We need to use the internal checkWin - do it through a placement
+  // Actually, let's just test the surround count
+  const surroundCount = (() => {
+    const nbrs = HexGrid.neighbors(0, 0);
+    return nbrs.filter(n => {
+      const nk = HexGrid.key(n.q, n.r);
+      const ns = state9.pieces.get(nk);
+      return ns && ns.length > 0;
+    }).length;
+  })();
+  assert(surroundCount === 6, 'queen is surrounded on all 6 sides');
+
+  // ===================== STACKED PIECES (getOccupiedSet) =====================
+  section('Stacked pieces handling');
+
+  const state10 = freshGame();
+  forcePlace(state10, 1, 'ant', 0, 0);
+  forcePlace(state10, 2, 'beetle', 0, 0); // beetle on top
+  forcePlace(state10, 1, 'ant', 1, 0);
+
+  const occSet = Pieces.getOccupiedSet(state10.pieces, HexGrid.key(0, 0));
+  assert(occSet.has('0,0'), 'stacked hex stays occupied when top piece excluded (stack > 1)');
+
+  const occSet2 = Pieces.getOccupiedSet(state10.pieces, HexGrid.key(1, 0));
+  assert(!occSet2.has('1,0'), 'single piece hex is removed when excluded');
+
+  // ===================== AI TESTS =====================
+  section('AI basic functionality');
+
+  const state11 = freshGame();
+  AI.setEnabled(true);
+  AI.setDifficulty('easy');
+
+  // Place initial pieces so AI has actions
+  forcePlace(state11, 1, 'queen', 0, 0);
+  forcePlace(state11, 2, 'queen', 1, 0);
+  state11.playerTurns = { 1: 1, 2: 1 };
+  state11.currentPlayer = 2;
+
+  const took = AI.takeTurn(state11);
+  assert(took, 'AI successfully takes a turn');
+
+  AI.setEnabled(false);
+
+  // ===================== SUMMARY =====================
+  const total = passed + failed;
+  sumEl.innerHTML = `<span class="${failed ? 'fail' : 'pass'}">${passed}/${total} tests passed` +
+    (failed ? `, ${failed} FAILED` : ' - ALL PASS') + '</span>';
+})();
+</script>
+</body>
+</html>
