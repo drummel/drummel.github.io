@@ -77,21 +77,36 @@ const Renderer = (() => {
     const { pieces, validMoves, validSpecials, selectedPiece, selectedHandPiece, pillbugGrab } = gameState;
 
     // Draw valid move highlights
+    // Use purple when in pillbug grab mode, green otherwise
+    const isPillbugDrop = !!pillbugGrab;
     for (const m of validMoves) {
       const { x, y } = hexToScreen(m.q, m.r);
-      drawHex(x, y, hexSize - 2, 'rgba(40, 167, 69, 0.2)', '#28a745', 2.5);
-      // Draw a small dot in center
-      ctx.beginPath();
-      ctx.arc(x, y, hexSize * 0.15, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(40, 167, 69, 0.5)';
-      ctx.fill();
+      if (isPillbugDrop) {
+        drawHex(x, y, hexSize - 2, 'rgba(142, 68, 173, 0.25)', '#8e44ad', 2.5);
+        ctx.beginPath();
+        ctx.arc(x, y, hexSize * 0.15, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(142, 68, 173, 0.6)';
+        ctx.fill();
+      } else {
+        drawHex(x, y, hexSize - 2, 'rgba(40, 167, 69, 0.2)', '#28a745', 2.5);
+        ctx.beginPath();
+        ctx.arc(x, y, hexSize * 0.15, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(40, 167, 69, 0.5)';
+        ctx.fill();
+      }
     }
 
-    // Draw pillbug special grab targets (purple)
-    if (validSpecials && !pillbugGrab) {
+    // Draw pillbug special grab targets (bold purple with pulsing border)
+    if (validSpecials && validSpecials.length > 0 && !pillbugGrab) {
       for (const s of validSpecials) {
         const { x, y } = hexToScreen(s.from.q, s.from.r);
-        drawHex(x, y, hexSize - 2, 'rgba(142, 68, 173, 0.2)', '#8e44ad', 2.5);
+        // Stronger purple fill + thicker border so they really stand out
+        drawHex(x, y, hexSize - 1, 'rgba(142, 68, 173, 0.35)', '#8e44ad', 3.5);
+        // Purple dot in center
+        ctx.beginPath();
+        ctx.arc(x, y, hexSize * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(142, 68, 173, 0.7)';
+        ctx.fill();
       }
     }
 

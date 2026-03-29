@@ -33,11 +33,20 @@ const Pieces = (() => {
     2: { name: 'Player 2', label: 'Black', color: '#111', tileFill: '#2a2a2a', tileStroke: '#555', tileShadow: 'rgba(0,0,0,0.3)' },
   };
 
-  // Build occupied set from pieces map (excluding a specific key if provided)
+  // Build occupied set from pieces map.
+  // If excludeKey is provided, only exclude that hex if it would be empty
+  // after removing the top piece (i.e., stack.length <= 1). Stacked hexes
+  // (beetle on top of something) remain occupied even when the top moves away.
   function getOccupiedSet(pieces, excludeKey) {
     const set = new Set();
     for (const [k, stack] of pieces) {
-      if (k !== excludeKey && stack.length > 0) set.add(k);
+      if (stack.length === 0) continue;
+      if (k === excludeKey) {
+        // Only exclude if there's just 1 piece (the one moving)
+        if (stack.length > 1) set.add(k);
+      } else {
+        set.add(k);
+      }
     }
     return set;
   }
