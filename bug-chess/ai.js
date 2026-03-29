@@ -95,11 +95,40 @@ const AI = (() => {
     return empty;
   }
 
-  // Count how many of a player's pieces are on the board
-  function piecesOnBoard(pieces, player) {
+  // Count how many of a player's pieces are pinned (articulation points)
+  function countPinnedPieces(pieces, player) {
+    let pinned = 0;
+    for (const [k, stack] of pieces) {
+      if (stack.length === 0) continue;
+      const top = stack[stack.length - 1];
+      if (top.player === player && stack.length === 1) {
+        const { q, r } = HexGrid.parse(k);
+        if (HexGrid.isArticulationPoint(q, r, pieces)) pinned++;
+      }
+    }
+    return pinned;
+  }
+
+  // Count mobile ants for a player
+  function countMobileAnts(pieces, player, lastMoved) {
     let count = 0;
-    for (const [, stack] of pieces) {
-      for (const p of stack) { if (p.player === player) count++; }
+    for (const [k, stack] of pieces) {
+      if (stack.length === 0) continue;
+      const top = stack[stack.length - 1];
+      if (top.player === player && top.type === 'ant' && stack.length === 1) {
+        const { q, r } = HexGrid.parse(k);
+        if (!HexGrid.isArticulationPoint(q, r, pieces)) count++;
+      }
+    }
+    return count;
+  }
+
+  // Count pieces adjacent to a queen that belong to its OWN player (self-surround)
+  function selfSurroundCount(q, r, pieces, queenPlayer) {
+    let count = 0;
+    for (const n of HexGrid.neighbors(q, r)) {
+      const ns = pieces.get(HexGrid.key(n.q, n.r));
+      if (ns && ns.length > 0 && ns[ns.length - 1].player === queenPlayer) count++;
     }
     return count;
   }
@@ -130,15 +159,18 @@ const AI = (() => {
   // - After queen, deploy ants for offense and beetles to threaten queen
   // - Place pieces to create a compact shape, not a long chain
 
+  // Opening priorities based on tournament-level play:
+  // Ant-first or Spider-first are both strong competitive openers.
+  // Queen on turn 2 is near-universal at tournament level.
   const OPENING_PRIORITY = {
-    // Turn 1: place a non-valuable piece to start
-    0: ['grasshopper', 'spider', 'beetle', 'ladybug', 'pillbug', 'mosquito'],
-    // Turn 2: place queen to unlock movement
-    1: ['queen', 'beetle', 'grasshopper', 'spider'],
-    // Turn 3: if queen not placed, must place; otherwise deploy offense
-    2: ['queen', 'ant', 'beetle', 'grasshopper', 'spider', 'mosquito'],
-    // Turn 4+: aggressive deployment
-    3: ['ant', 'beetle', 'mosquito', 'grasshopper', 'spider', 'ladybug', 'pillbug'],
+    // Turn 1: ant is the strongest competitive opener, spider/grasshopper also good
+    0: ['ant', 'spider', 'grasshopper', 'beetle', 'ladybug', 'mosquito', 'pillbug'],
+    // Turn 2: queen MUST go down to unlock movement
+    1: ['queen'],
+    // Turn 3: deploy offense (ant if not placed yet, beetle for queen pressure)
+    2: ['ant', 'beetle', 'mosquito', 'grasshopper', 'spider', 'ladybug'],
+    // Turn 4+: ants and beetles are the primary offensive weapons
+    3: ['ant', 'beetle', 'mosquito', 'ladybug', 'grasshopper', 'spider', 'pillbug'],
   };
 
   function getOpeningTypePriority(turnNum) {
@@ -163,13 +195,10 @@ const AI = (() => {
       if (priorityIdx >= 0) score += (10 - priorityIdx) * 3;
       else score -= 5;
 
-      // NEVER place ant on first move (waste of the best offensive piece)
-      if (turnNum === 0 && action.type === 'ant') score -= 30;
-
-      // Place queen on turn 2 (index 1) to unlock movement early
-      if (action.type === 'queen' && turnNum === 1) score += 25;
-      // But not on turn 1 (too exposed)
-      if (action.type === 'queen' && turnNum === 0) score -= 20;
+      // Place queen on turn 2 to unlock movement (tournament standard)
+      if (action.type === 'queen' && turnNum === 1) score += 30;
+      // Never place queen on turn 1 (too exposed, no support pieces)
+      if (action.type === 'queen' && turnNum === 0) score -= 25;
 
       // After queen is placed, prefer offensive pieces
       if (myQueenPos && (action.type === 'ant' || action.type === 'beetle')) score += 8;
@@ -330,26 +359,45 @@ const AI = (() => {
     const myQueen = findQueen(pieces, player);
     const oppQueen = findQueen(pieces, opponent);
 
-    // Queen surround is THE most important factor
+    // === QUEEN LIBERTY COUNT (most important heuristic) ===
     if (oppQueen) {
       const s = queenSurroundCount(oppQueen.q, oppQueen.r, pieces);
       score += s * 30;
-      if (s === 6) return 10000; // instant win
-      if (s === 5) score += 100; // one move from winning
+      if (s === 6) return 10000;
+      if (s === 5) score += 120;
+      // Bonus if opponent's OWN pieces surround their queen (they did it to themselves)
+      const selfS = selfSurroundCount(oppQueen.q, oppQueen.r, pieces, opponent);
+      score += selfS * 8; // exploit opponent's self-surround
     }
 
     if (myQueen) {
       const s = queenSurroundCount(myQueen.q, myQueen.r, pieces);
-      score -= s * 35; // slightly more weight on defense
-      if (s === 6) return -10000; // instant loss
-      if (s === 5) score -= 120;
+      score -= s * 35;
+      if (s === 6) return -10000;
+      if (s === 5) score -= 140;
 
       // Queen mobility (escape routes)
       const mobility = queenMobility(myQueen.q, myQueen.r, pieces);
-      score += mobility * 5;
+      score += mobility * 6;
     }
 
-    // Piece proximity to opponent queen
+    // === PIN COUNT ===
+    const myPinned = countPinnedPieces(pieces, player);
+    const oppPinned = countPinnedPieces(pieces, opponent);
+    score += (oppPinned - myPinned) * 5; // more opponent pins = better
+
+    // === MOBILE ANTS (key offensive resource) ===
+    const myAnts = countMobileAnts(pieces, player, null);
+    const oppAnts = countMobileAnts(pieces, opponent, null);
+    score += myAnts * 10; // mobile ants are extremely valuable
+    score -= oppAnts * 8;
+    // Two mobile ants is near-winning if opponent queen is exposed
+    if (myAnts >= 2 && oppQueen) {
+      const oppS = queenSurroundCount(oppQueen.q, oppQueen.r, pieces);
+      if (oppS >= 2) score += 30;
+    }
+
+    // === PIECE PROXIMITY TO OPPONENT QUEEN ===
     if (oppQueen) {
       for (const [k, stack] of pieces) {
         if (stack.length === 0) continue;
@@ -358,9 +406,10 @@ const AI = (() => {
           const { q, r } = HexGrid.parse(k);
           const dist = hexDist(q, r, oppQueen.q, oppQueen.r);
           if (dist <= 3) score += (4 - dist) * 4;
-          // Beetles adjacent/on queen are especially threatening
-          if (top.type === 'beetle' && dist <= 1) score += 15;
-          if (top.type === 'ant' && dist <= 2) score += 8;
+          // Beetle on/adjacent to queen is devastating
+          if (top.type === 'beetle' && dist === 0) score += 40;
+          if (top.type === 'beetle' && dist === 1) score += 18;
+          if (top.type === 'ant' && dist <= 2) score += 10;
         }
       }
     }
