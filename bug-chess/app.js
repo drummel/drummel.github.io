@@ -34,6 +34,7 @@ const App = (() => {
   function startGame() {
     const canvas = document.getElementById('board-canvas');
     Renderer.init(canvas);
+    Celebration.init();
     UI.init();
     GameState.init();
 
@@ -222,6 +223,8 @@ const App = (() => {
       refresh();
     });
     document.getElementById('btn-new-game').addEventListener('click', () => {
+      Celebration.stop();
+      UI.resetCelebration();
       // Show setup screen again
       document.getElementById('setup-overlay').classList.remove('hidden');
       // Re-sync toggle states with current config

@@ -73,14 +73,21 @@ const UI = (() => {
     }
   }
 
+  let celebrationTriggered = false;
+
+  function resetCelebration() { celebrationTriggered = false; }
+
   function renderTurnInfo(gameState) {
     if (gameState.gameOver) {
+      // Trigger celebration once
+      if (!celebrationTriggered) {
+        celebrationTriggered = true;
+        Celebration.start(gameState.winner);
+      }
       if (gameState.winner === 'draw') {
-        turnEl.textContent = 'Draw!';
-        turnEl.style.color = '#e67e22';
+        turnEl.textContent = '';
       } else {
-        const pInfo = Pieces.PLAYERS[gameState.winner];
-        turnEl.innerHTML = `<span style="color:${pInfo.color}"><b>${pInfo.name} (${pInfo.label}) Wins!</b></span>`;
+        turnEl.textContent = '';
       }
       statusEl.textContent = 'Click "New Game" to play again.';
       return;
@@ -118,5 +125,5 @@ const UI = (() => {
     renderTurnInfo(gameState);
   }
 
-  return { init, update };
+  return { init, update, resetCelebration };
 })();
