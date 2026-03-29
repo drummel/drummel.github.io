@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Chess</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  header {
+    text-align: center;
+    padding: 8px;
+    background: #16213e;
+    border-bottom: 2px solid #0f3460;
+  }
+  header h1 { font-size: 1.4em; letter-spacing: 2px; }
+  #turn-indicator {
+    font-size: 0.95em;
+    margin-top: 4px;
+    font-weight: bold;
+  }
+  #game-status {
+    font-size: 0.85em;
+    color: #e94560;
+    margin-top: 2px;
+    min-height: 1.2em;
+  }
+
+  #main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .player-hand {
+    width: 160px;
+    min-width: 160px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    background: #16213e;
+  }
+  .player-hand h3 {
+    text-align: center;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #0f3460;
+  }
+  .hand-piece {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 0.9em;
+  }
+  .hand-piece:hover { background: #0f3460; }
+  .hand-piece.selected { background: #e94560; }
+  .hand-piece.disabled { opacity: 0.35; cursor: default; }
+  .hand-piece .emoji { font-size: 1.6em; }
+  .hand-piece .count {
+    margin-left: auto;
+    background: #0f3460;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+
+  #board-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  #board-container.dragging { cursor: grabbing; }
+
+  #board-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  #controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+  }
+  #controls button {
+    background: #0f3460;
+    color: #eee;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  #controls button:hover { background: #e94560; }
+
+  .player1-color { color: #5dade2; }
+  .player2-color { color: #e74c3c; }
+
+  .player-hand.active-hand {
+    box-shadow: inset 0 0 20px rgba(233, 69, 96, 0.3);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Bug Chess</h1>
+    <div id="turn-indicator">Player 1's Turn</div>
+    <div id="game-status"></div>
+  </header>
+  <div id="main">
+    <div class="player-hand" id="hand-p1">
+      <h3 class="player1-color">Player 1</h3>
+    </div>
+    <div id="board-container">
+      <canvas id="board-canvas"></canvas>
+      <div id="controls">
+        <button id="btn-zoom-in">+</button>
+        <button id="btn-zoom-out">-</button>
+        <button id="btn-reset-view">Reset</button>
+        <button id="btn-new-game">New Game</button>
+      </div>
+    </div>
+    <div class="player-hand" id="hand-p2">
+      <h3 class="player2-color">Player 2</h3>
+    </div>
+  </div>
+
+  <script src="hex-grid.js"></script>
+  <script src="pieces.js"></script>
+  <script src="game-state.js"></script>
+  <script src="renderer.js"></script>
+  <script src="ui.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
