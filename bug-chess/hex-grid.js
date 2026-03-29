@@ -112,12 +112,15 @@ const HexGrid = (() => {
   }
 
   // Freedom of movement: can a piece slide from (q1,r1) to adjacent (q2,r2)?
+  // The two shared neighbors form the "gate". For a valid slide:
+  // - At least one shared neighbor must be occupied (something to slide along)
+  // - Not both can be occupied (gate is physically blocked)
   function canSlide(q1, r1, q2, r2, occupied) {
     const shared = sharedNeighbors(q1, r1, q2, r2);
     if (shared.length === 2) {
       const s0 = occupied.has(key(shared[0].q, shared[0].r));
       const s1 = occupied.has(key(shared[1].q, shared[1].r));
-      return !(s0 && s1);
+      return (s0 || s1) && !(s0 && s1);
     }
     return true;
   }
