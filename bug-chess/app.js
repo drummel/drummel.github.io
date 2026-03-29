@@ -130,6 +130,7 @@ const App = (() => {
     Renderer.init(canvas);
     Celebration.init();
     UI.init();
+    AI.reset();
     GameState.init();
 
     setupBoardEvents(canvas);
