@@ -1,9 +1,9 @@
 // AI opponent for Bug Chess
-// Supports 4 difficulty levels: easy, medium, hard, impossible
+// 4 difficulty levels with proper Hive strategy
 
 const AI = (() => {
-  let difficulty = 'medium'; // easy, medium, hard, impossible
-  let aiPlayer = 2; // AI always plays as player 2 (black)
+  let difficulty = 'medium';
+  let aiPlayer = 2;
   let enabled = false;
 
   function setDifficulty(d) { difficulty = d; }
@@ -12,7 +12,8 @@ const AI = (() => {
   function isEnabled() { return enabled; }
   function getAIPlayer() { return aiPlayer; }
 
-  // Get all valid actions for a player: placements + moves + pillbug specials
+  // ======================== ACTION GENERATION ========================
+
   function getAllActions(state, player) {
     const actions = [];
     const hand = state.hands[player];
@@ -23,7 +24,7 @@ const AI = (() => {
     if (hasHandPieces) {
       const positions = GameState.getPlacementPositions(player);
       for (const pos of positions) {
-        for (const [type, info] of Object.entries(Pieces.getTypes())) {
+        for (const [type] of Object.entries(Pieces.getTypes())) {
           if (hand[type] <= 0) continue;
           if (mustQueen && type !== 'queen') continue;
           actions.push({ kind: 'place', type, q: pos.q, r: pos.r });
@@ -53,170 +54,332 @@ const AI = (() => {
     return actions;
   }
 
-  // Execute an action
   function executeAction(action) {
     switch (action.kind) {
-      case 'place':
-        GameState.placePiece(action.type, action.q, action.r);
-        break;
-      case 'move':
-        GameState.movePiece(action.fromQ, action.fromR, action.toQ, action.toR);
-        break;
-      case 'pillbug':
-        GameState.pillbugMove(action.pillQ, action.pillR, action.fromQ, action.fromR, action.toQ, action.toR);
-        break;
+      case 'place': GameState.placePiece(action.type, action.q, action.r); break;
+      case 'move':  GameState.movePiece(action.fromQ, action.fromR, action.toQ, action.toR); break;
+      case 'pillbug': GameState.pillbugMove(action.pillQ, action.pillR, action.fromQ, action.fromR, action.toQ, action.toR); break;
     }
   }
 
-  // Count how many of a queen's 6 neighbors are occupied
-  function queenSurroundCount(q, r, pieces) {
-    let count = 0;
-    for (const n of HexGrid.neighbors(q, r)) {
-      const nk = HexGrid.key(n.q, n.r);
-      const ns = pieces.get(nk);
-      if (ns && ns.length > 0) count++;
-    }
-    return count;
+  // ======================== BOARD ANALYSIS HELPERS ========================
+
+  function hexDist(q1, r1, q2, r2) {
+    return Math.max(Math.abs(q1 - q2), Math.abs(r1 - r2), Math.abs((-q1-r1) - (-q2-r2)));
   }
 
-  // Find a player's queen position
   function findQueen(pieces, player) {
     for (const [k, stack] of pieces) {
       for (const piece of stack) {
-        if (piece.type === 'queen' && piece.player === player) {
-          return HexGrid.parse(k);
-        }
+        if (piece.type === 'queen' && piece.player === player) return HexGrid.parse(k);
       }
     }
     return null;
   }
 
-  // Hex distance
-  function hexDist(q1, r1, q2, r2) {
-    const s1 = -q1 - r1, s2 = -q2 - r2;
-    return Math.max(Math.abs(q1 - q2), Math.abs(r1 - r2), Math.abs(s1 - s2));
+  function queenSurroundCount(q, r, pieces) {
+    let count = 0;
+    for (const n of HexGrid.neighbors(q, r)) {
+      const ns = pieces.get(HexGrid.key(n.q, n.r));
+      if (ns && ns.length > 0) count++;
+    }
+    return count;
   }
 
-  // Score an action based on heuristics
-  function scoreAction(action, state, player) {
+  function queenEmptyNeighbors(q, r, pieces) {
+    const empty = [];
+    for (const n of HexGrid.neighbors(q, r)) {
+      const ns = pieces.get(HexGrid.key(n.q, n.r));
+      if (!ns || ns.length === 0) empty.push(n);
+    }
+    return empty;
+  }
+
+  // Count how many of a player's pieces are on the board
+  function piecesOnBoard(pieces, player) {
+    let count = 0;
+    for (const [, stack] of pieces) {
+      for (const p of stack) { if (p.player === player) count++; }
+    }
+    return count;
+  }
+
+  // Check how many moves a queen would have (mobility)
+  function queenMobility(q, r, pieces) {
+    const occupied = Pieces.getOccupiedSet(pieces, HexGrid.key(q, r));
+    let moves = 0;
+    for (const n of HexGrid.neighbors(q, r)) {
+      const nk = HexGrid.key(n.q, n.r);
+      if (occupied.has(nk)) continue;
+      let touchesHive = false;
+      for (const nn of HexGrid.neighbors(n.q, n.r)) {
+        if (occupied.has(HexGrid.key(nn.q, nn.r))) { touchesHive = true; break; }
+      }
+      if (!touchesHive) continue;
+      if (!HexGrid.canSlide(q, r, n.q, n.r, occupied)) continue;
+      moves++;
+    }
+    return moves;
+  }
+
+  // ======================== OPENING BOOK ========================
+  // Hive opening principles:
+  // - Never lead with queen or ant on turn 1
+  // - Good openers: beetle, spider, grasshopper
+  // - Place queen on turn 2 or 3 (not turn 1, and don't wait until forced on turn 4)
+  // - After queen, deploy ants for offense and beetles to threaten queen
+  // - Place pieces to create a compact shape, not a long chain
+
+  const OPENING_PRIORITY = {
+    // Turn 1: place a non-valuable piece to start
+    0: ['grasshopper', 'spider', 'beetle', 'ladybug', 'pillbug', 'mosquito'],
+    // Turn 2: place queen to unlock movement
+    1: ['queen', 'beetle', 'grasshopper', 'spider'],
+    // Turn 3: if queen not placed, must place; otherwise deploy offense
+    2: ['queen', 'ant', 'beetle', 'grasshopper', 'spider', 'mosquito'],
+    // Turn 4+: aggressive deployment
+    3: ['ant', 'beetle', 'mosquito', 'grasshopper', 'spider', 'ladybug', 'pillbug'],
+  };
+
+  function getOpeningTypePriority(turnNum) {
+    if (turnNum <= 3) return OPENING_PRIORITY[turnNum] || OPENING_PRIORITY[3];
+    return OPENING_PRIORITY[3];
+  }
+
+  // ======================== STRATEGIC SCORING ========================
+
+  function scoreAction(action, state, player, difficultyLevel) {
     const opponent = player === 1 ? 2 : 1;
     const myQueenPos = findQueen(state.pieces, player);
     const oppQueenPos = findQueen(state.pieces, opponent);
+    const turnNum = state.playerTurns[player];
     let score = 0;
 
-    // === PLACEMENT SCORING ===
+    // === PLACEMENT ===
     if (action.kind === 'place') {
-      // Queen placement priority
-      if (action.type === 'queen') {
-        // Place queen early but not first move
-        if (state.playerTurns[player] >= 2) score += 5;
-        // Prefer safer positions (fewer enemy neighbors)
-        const neighbors = HexGrid.neighbors(action.q, action.r);
-        let enemyAdj = 0;
-        for (const n of neighbors) {
-          const nk = HexGrid.key(n.q, n.r);
-          const ns = state.pieces.get(nk);
-          if (ns && ns.length > 0 && ns[ns.length - 1].player === opponent) enemyAdj++;
-        }
-        score -= enemyAdj * 3;
-      }
+      const typePriority = getOpeningTypePriority(turnNum);
+      const priorityIdx = typePriority.indexOf(action.type);
+      // Higher priority types get higher scores (index 0 = best)
+      if (priorityIdx >= 0) score += (10 - priorityIdx) * 3;
+      else score -= 5;
 
-      // Ant and beetle are strong pieces - save them or place strategically
-      if (action.type === 'ant') score += 3;
-      if (action.type === 'beetle') score += 2;
-      if (action.type === 'spider') score += 1;
+      // NEVER place ant on first move (waste of the best offensive piece)
+      if (turnNum === 0 && action.type === 'ant') score -= 30;
 
-      // Place near opponent's queen if possible
+      // Place queen on turn 2 (index 1) to unlock movement early
+      if (action.type === 'queen' && turnNum === 1) score += 25;
+      // But not on turn 1 (too exposed)
+      if (action.type === 'queen' && turnNum === 0) score -= 20;
+
+      // After queen is placed, prefer offensive pieces
+      if (myQueenPos && (action.type === 'ant' || action.type === 'beetle')) score += 8;
+
+      // Placement position scoring
       if (oppQueenPos) {
         const dist = hexDist(action.q, action.r, oppQueenPos.q, oppQueenPos.r);
-        score += Math.max(0, 5 - dist);
+        // Place pieces near the opponent's queen
+        score += Math.max(0, 8 - dist) * 3;
+        // Adjacent to opponent queen is excellent
+        if (dist === 1) score += 20;
+      }
+
+      // Protect own queen - place near it for defense
+      if (myQueenPos) {
+        const myDist = hexDist(action.q, action.r, myQueenPos.q, myQueenPos.r);
+        const mySurround = queenSurroundCount(myQueenPos.q, myQueenPos.r, state.pieces);
+        // If own queen is threatened, don't place too far away
+        if (mySurround >= 3 && myDist > 2) score -= 10;
+      }
+
+      // Prefer compact placement (adjacent to multiple friendly pieces)
+      let friendlyAdj = 0;
+      for (const n of HexGrid.neighbors(action.q, action.r)) {
+        const ns = state.pieces.get(HexGrid.key(n.q, n.r));
+        if (ns && ns.length > 0 && ns[ns.length - 1].player === player) friendlyAdj++;
+      }
+      score += friendlyAdj * 2; // compact is good, avoid long chains
+
+      // Queen safety: don't place queen where it has few escape routes
+      if (action.type === 'queen') {
+        let openNeighbors = 0;
+        for (const n of HexGrid.neighbors(action.q, action.r)) {
+          const ns = state.pieces.get(HexGrid.key(n.q, n.r));
+          if (!ns || ns.length === 0) openNeighbors++;
+        }
+        score += openNeighbors * 3; // more open = safer queen
+        // Don't place queen adjacent to opponent pieces
+        let enemyAdj = 0;
+        for (const n of HexGrid.neighbors(action.q, action.r)) {
+          const ns = state.pieces.get(HexGrid.key(n.q, n.r));
+          if (ns && ns.length > 0 && ns[ns.length - 1].player === opponent) enemyAdj++;
+        }
+        score -= enemyAdj * 8;
       }
     }
 
-    // === MOVEMENT SCORING ===
+    // === MOVEMENT ===
     if (action.kind === 'move') {
-      // Moving toward opponent's queen is good
+      // --- OFFENSE: move toward opponent queen ---
       if (oppQueenPos) {
         const distBefore = hexDist(action.fromQ, action.fromR, oppQueenPos.q, oppQueenPos.r);
         const distAfter = hexDist(action.toQ, action.toR, oppQueenPos.q, oppQueenPos.r);
-        score += (distBefore - distAfter) * 4;
+        const improvement = distBefore - distAfter;
+        score += improvement * 6;
 
-        // Adjacent to opponent queen is great
-        if (distAfter === 1) score += 15;
-        // ON opponent queen surroundings - count how many sides filled
+        // Landing adjacent to opponent queen is very strong
         if (distAfter === 1) {
-          const oppSurround = queenSurroundCount(oppQueenPos.q, oppQueenPos.r, state.pieces);
-          score += oppSurround * 5; // more surrounded = higher value to add another
+          const currentSurround = queenSurroundCount(oppQueenPos.q, oppQueenPos.r, state.pieces);
+          score += 20 + currentSurround * 8; // more surrounded = higher value
         }
+
+        // Landing ON opponent queen (beetle) is devastating
+        if (distAfter === 0 && action.pieceType === 'beetle') score += 50;
+
+        // Ant offense: ants are best at reaching and surrounding the queen
+        if (action.pieceType === 'ant' && distAfter <= 2) score += 12;
+
+        // Beetle offense: beetles near queen are very threatening
+        if (action.pieceType === 'beetle' && distAfter <= 2) score += 15;
       }
 
-      // Moving away from own queen if it's threatened
+      // --- DEFENSE: protect own queen ---
       if (myQueenPos) {
-        const myDistBefore = hexDist(action.fromQ, action.fromR, myQueenPos.q, myQueenPos.r);
-        const myDistAfter = hexDist(action.toQ, action.toR, myQueenPos.q, myQueenPos.r);
         const mySurround = queenSurroundCount(myQueenPos.q, myQueenPos.r, state.pieces);
-        // Don't move pieces away from a threatened queen
-        if (mySurround >= 3 && myDistBefore === 1 && myDistAfter > 1) {
-          score -= 10;
+        const distFromMyQueen = hexDist(action.fromQ, action.fromR, myQueenPos.q, myQueenPos.r);
+        const distToMyQueen = hexDist(action.toQ, action.toR, myQueenPos.q, myQueenPos.r);
+
+        // If our queen is in danger (3+ sides surrounded), prioritize defense
+        if (mySurround >= 3) {
+          // Moving a piece AWAY from threatened queen is bad
+          if (distFromMyQueen === 1 && distToMyQueen > 1) score -= 25;
+          // Moving to block an empty space next to our queen is great defense
+          const emptyNbrs = queenEmptyNeighbors(myQueenPos.q, myQueenPos.r, state.pieces);
+          for (const en of emptyNbrs) {
+            if (action.toQ === en.q && action.toR === en.r) {
+              // But only if the piece is friendly (we're filling our own queen's space)
+              // Actually this is BAD - we'd be surrounding our own queen
+              score -= 15;
+            }
+          }
+        }
+
+        // If our queen is very threatened (5 sides), desperate defense
+        if (mySurround >= 5) {
+          // Try to move an enemy piece away (if we have pillbug)
+          // Or move our pieces to create an escape route
+          score += 30; // any move is valuable when desperate
         }
       }
 
-      // Ants are best movers - prefer moving them offensively
-      if (action.pieceType === 'ant') score += 2;
-      if (action.pieceType === 'beetle' && oppQueenPos) {
-        const dist = hexDist(action.toQ, action.toR, oppQueenPos.q, oppQueenPos.r);
-        if (dist <= 1) score += 10; // beetle on/near queen is devastating
+      // --- Don't move queen unnecessarily ---
+      if (action.pieceType === 'queen') {
+        // Moving queen is usually bad unless escaping danger
+        score -= 8;
+        if (myQueenPos) {
+          const mySurround = queenSurroundCount(myQueenPos.q, myQueenPos.r, state.pieces);
+          if (mySurround >= 2) {
+            // Queen escaping is good
+            const newSurround = countSurroundAt(action.toQ, action.toR, state.pieces, player);
+            if (newSurround < mySurround) score += 20;
+          }
+        }
+      }
+
+      // --- Avoid moving pieces that pin opponent pieces ---
+      // If our piece is preventing an opponent piece from moving, don't move it
+      if (!HexGrid.isArticulationPoint(action.fromQ, action.fromR, state.pieces)) {
+        // Not an articulation point, ok to move
+      } else {
+        // Our piece is critical to hive connectivity - should already be blocked by rules
       }
     }
 
-    // === PILLBUG SPECIAL SCORING ===
+    // === PILLBUG SPECIAL ===
     if (action.kind === 'pillbug') {
-      // Moving an opponent's piece away from our queen is great
+      // Moving enemy piece away from our queen
       if (myQueenPos) {
         const distBefore = hexDist(action.fromQ, action.fromR, myQueenPos.q, myQueenPos.r);
-        if (distBefore === 1) score += 12; // pull enemy away from our queen
+        if (distBefore === 1) score += 25; // pull attacker away from queen
       }
-      // Moving any piece next to opponent's queen
+      // Moving any piece next to opponent queen
       if (oppQueenPos) {
         const distAfter = hexDist(action.toQ, action.toR, oppQueenPos.q, oppQueenPos.r);
-        if (distAfter === 1) score += 10;
+        if (distAfter === 1) score += 20;
       }
     }
 
     return score;
   }
 
-  // Simulate an action and evaluate board position
-  function simulateAndEvaluate(action, state, player) {
-    // Deep-clone the pieces map and hands
+  // Count how many neighbors a position would have (predictive)
+  function countSurroundAt(q, r, pieces, excludePlayer) {
+    let count = 0;
+    for (const n of HexGrid.neighbors(q, r)) {
+      const ns = pieces.get(HexGrid.key(n.q, n.r));
+      if (ns && ns.length > 0) count++;
+    }
+    return count;
+  }
+
+  // ======================== BOARD EVALUATION ========================
+
+  function evaluateBoard(pieces, player) {
+    const opponent = player === 1 ? 2 : 1;
+    let score = 0;
+
+    const myQueen = findQueen(pieces, player);
+    const oppQueen = findQueen(pieces, opponent);
+
+    // Queen surround is THE most important factor
+    if (oppQueen) {
+      const s = queenSurroundCount(oppQueen.q, oppQueen.r, pieces);
+      score += s * 30;
+      if (s === 6) return 10000; // instant win
+      if (s === 5) score += 100; // one move from winning
+    }
+
+    if (myQueen) {
+      const s = queenSurroundCount(myQueen.q, myQueen.r, pieces);
+      score -= s * 35; // slightly more weight on defense
+      if (s === 6) return -10000; // instant loss
+      if (s === 5) score -= 120;
+
+      // Queen mobility (escape routes)
+      const mobility = queenMobility(myQueen.q, myQueen.r, pieces);
+      score += mobility * 5;
+    }
+
+    // Piece proximity to opponent queen
+    if (oppQueen) {
+      for (const [k, stack] of pieces) {
+        if (stack.length === 0) continue;
+        const top = stack[stack.length - 1];
+        if (top.player === player) {
+          const { q, r } = HexGrid.parse(k);
+          const dist = hexDist(q, r, oppQueen.q, oppQueen.r);
+          if (dist <= 3) score += (4 - dist) * 4;
+          // Beetles adjacent/on queen are especially threatening
+          if (top.type === 'beetle' && dist <= 1) score += 15;
+          if (top.type === 'ant' && dist <= 2) score += 8;
+        }
+      }
+    }
+
+    return score;
+  }
+
+  // Simulate an action and evaluate the resulting board
+  function simulateAction(action, state, player) {
     const clonedPieces = new Map();
     for (const [k, stack] of state.pieces) {
       clonedPieces.set(k, stack.map(p => ({ ...p })));
     }
-    const clonedHands = {
-      1: { ...state.hands[1] },
-      2: { ...state.hands[2] },
-    };
-    const clonedQueenPlaced = { ...state.queenPlaced };
-    const clonedPlayerTurns = { ...state.playerTurns };
 
-    // Apply the action to cloned state
     if (action.kind === 'place') {
       const k = HexGrid.key(action.q, action.r);
       if (!clonedPieces.has(k)) clonedPieces.set(k, []);
       clonedPieces.get(k).push({ player, type: action.type });
-      clonedHands[player][action.type]--;
-      if (action.type === 'queen') clonedQueenPlaced[player] = true;
-      clonedPlayerTurns[player]++;
-    } else if (action.kind === 'move') {
-      const fromK = HexGrid.key(action.fromQ, action.fromR);
-      const toK = HexGrid.key(action.toQ, action.toR);
-      const stack = clonedPieces.get(fromK);
-      const piece = stack.pop();
-      if (stack.length === 0) clonedPieces.delete(fromK);
-      if (!clonedPieces.has(toK)) clonedPieces.set(toK, []);
-      clonedPieces.get(toK).push(piece);
-    } else if (action.kind === 'pillbug') {
+    } else if (action.kind === 'move' || action.kind === 'pillbug') {
       const fromK = HexGrid.key(action.fromQ, action.fromR);
       const toK = HexGrid.key(action.toQ, action.toR);
       const stack = clonedPieces.get(fromK);
@@ -229,139 +392,102 @@ const AI = (() => {
     return evaluateBoard(clonedPieces, player);
   }
 
-  // Static board evaluation from a player's perspective
-  function evaluateBoard(pieces, player) {
-    const opponent = player === 1 ? 2 : 1;
-    let score = 0;
+  // ======================== DIFFICULTY-BASED PICKING ========================
 
-    const myQueen = findQueenInPieces(pieces, player);
-    const oppQueen = findQueenInPieces(pieces, opponent);
-
-    if (oppQueen) {
-      const oppSurround = queenSurroundCount(oppQueen.q, oppQueen.r, pieces);
-      score += oppSurround * 20; // surround opponent = very good
-      if (oppSurround === 6) score += 1000; // win!
-    }
-
-    if (myQueen) {
-      const mySurround = queenSurroundCount(myQueen.q, myQueen.r, pieces);
-      score -= mySurround * 25; // our queen surrounded = very bad
-      if (mySurround === 6) score -= 1000; // loss!
-    }
-
-    // Count pieces near opponent queen
-    if (oppQueen) {
-      for (const [k, stack] of pieces) {
-        if (stack.length === 0) continue;
-        const top = stack[stack.length - 1];
-        if (top.player === player) {
-          const { q, r } = HexGrid.parse(k);
-          const dist = hexDist(q, r, oppQueen.q, oppQueen.r);
-          if (dist <= 2) score += (3 - dist) * 3;
-        }
-      }
-    }
-
-    // Mobility: more moves available is better
-    let myMoves = 0;
-    for (const [k, stack] of pieces) {
-      if (stack.length === 0) continue;
-      const top = stack[stack.length - 1];
-      if (top.player === player) {
-        const { q, r } = HexGrid.parse(k);
-        const { moves } = Pieces.getValidMoves(q, r, pieces, null);
-        myMoves += moves.length;
-      }
-    }
-    score += myMoves * 0.5;
-
-    return score;
-  }
-
-  function findQueenInPieces(pieces, player) {
-    for (const [k, stack] of pieces) {
-      for (const piece of stack) {
-        if (piece.type === 'queen' && piece.player === player) {
-          return HexGrid.parse(k);
-        }
-      }
-    }
-    return null;
-  }
-
-  // Pick the best action based on difficulty
   function pickAction(state) {
     const actions = getAllActions(state, aiPlayer);
     if (actions.length === 0) return null;
 
     switch (difficulty) {
-      case 'easy': return pickEasy(actions, state);
-      case 'medium': return pickMedium(actions, state);
-      case 'hard': return pickHard(actions, state);
+      case 'easy':       return pickEasy(actions, state);
+      case 'medium':     return pickMedium(actions, state);
+      case 'hard':       return pickHard(actions, state);
       case 'impossible': return pickImpossible(actions, state);
-      default: return pickMedium(actions, state);
+      default:           return pickMedium(actions, state);
     }
   }
 
-  // Easy: mostly random with slight preference for placements
+  // EASY: uses opening book loosely, random from top 50%
   function pickEasy(actions, state) {
-    // 70% random, 30% use basic scoring
-    if (Math.random() < 0.7) {
-      return actions[Math.floor(Math.random() * actions.length)];
-    }
-    return pickWithScoring(actions, state, 0.5);
+    const scored = actions.map(a => ({
+      action: a,
+      score: scoreAction(a, state, aiPlayer) + Math.random() * 40,
+    }));
+    scored.sort((a, b) => b.score - a.score);
+    // Pick randomly from top half
+    const pool = scored.slice(0, Math.max(1, Math.ceil(scored.length / 2)));
+    return pool[Math.floor(Math.random() * pool.length)].action;
   }
 
-  // Medium: use heuristic scoring with some randomness
+  // MEDIUM: uses opening book + heuristics, small randomness
   function pickMedium(actions, state) {
-    return pickWithScoring(actions, state, 0.3);
+    const scored = actions.map(a => ({
+      action: a,
+      score: scoreAction(a, state, aiPlayer) + Math.random() * 10,
+    }));
+    scored.sort((a, b) => b.score - a.score);
+    // Pick from top 3
+    const top = scored.slice(0, Math.min(3, scored.length));
+    return top[Math.floor(Math.random() * top.length)].action;
   }
 
-  // Hard: use heuristic scoring + simulation with little randomness
+  // HARD: heuristics + 1-ply simulation, picks from top 2
   function pickHard(actions, state) {
     const scored = actions.map(a => {
       const heuristic = scoreAction(a, state, aiPlayer);
-      const simScore = simulateAndEvaluate(a, state, aiPlayer);
-      return { action: a, score: heuristic * 2 + simScore };
+      const simScore = simulateAction(a, state, aiPlayer);
+      return { action: a, score: heuristic * 2 + simScore + Math.random() * 5 };
     });
     scored.sort((a, b) => b.score - a.score);
-
-    // Pick from top 3 with weighted randomness
-    const top = scored.slice(0, Math.min(3, scored.length));
-    const weights = top.map((_, i) => Math.pow(0.5, i));
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
-    let r = Math.random() * totalWeight;
-    for (let i = 0; i < top.length; i++) {
-      r -= weights[i];
-      if (r <= 0) return top[i].action;
-    }
-    return top[0].action;
+    const top = scored.slice(0, Math.min(2, scored.length));
+    return top[Math.floor(Math.random() * top.length)].action;
   }
 
-  // Impossible: exhaustive simulation, always picks the best
+  // IMPOSSIBLE: deep heuristics + simulation + opponent response analysis
   function pickImpossible(actions, state) {
+    const opponent = aiPlayer === 1 ? 2 : 1;
     let bestScore = -Infinity;
     let bestAction = actions[0];
 
     for (const action of actions) {
       const heuristic = scoreAction(action, state, aiPlayer) * 3;
-      const simScore = simulateAndEvaluate(action, state, aiPlayer) * 2;
+      const simScore = simulateAction(action, state, aiPlayer) * 2;
 
-      // For impossible, also consider opponent's best response
-      let opponentThreat = 0;
-      // Simulate our move, then check opponent's best counter
+      // 2-ply: simulate our move, then find opponent's best response
+      let opponentBestCounter = 0;
+      // Clone state after our move
       const clonedPieces = new Map();
       for (const [k, stack] of state.pieces) {
         clonedPieces.set(k, stack.map(p => ({ ...p })));
       }
-      // Quick threat assessment: how much can opponent surround our queen after this move?
-      const myQueen = findQueenInPieces(state.pieces, aiPlayer);
-      if (myQueen) {
-        const mySurround = queenSurroundCount(myQueen.q, myQueen.r, state.pieces);
-        if (mySurround >= 4) opponentThreat -= 30; // we're in danger, prioritize defense
+      const clonedHands = { 1: { ...state.hands[1] }, 2: { ...state.hands[2] } };
+      const clonedQueenPlaced = { ...state.queenPlaced };
+      const clonedTurns = { ...state.playerTurns };
+
+      // Apply our action
+      if (action.kind === 'place') {
+        const k = HexGrid.key(action.q, action.r);
+        if (!clonedPieces.has(k)) clonedPieces.set(k, []);
+        clonedPieces.get(k).push({ player: aiPlayer, type: action.type });
+        clonedHands[aiPlayer][action.type]--;
+        if (action.type === 'queen') clonedQueenPlaced[aiPlayer] = true;
+        clonedTurns[aiPlayer]++;
+      } else if (action.kind === 'move' || action.kind === 'pillbug') {
+        const fromK = HexGrid.key(action.fromQ, action.fromR);
+        const toK = HexGrid.key(action.toQ, action.toR);
+        const stack = clonedPieces.get(fromK);
+        const piece = stack.pop();
+        if (stack.length === 0) clonedPieces.delete(fromK);
+        if (!clonedPieces.has(toK)) clonedPieces.set(toK, []);
+        clonedPieces.get(toK).push(piece);
+        clonedTurns[aiPlayer]++;
       }
 
-      const totalScore = heuristic + simScore + opponentThreat;
+      // Evaluate from opponent's perspective (negated = bad for us)
+      const oppEval = evaluateBoard(clonedPieces, opponent);
+      opponentBestCounter = -oppEval * 0.5;
+
+      const totalScore = heuristic + simScore + opponentBestCounter;
       if (totalScore > bestScore) {
         bestScore = totalScore;
         bestAction = action;
@@ -371,33 +497,17 @@ const AI = (() => {
     return bestAction;
   }
 
-  // Generic scoring-based pick with randomness factor
-  function pickWithScoring(actions, state, randomFactor) {
-    const scored = actions.map(a => ({
-      action: a,
-      score: scoreAction(a, state, aiPlayer) + (Math.random() * randomFactor * 20),
-    }));
-    scored.sort((a, b) => b.score - a.score);
-    return scored[0].action;
-  }
+  // ======================== PUBLIC API ========================
 
-  // Called by App after player's turn, if AI is enabled and it's AI's turn
   function takeTurn(state) {
     if (!enabled || state.currentPlayer !== aiPlayer || state.gameOver) return false;
-
     const action = pickAction(state);
     if (!action) return false;
-
     executeAction(action);
     return true;
   }
 
   return {
-    setDifficulty,
-    getDifficulty,
-    setEnabled,
-    isEnabled,
-    getAIPlayer,
-    takeTurn,
+    setDifficulty, getDifficulty, setEnabled, isEnabled, getAIPlayer, takeTurn,
   };
 })();

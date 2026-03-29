@@ -37,7 +37,8 @@ const UI = (() => {
         const div = document.createElement('div');
         div.className = 'hand-piece';
 
-        const canSelect = isActive && count > 0 && !gameState.gameOver;
+        const isAITurn = AI.isEnabled() && player === AI.getAIPlayer();
+        const canSelect = isActive && count > 0 && !gameState.gameOver && !isAITurn;
         const mustQueen = GameState.mustPlaceQueen(player);
 
         if (!canSelect || (mustQueen && type !== 'queen')) {

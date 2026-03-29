@@ -115,20 +115,24 @@ const App = (() => {
     refresh();
   }
 
+  let aiThinking = false; // guard against clicks during AI turn
+
   function refresh() {
     const state = GameState.getState();
     Renderer.render(state);
     UI.update(state);
+    scheduleAI(state);
+  }
 
-    // If it's the AI's turn, schedule its move with a short delay
-    if (AI.isEnabled() && state.currentPlayer === AI.getAIPlayer() && !state.gameOver) {
-      setTimeout(() => {
-        AI.takeTurn(GameState.getState());
-        const newState = GameState.getState();
-        Renderer.render(newState);
-        UI.update(newState);
-      }, 400 + Math.random() * 300);
-    }
+  function scheduleAI(state) {
+    if (!AI.isEnabled() || state.currentPlayer !== AI.getAIPlayer() || state.gameOver || aiThinking) return;
+    aiThinking = true;
+    setTimeout(() => {
+      AI.takeTurn(GameState.getState());
+      aiThinking = false;
+      // Call refresh again - handles auto-pass chains and re-renders
+      refresh();
+    }, 400 + Math.random() * 400);
   }
 
   function setupBoardEvents(canvas) {
@@ -212,6 +216,8 @@ const App = (() => {
   function handleBoardClickAt(x, y) {
     const state = GameState.getState();
     if (state.gameOver) return;
+    // Block interaction during AI's turn
+    if (AI.isEnabled() && (aiThinking || state.currentPlayer === AI.getAIPlayer())) return;
 
     const hex = Renderer.screenToHex(x, y);
     const k = HexGrid.key(hex.q, hex.r);
