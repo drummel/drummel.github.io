@@ -3,8 +3,35 @@
 ## Overview
 
 This document describes the AI strategy system for Bug Chess, a Hive-inspired
-hex strategy game. It covers the strategic principles, known flaws, and the
-reasoning behind each design decision.
+hex strategy game. It covers the architecture, strategic principles, evaluation
+function, search engine, and difficulty level design.
+
+---
+
+## Architecture
+
+The AI is split into four files for maintainability and testability:
+
+| File | Purpose |
+|------|---------|
+| `ai-eval.js` | Evaluation function, game-phase detection, board analysis helpers |
+| `ai-zobrist.js` | Zobrist hashing, transposition table for caching positions |
+| `ai-search.js` | Negamax with alpha-beta pruning, iterative deepening, move ordering, killer moves |
+| `ai.js` | Orchestrator: difficulty configs, oscillation detection, action selection |
+
+### Dependency Chain
+
+```
+HexGrid, Pieces, GameState  (game engine)
+         ↓
+      ai-eval.js            (evaluation)
+         ↓
+     ai-zobrist.js          (position hashing)
+         ↓
+     ai-search.js           (search engine)
+         ↓
+       ai.js                (orchestrator)
+```
 
 ---
 
@@ -65,199 +92,174 @@ moves with existing pieces.
 
 ---
 
-## How the AI System Works
+## Search Engine (`ai-search.js`)
 
-The AI operates as a three-stage pipeline: **action generation**, **scoring**,
-and **selection**. Each difficulty level uses the same first two stages but
-differs in how it combines scores and selects the final action.
+### Algorithm: Negamax with Alpha-Beta Pruning
 
-### Stage 1: Action Generation (`getAllActions`)
+The AI uses negamax (a simplified minimax formulation) with alpha-beta pruning
+to search the game tree. This is the same fundamental approach used by chess
+engines and proven Hive engines like Mzinga and shaw3257/hive.
 
-On each turn, the AI enumerates every legal action available to it:
+**Key properties:**
+- Negamax negates scores at each level (my gain = opponent's loss)
+- Alpha-beta prunes branches that cannot affect the outcome
+- With good move ordering, effective branching factor drops from ~60 to ~15-20
 
-1. **Placement actions**: For every piece type remaining in hand, and every
-   valid placement hex (adjacent to friendly, not adjacent to enemy), generate
-   a `{kind: 'place', type, q, r}` action. If the queen must be placed this
-   turn (turn 4 forced placement), only queen placements are generated.
+### Iterative Deepening
 
-2. **Movement actions**: For every piece the AI owns on the board (top of
-   stack only), compute all legal destination hexes using `Pieces.getValidMoves`.
-   This respects one-hive rule, freedom of movement / gate checks, and
-   piece-specific movement rules. Each becomes a `{kind: 'move', fromQ, fromR,
-   toQ, toR, pieceType}` action.
+Rather than searching to a fixed depth, the engine uses iterative deepening:
+1. Search depth 1, store best move
+2. Search depth 2 using depth-1 results for move ordering
+3. Continue until time budget expires
+4. Return the best result from the deepest completed search
 
-3. **Pillbug special actions**: If the AI has a pillbug (or mosquito copying
-   pillbug), the special grab-and-relocate targets are also enumerated.
+**Benefits:**
+- Always has a move ready (anytime algorithm)
+- Previous iterations improve move ordering for subsequent ones
+- Natural time management
 
-This typically produces 20-200+ candidate actions in the mid-game.
+### Move Ordering
 
-### Stage 2: Scoring (`scoreAction`)
+Good move ordering is critical for alpha-beta efficiency. Moves are ordered by:
 
-Each candidate action is scored by a heuristic function that considers:
+1. **Transposition table best move** (+10000 priority) — the best move from a
+   previous search of this position
+2. **Killer moves** (+5000) — moves that caused beta cutoffs at this depth
+3. **Heuristic score** — the same strategic scoring used in the original AI
 
-#### For Placement Actions:
-- **Opening book priority**: A lookup table maps turn number to preferred piece
-  types. Turn 1 prefers expendable pieces (spider, grasshopper), turn 2 demands
-  queen, turns 3+ prefer offensive pieces (ant, beetle). The piece's position
-  in the priority list maps to a score (higher priority = higher score).
-- **First-piece penalty**: Ant on turn 1 gets -30 (will be permanently pinned).
-  Beetle on turn 1 gets -15.
-- **Queen timing bonus**: Queen on turn 2 gets +30. Queen on turn 1 gets -25.
-- **Deployment urgency**: When 4+ pieces remain in hand, all placements get +15.
-  Ants get an additional +12 after queen is placed, beetles +10.
-- **Position quality**: Distance to opponent queen (closer = better), +20 for
-  adjacent placement. Compact placement bonus (+2 per adjacent friendly piece).
-- **Queen safety**: When placing the queen specifically, scores open neighbors
-  (+3 each) and penalizes adjacent enemy pieces (-8 each).
+### Transposition Table (`ai-zobrist.js`)
 
-#### For Movement Actions:
-- **Move-away penalty** (critical fix): If the piece is currently adjacent to
-  the opponent's queen and would move to a non-adjacent hex, score -35. This
-  prevents the AI from accidentally reducing the opponent's surround count.
-- **Shuffle penalty**: Moving between two queen-adjacent hexes scores -5.
-  This prevents the aimless ant-shuffling behavior.
-- **New adjacency bonus**: Moving FROM a non-adjacent hex TO adjacent scores
-  +25 plus surround_count * 10. Only genuinely new threats are rewarded.
-- **Beetle on queen**: Moving a beetle onto the queen's hex (distance 0) scores
-  +50. This is the single highest-value move in the game.
-- **Approach bonus**: For pieces not already adjacent, each hex closer to the
-  opponent queen scores +4.
-- **Defense**: If own queen has 3+ sides surrounded and the piece is adjacent
-  to it, moving away gets -20.
-- **Queen movement**: Moving the queen itself gets -8 (usually bad) unless it
-  reduces the queen's surround count (escaping = +20).
-- **Deployment preference**: If 4+ pieces in hand, movements get -10 (prefer
-  placing). If 2+ in hand and the move doesn't threaten the opponent queen
-  (distance > 2), gets -8.
-- **Oscillation penalty**: If this move reverses a recent move (same piece
-  going back), -50.
+Positions are hashed using Zobrist hashing (XOR of random numbers for each
+piece-position combination). The transposition table stores:
+- Hash key, search depth, score, flag (exact/upper/lower bound), best move
+- 64K entry capacity with depth-priority replacement
+- Cleared between searches at Hard/Impossible levels
 
-#### For Pillbug Special Actions:
-- +25 for pulling an enemy piece away from own queen (distance 1)
-- +20 for placing any piece adjacent to opponent queen
+### Quiescence Search
 
-### Stage 3: Selection (Difficulty-Dependent)
-
-#### Easy (`pickEasy`)
-1. Score all actions with `scoreAction` + random noise (0 to 40)
-2. Sort by score descending
-3. Pick randomly from the **top 50%**
-
-The large random noise means easy frequently picks bad moves, but the base
-scoring prevents completely nonsensical play.
-
-#### Medium (`pickMedium`)
-1. Score all actions with `scoreAction` + small noise (0 to 10)
-2. Sort by score descending
-3. Pick randomly from the **top 3**
-
-Follows the heuristics fairly well but has some unpredictability.
-
-#### Hard (`pickHard`)
-1. Score all actions with `scoreAction` (weight x2) + `simulateDelta` (weight x3)
-   + tiny noise (0 to 5)
-2. Sort by score descending
-3. Pick randomly from the **top 2**
-
-`simulateDelta` clones the board, applies the action, and computes:
-`evaluateBoard(after) - evaluateBoard(before)`. This catches moves that look
-good heuristically but don't actually improve the board state, and finds
-moves that the heuristics might undervalue.
-
-#### Impossible (`pickImpossible`)
-1. For each action, compute:
-   - `scoreAction` (weight x2)
-   - `simulateDelta` (weight x3)
-   - **2-ply counter**: Clone the board after the move, evaluate from the
-     opponent's perspective using `evaluateBoard`, negate it (opponent's gain
-     is our loss), weight x0.5
-2. Sum all three components
-3. Pick the **single highest-scoring action** (no randomness)
-
-The 2-ply analysis means the AI avoids moves that look good for it but leave
-the opponent in an even better position. It's not a full minimax (doesn't
-enumerate opponent responses), but the static evaluation from the opponent's
-perspective catches many blunders.
-
-### Board Evaluation (`evaluateBoard`)
-
-This function takes a board position and returns a numeric score from the
-perspective of a given player. It's used by the simulation stages (hard and
-impossible) to evaluate hypothetical board states.
-
-Components:
-1. **Queen liberty count**: +30 per side of opponent queen surrounded, -35 per
-   side of own queen surrounded. +10000 for win, -10000 for loss.
-2. **Critical thresholds**: +120 when opponent queen has 5/6 sides (one move
-   from winning), -140 when own queen has 5/6 (one move from losing).
-3. **Queen mobility**: +6 per legal slide the own queen could make.
-4. **Self-surround exploitation**: +8 per opponent piece surrounding their own
-   queen (they're helping us win).
-5. **Pin differential**: +5 per opponent pinned piece minus own pinned pieces.
-6. **Mobile ant count**: +10 per own mobile ant, -8 per opponent mobile ant.
-   If 2+ own mobile ants and opponent queen has 2+ sides, extra +30.
-7. **Piece proximity**: For each own piece within distance 3 of opponent queen,
-   +(4 - distance) * 4. Beetle bonuses: +40 if on queen, +18 if adjacent.
-   Ant bonus: +10 if within 2.
-
-### Oscillation Detection
-
-The AI maintains a `moveHistory` buffer of the last 10 actions. Before scoring
-a move action, it checks if the move reverses any recent move (same piece,
-swapped from/to coordinates). If so, -50 penalty. The history is cleared on
-new game via `AI.reset()`.
+At the leaf nodes of the search tree, if the position is "volatile" (either
+queen has 4+ sides surrounded), the search extends by 1-2 additional ply.
+This prevents the horizon effect where the AI stops searching just before
+a critical capture/surround sequence.
 
 ---
 
-## Known AI Flaws (Fixed)
+## Evaluation Function (`ai-eval.js`)
 
-### Flaw 1: Ant Shuffling (Critical) — FIXED
+### Game Phase Detection
 
-**Problem**: The AI moved an ant from one hex adjacent to the opponent's queen
-to another adjacent hex. This scored +20 but accomplished nothing (surround
-count unchanged).
+The evaluation adjusts weights based on the game phase:
 
-**Root cause**: Scoring evaluated absolute destination quality, not net change.
+| Phase | Condition | Weight Emphasis |
+|-------|-----------|-----------------|
+| Opening | Player turns < 4 | Deployment +50%, Queen surround -20% |
+| Midgame | Default | Balanced |
+| Endgame | Any queen 3+ surrounded, or few pieces in hand | Surround +50%, Safety +50%, Mobility -30% |
 
-**Fix applied**: Shuffling between two queen-adjacent hexes now scores -5.
-Only moving FROM non-adjacent TO adjacent gets the +25 bonus.
+### Evaluation Components
 
-### Flaw 2: Helping the Opponent (Critical) — FIXED
+| Factor | Base Weight | Notes |
+|--------|-------------|-------|
+| Opponent queen surround (per side) | +30 | Primary offensive metric |
+| Own queen surround (per side) | -35 | Slightly higher than offense (defense first) |
+| Opponent queen 5 sides | +120 | One move from winning |
+| Own queen 5 sides | -140 | Critical danger |
+| Win (6 sides) | +10000 | Absolute |
+| Loss (6 sides) | -10000 | Absolute |
+| Queen mobility (per escape route) | +6 | More options = safer |
+| Queen gated sides | -5 / +5 | Gated empty hexes are traps |
+| Opponent pinned pieces (per piece) | +5 | Pinned pieces can't attack/defend |
+| Mobile ants (per ant) | +10 | Key offensive resource |
+| Opponent mobile ants (per ant) | -8 | Threatening |
+| Mobile beetles | +6 | Secondary offensive resource |
+| Beetle on opponent queen | +40 | Devastating pin |
+| Beetle adjacent to opponent queen | +18 | Major threat |
+| Ant within 2 of opponent queen | +10 | Immediate pressure |
+| Ladybug within 2 of opponent queen | +8 | Interior hex threat |
+| Mosquito near beetle near queen | +12 | Can copy beetle to climb queen |
+| Opponent self-surround (per piece) | +8 | Exploit their mistakes |
+| Opponent threats near own queen | -8 to -15 | Ant/beetle proximity danger |
+| Pieces in hand (own) | -2 each | Undeployed = wasted potential |
+| Pieces in hand (opponent) | +1.5 each | Their wasted potential |
 
-**Problem**: The AI moved pieces AWAY from the opponent's queen, reducing their
-surround count.
+### Simple Evaluation
 
-**Root cause**: Scoring only looked at destination, never checked what was
-being left behind.
+Easy difficulty uses a simplified evaluation with only 3 components:
+queen surround differential, pin differential. This is fast but strategically
+weak, which is appropriate for the easiest level.
 
-**Fix applied**: -35 penalty for leaving a queen-adjacent hex to go non-adjacent.
-The `isAdjacentTo` helper checks origin and destination independently.
+---
 
-### Flaw 3: Under-valuing Placement (Moderate) — FIXED
+## Difficulty Levels
 
-**Problem**: AI shuffled existing pieces instead of deploying from hand.
+### Design Philosophy
 
-**Root cause**: Movement scores exceeded placement scores.
+Research (Kampert 2023, Nasar 2022) consistently shows that **search depth**
+is the most effective difficulty differentiator. The current system uses depth
+as the primary knob, with evaluation complexity and noise as secondary levers.
 
-**Fix applied**: +15 bonus for any placement when 4+ pieces in hand. +12 for
-ant placement, +10 for beetle after queen is placed. Movements get -10 when
-4+ pieces unplayed, -8 for non-threatening moves when 2+ in hand.
+### Easy — "Learning Opponent"
 
-### Flaw 4: No Oscillation Detection (Moderate) — FIXED
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | Heuristic scoring only (no tree search) |
+| Search depth | 0 |
+| Noise | Gaussian-approximated, σ ≈ 40 |
+| Selection | Random from top 50% |
+| Evaluation | Simple (3 components) |
+| Transposition table | No |
 
-**Problem**: AI moved the same piece back and forth indefinitely.
+Makes frequent sub-optimal moves but follows basic strategic principles
+(place queen early, don't waste ants as first piece). Suitable for
+learning the game.
 
-**Fix applied**: `moveHistory` tracks last 10 moves. Any move that reverses a
-recent move (same piece, swapped from/to) gets -50. History cleared on new game.
+### Medium — "Club Player"
 
-### Flaw 5: Simulation Doesn't Compare Before/After (Minor) — FIXED
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | Negamax alpha-beta |
+| Search depth | 2 ply |
+| Noise | σ ≈ 8 |
+| Selection | Top 3, random |
+| Evaluation | Full (phase-aware) |
+| Transposition table | No |
+| Time budget | 800ms |
 
-**Problem**: `simulateAction` evaluated board AFTER move but didn't compare to
-BEFORE. Do-nothing moves scored the same as transformative ones.
+Plays competently, catches 2-move tactics. Some unpredictability from
+noise prevents feeling robotic. Suitable for casual play.
 
-**Fix applied**: Replaced with `simulateDelta()` which computes
-`evaluateBoard(after) - evaluateBoard(before)`. Used by Hard (weight x3)
-and Impossible (weight x3) difficulty levels.
+### Hard — "Tournament Player"
+
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | Negamax alpha-beta + iterative deepening |
+| Search depth | 3-4 ply |
+| Noise | None |
+| Selection | Best move (deterministic) |
+| Evaluation | Full (phase-aware) |
+| Transposition table | Yes (64K entries) |
+| Quiescence | 1 ply |
+| Time budget | 2 seconds |
+
+Plays strong tactical game with multi-move lookahead. Finds combinations
+that require seeing 3-4 moves ahead. Suitable for experienced players.
+
+### Impossible — "Engine Level"
+
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | Negamax alpha-beta + iterative deepening |
+| Search depth | 4-6 ply |
+| Noise | None |
+| Selection | Best move (deterministic) |
+| Evaluation | Full (phase-aware) |
+| Transposition table | Yes (64K entries) |
+| Quiescence | 2 ply |
+| Time budget | 3.5 seconds |
+
+Near-optimal play. Deep tactical analysis, quiescence search prevents
+horizon-effect blunders, and full positional understanding. Suitable for
+competitive challenge.
 
 ---
 
@@ -308,66 +310,46 @@ trapped even without being fully surrounded.
 
 The opponent's own pieces count toward surrounding their queen. If the opponent
 places pieces carelessly around their queen, those pieces help you win. The AI
-should recognize and exploit when the opponent has 2+ of their own pieces
+recognizes and exploits when the opponent has 2+ of their own pieces
 adjacent to their queen.
 
 ---
 
-## Difficulty Levels
+## Oscillation Detection
 
-### Easy
-- Uses opening book loosely (50% random noise)
-- Picks from top 50% of scored moves randomly
-- Makes frequent sub-optimal moves
-- Intended for: learning the game
-
-### Medium
-- Follows opening book
-- Uses heuristic scoring with small noise
-- Picks from top 3 moves
-- Intended for: casual play
-
-### Hard
-- Opening book + heuristic scoring + 1-ply simulation
-- Evaluates board state after each candidate move
-- Picks from top 2 moves (slight variance)
-- Intended for: experienced players
-
-### Impossible
-- All of the above + 2-ply analysis
-- Simulates own move, then evaluates opponent's best counter
-- Always picks the single best move (no randomness)
-- Intended for: competitive challenge
+The AI maintains a `moveHistory` buffer of the last 10 actions. Before selecting
+a move, it checks if the move reverses any recent move (same piece, swapped
+from/to coordinates). Oscillating moves receive a -50 penalty or are replaced
+with the next best alternative from search results.
 
 ---
 
-## Evaluation Function Weights
+## Research References
 
-| Factor | Weight | Notes |
-|--------|--------|-------|
-| Opponent queen surround (per side) | +30 | Primary offensive metric |
-| Own queen surround (per side) | -35 | Slightly higher than offense (defense first) |
-| Opponent queen 5 sides | +120 | One move from winning |
-| Own queen 5 sides | -140 | Critical danger |
-| Win (6 sides) | +10000 | Absolute |
-| Loss (6 sides) | -10000 | Absolute |
-| Queen mobility (per escape route) | +6 | More options = safer |
-| Opponent pinned pieces (per piece) | +5 | Pinned pieces can't attack/defend |
-| Mobile ants (per ant) | +10 | Key offensive resource |
-| Opponent mobile ants (per ant) | -8 | Threatening |
-| Beetle on opponent queen | +40 | Devastating pin |
-| Beetle adjacent to opponent queen | +18 | Major threat |
-| Ant within 2 of opponent queen | +10 | Immediate pressure |
-| Opponent self-surround (per piece) | +8 | Exploit their mistakes |
+The AI design draws from these published Hive AI research works:
+
+- **Kampert, "Better AI for Hive" (Leiden University, IEEE)** — Alpha-beta
+  with iterative deepening + transposition tables. Branching factor ~60.
+- **Nasar, "Hive AI" (University of Leeds)** — 15 heuristics with genetic
+  algorithm tuned weights. Queen weighted 2x other factors.
+- **"Strategies in Hive" (KTH Royal Institute of Technology)** — Tempo
+  concepts, pinning strategies, piece valuations.
+- **"A Monte Carlo Strategy for Hive" (Leiden University)** — MCTS comparison,
+  circling and beetle-drop tactics.
+- **Mzinga (Jon Thysell)** — ~90 evaluation metrics, evolutionary weight
+  training, Universal Hive Protocol.
+- **HiveMind (cmelchior)** — 22K+ game analysis, negamax with alpha-beta,
+  iterative deepening, killer heuristic, transposition tables.
+- **shaw3257/hive** — Proves minimax with alpha-beta works in client-side
+  JavaScript via Web Workers.
 
 ---
 
 ## Future Improvements
 
-1. **Move delta scoring**: Score based on board state change, not absolute position
-2. **Oscillation prevention**: Track and penalize repeated positions
-3. **Placement urgency**: Stronger incentive to deploy pieces from hand
-4. **Move-away penalty**: Heavily penalize leaving opponent-queen-adjacent hexes
-5. **Deeper search**: 3+ ply minimax with alpha-beta pruning for impossible
-6. **Pattern recognition**: Detect common winning/losing configurations
-7. **Endgame solver**: When few pieces remain, search to completion
+1. **Web Worker**: Move search to a separate thread to avoid UI blocking
+2. **Opening book database**: Pre-computed strong openings from game analysis
+3. **Evolutionary weight tuning**: Population of AIs playing each other
+4. **Pattern recognition**: Detect known winning/losing configurations
+5. **Endgame solver**: When few pieces remain, search to completion
+6. **Null move pruning**: Skip a turn to quickly identify strong positions
