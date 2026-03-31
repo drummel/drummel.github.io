@@ -124,6 +124,9 @@ const App = (() => {
     });
   }
 
+  let boardEventsReady = false;
+  let aiThinking = false; // guard against clicks during AI turn
+
   function startGame() {
     setupKonami();
     const canvas = document.getElementById('board-canvas');
@@ -131,19 +134,22 @@ const App = (() => {
     Celebration.init();
     UI.init();
     AI.reset();
+    aiThinking = false; // reset in case previous game's AI was mid-turn
     GameState.init();
 
-    setupBoardEvents(canvas);
-    setupControlEvents();
-    window.addEventListener('resize', () => {
-      Renderer.resize();
-      refresh();
-    });
+    // Only attach DOM event listeners once to avoid duplicate handlers on restart
+    if (!boardEventsReady) {
+      boardEventsReady = true;
+      setupBoardEvents(canvas);
+      setupControlEvents();
+      window.addEventListener('resize', () => {
+        Renderer.resize();
+        refresh();
+      });
+    }
 
     refresh();
   }
-
-  let aiThinking = false; // guard against clicks during AI turn
 
   function refresh() {
     const state = GameState.getState();
